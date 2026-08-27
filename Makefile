@@ -18,7 +18,7 @@ lint-strict:
 
 
 env: $(CONDA_REQUIREMENTS)
-	curl -L - O $(MININFORGE_URL)
+	curl -L -O $(MINIFORGE_URL)
 	bash $(MINIFORGE_INSTALL) -b -f -p ${HOME}/conda
 
 	source ${HOME}/conda/etc/profile.d/conda.sh
@@ -31,6 +31,7 @@ install: env $(PIP_REQUIREMENTS)
 
 clean:
 	rm -rf __pycache__
+	rm -rf .mypy_cache
 
 
 .PHONY: all env install clean lint lint-strict
