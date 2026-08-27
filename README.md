@@ -1,10 +1,16 @@
 *This project has been created as part of the 42 curriculum by mabarlag, eepyemy*
 
+Agreements:
+Putting temporary comments between brackets [].
+
+
 ## Description
 
 <br>
 
-TODO: past here description from the subject?
+A-Maze-ing is a maze generator in Python that takes a configuration file, generates a maze, possibly perfect (with a single path between entrance and exit), and writes it to a
+file using a hexadecimal wall representation. You will also provide a visual representation
+of the maze and organize your code so that the generation logic can be reused later.
 
 <br>
 
