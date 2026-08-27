@@ -16,9 +16,10 @@ __The maze generation algorithm overview__
 __Why this algorithm__  
 __Reusable code overview and examples__  
 
-### __Team and project management__ 
+### __Team and project management__  
  
 __Roles and responsibilities__  
+[ put something here for codam, we have strategy already, not helpful (?) ]  
 __Anticipated planning and how it evolved__  
 Aiming for 2 to 2,5 weeks for the project.  
 ><br>
@@ -33,6 +34,9 @@ Aiming for 2 to 2,5 weeks for the project.
 
 __What worked well__  
 __What could be improved__  
+* Paying attention to our energy levels  
+* Booking a silent room beforehand where we can work without distraction  
+
 __Tools used__  
 Visual brainstorming -> [Excalidraw](excalidraw.com)  
 Package manager -> miniforge3  
@@ -56,15 +60,14 @@ Using tester:
 ^_^
 ## Resources
 
-_~No AI was used_
 
 #### Links:  
 
-Doc strings explanation: https://www.geeksforgeeks.org/python/python-docstrings/
+Doc strings explanation: https://www.geeksforgeeks.org/python/python-docstrings/  
 
-Doc string styles: https://sphinxcontrib-napoleon.readthedocs.io/en/latest/index.html
+Doc string styles: https://sphinxcontrib-napoleon.readthedocs.io/en/latest/index.html  
 
-Explanation on Pydantic: https://www.youtube.com/watch?v=XIdQ6gO3Anc
+Explanation on Pydantic: https://www.youtube.com/watch?v=XIdQ6gO3Anc  
 
 Design patterns: https://refactoring.guru/design-patterns  
 
@@ -72,4 +75,4 @@ Pair programming: https://www.youtube.com/watch?v=E4cg5mmvpwo
 
 Merge conflict handling: https://www.geeksforgeeks.org/git/merge-conflicts-and-how-to-handle-them/  
 
-Oh My Git Game: https://ohmygit.org
+Oh My Git Game: https://ohmygit.org  
