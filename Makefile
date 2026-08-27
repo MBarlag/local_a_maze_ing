@@ -1,3 +1,4 @@
+SHELL:= /bin/bash
 CONDA_ENV:= amazing
 PIP:= # Path to pip3.
 OS:=$(shell uname)
@@ -20,16 +21,13 @@ lint-strict:
 $(MINIFORGE_INSTALL):
 	curl -L -O $(MINIFORGE_URL)
 
-env: $(CONDA_REQUIREMENTS)
+env: $(CONDA_REQUIREMENTS) $(MINIFORGE_INSTALL)
 	bash $(MINIFORGE_INSTALL) -b -f -p ${HOME}/conda
 	printf ${HOME}/conda/etc/profile.d/conda.sh
-	$(SOURCE) "${HOME}/conda/etc/profile.d/conda.sh"
-	conda activate
-	conda create -n amazing --file $(CONDA_REQUIREMENTS)
-	activate amazing
+	source "${HOME}/conda/etc/profile.d/conda.sh" ; conda activate ; conda activate ; conda create -y -n amazing --file $(CONDA_REQUIREMENTS) ; conda activate amazing
 
 install: env $(PIP_REQUIREMENTS)
-	$(PIP) install --file $(PIP_REQUIREMENTS)
+	$(PIP) install --no-input --file $(PIP_REQUIREMENTS)
 
 clean:
 	rm -rf __pycache__
