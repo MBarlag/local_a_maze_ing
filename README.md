@@ -36,7 +36,7 @@ __What could be improved__
 __Tools used__  
 Visual brainstorming -> [Excalidraw](excalidraw.com)  
 Package manager -> miniforge3  
-^ (? might wanna switch, turned out to be unreliable)  
+^ (? might wanna switch, turned out to be unreliable)  --> Maybe Python build module?
 
 <br>
 
@@ -60,10 +60,16 @@ _~No AI was used_
 
 #### Links:  
 
-Doc string styles: https://sphinxcontrib-napoleon.readthedocs.io/en/latest/index.html  
+Doc strings explanation: https://www.geeksforgeeks.org/python/python-docstrings/
+
+Doc string styles: https://sphinxcontrib-napoleon.readthedocs.io/en/latest/index.html
+
+Explanation on Pydantic: https://www.youtube.com/watch?v=XIdQ6gO3Anc
 
 Design patterns: https://refactoring.guru/design-patterns  
 
 Pair programming: https://www.youtube.com/watch?v=E4cg5mmvpwo  
 
 Merge conflict handling: https://www.geeksforgeeks.org/git/merge-conflicts-and-how-to-handle-them/  
+
+Oh My Git Game: https://ohmygit.org
