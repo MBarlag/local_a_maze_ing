@@ -25,19 +25,22 @@ lint-strict:
 $(MINIFORGE_INSTALL):
 	curl -L -O $(MINIFORGE_URL)
 
-env: $(MINIFORGE_INSTALL) $(CONDA_DIR) $(CONDA_REQUIREMENTS) 
+env: $(CONDA_DIR)
 
-$(CONDA_DIR):
-	bash $(MINIFORGE_INSTALL) -b -f -p ${HOME}/conda
-	printf ${HOME}/conda/etc/profile.d/conda.sh
-	source "${HOME}/conda/etc/profile.d/conda.sh" ; conda activate ; conda activate ; conda create -y -n amazing --file $(CONDA_REQUIREMENTS) ; conda activate amazing
+$(CONDA_DIR): $(CONDA_REQUIREMENTS)
+	$(MAKE) $(MINIFORGE_INSTALL)
+	./conda_install.sh $(MINIFORGE_INSTALL) $(CONDA_REQUIREMENTS) 
 
 install: env $(PIP_REQUIREMENTS)
-	bash install.sh
+	./install.sh $(PIP_REQUIREMENTS)
+
+run:
+	source $(CONDA_DIR)/etc/profile.d/conda.sh ; conda activate amazing ; python3 test.py
 
 clean:
 	rm -rf __pycache__
 	rm -rf .mypy_cache
+	[delete conda]
 
 
 .PHONY: all env install clean lint lint-strict

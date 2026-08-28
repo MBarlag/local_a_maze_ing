@@ -1,3 +1,5 @@
+source "$HOME/conda/etc/profile.d/conda.sh"
+
 # Use this first command to see what rc files will be updated
 conda init --reverse --dry-run
 # Use this next command to take action on the rc files listed above
