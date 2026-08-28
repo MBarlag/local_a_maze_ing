@@ -52,10 +52,11 @@ __What worked well__
 __What could be improved__  
 * Paying attention to our energy levels  
 * Booking a silent room beforehand where we can work without distraction  
+* Talked about using bigger fonts for ease of following during pair programming
 
 __Tools used__  
 Visual brainstorming -> [Excalidraw](excalidraw.com)  
-Package manager -> miniforge3  
+Package manager -> miniforge3  (comunity managed version of conda)
 ^ (? might wanna switch, turned out to be unreliable)  --> Maybe Python build module?
 
 <br>
