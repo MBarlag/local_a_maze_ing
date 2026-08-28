@@ -33,7 +33,7 @@ $(CONDA_DIR):
 	source "${HOME}/conda/etc/profile.d/conda.sh" ; conda activate ; conda activate ; conda create -y -n amazing --file $(CONDA_REQUIREMENTS) ; conda activate amazing
 
 install: env $(PIP_REQUIREMENTS)
-	source "${HOME}/conda/etc/profile.d/conda.sh"; conda activate amazing; pip3 install -r $(PIP_REQUIREMENTS)
+	bash install.sh
 
 clean:
 	rm -rf __pycache__
