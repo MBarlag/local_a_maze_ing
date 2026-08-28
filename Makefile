@@ -19,6 +19,9 @@ all:
 lint:
 lint-strict:
 
+# [thinking to move all of the long commands into one script file, 
+# and then just run the script file from makefile]
+
 $(MINIFORGE_INSTALL):
 	curl -L -O $(MINIFORGE_URL)
 
