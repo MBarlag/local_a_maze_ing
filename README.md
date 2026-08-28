@@ -36,6 +36,16 @@ Aiming for 2 to 2,5 weeks for the project.
 >
 ><br>
 
+<br>
+
+><br>
+>	[Day 2]: Tried out pair programming and choose it as  
+>   development strategy. Also delved into installing a virtual environment.  
+>   Chose to use Conda because it allows to select the version of Python.  
+>   Managed to set up the environment using our Makefile.  
+>   
+><br>
+
 <br> 
 
 __What worked well__  
