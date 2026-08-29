@@ -1,1 +1,3 @@
-Miniforge*
+.venv
+*.egg-info
+ready

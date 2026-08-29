@@ -1,6 +1,7 @@
-import platform
+def test[T](x: T) -> T:
+    return x
 
-# def log[P, T]():
-#     pass
 
-print(platform.python_version())
+if __name__ == "__main__":
+    print(test(3))
+# end main

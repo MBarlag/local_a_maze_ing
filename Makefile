@@ -1,46 +1,71 @@
-SHELL:= /bin/bash
-CONDA_ENV:= amazing
-PIP:=pip3
-OS:=$(shell uname)
-ARCH:=$(shell uname -m)
-MINIFORGE_INSTALL:= Miniforge3-$(OS)-$(ARCH).sh
-MINIFORGE_URL:= "https://github.com/conda-forge/miniforge/releases/latest/download/$(MINIFORGE_INSTALL)"
-# OS:= uname
-CONDA_REQUIREMENTS:=conda_requirements.txt
+VENV_DIR:=.venv
+WHICH_UV:=$(shell which uv)
 PIP_REQUIREMENTS:=requirements.txt
-CONDA_DIR:=${HOME}/conda
-# HOME_DIR:=$(shell echo "${HOME}")
-all:
-# # gonna install conda and make conda env
-# env: conda_requirements.txt
-# # install python modules using pip install
-# install: env requirements.txt
-# clean:
-lint:
+PY_VERSION:=.python-version
+LINT_FLAGS:=--warn-return-any \
+--warn-unused-ignores \
+--ignore-missing-imports \
+--disallow-untyped-defs \
+--check-untyped-defs
+
+
+all: run
+lint: 
+	$(MAKE) ready
+	uvx mypy $(LINT_FLAGS) . || true
+	uvx flake8 --exclude $(VENV_DIR) . || true
+
 lint-strict:
+	$(MAKE) ready
+	uvx mypy  --strict . || true
+	uvx flake8 --exclude $(VENV_DIR) . || true
 
-# [thinking to move all of the long commands into one script file, 
-# and then just run the script file from makefile]
 
-$(MINIFORGE_INSTALL):
-	curl -L -O $(MINIFORGE_URL)
+# command for installing uv in case it's not installed
+# we know it by running which uv
+# if its empty, it means uv is not installed
+uv_install: $(WHICH_UV)
+ifeq ($(WHICH_UV),)
+	curl -LsSf https://astral.sh/uv/install.sh | sh
+endif
 
-env: $(CONDA_DIR)
+# recepie for creating venv, depends on python version,
+# which is stored in a file and any time the file gets updated
+# we should delete previous venv if it was there and recreate using
+# new python version
+$(VENV_DIR): $(PY_VERSION)
+	$(MAKE) uv_install
+	rm -rf $(VENV_DIR)
+	uv venv
 
-$(CONDA_DIR): $(CONDA_REQUIREMENTS)
-	$(MAKE) $(MINIFORGE_INSTALL)
-	./conda_install.sh $(MINIFORGE_INSTALL) $(CONDA_REQUIREMENTS) 
+# make sure the environment is up to date
+# and create a file "ready" when its ready
+# to avoid relinking
+ready: $(VENV_DIR) $(PIP_REQUIREMENTS)
+	uv pip install --exact -r $(PIP_REQUIREMENTS)
+	touch ready
 
-install: env $(PIP_REQUIREMENTS)
-	./install.sh $(PIP_REQUIREMENTS)
+# command asked in subject
+# does same as make ready
+install:
+	$(MAKE) ready
 
 run:
-	source $(CONDA_DIR)/etc/profile.d/conda.sh ; conda activate amazing ; python3 test.py
+	$(MAKE) ready
+	uv run test.py
 
 clean:
 	rm -rf __pycache__
 	rm -rf .mypy_cache
-	[delete conda]
 
+# removes uv package manager, and it's .venv
+# also removes build folders and the file ready
+uninstall:
+	./uv_uninstall.sh
+	$(MAKE) clean
+	rm -rf $(VENV_DIR)
+	rm -rf dist
+	rm -rf *.egg-info
+	rm -f ready
 
-.PHONY: all env install clean lint lint-strict
+.PHONY:	all uninstall install run clean lint lint-strict
