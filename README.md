@@ -48,6 +48,17 @@ Aiming for 2 to 2,5 weeks for the project.
 
 <br> 
 
+><br>
+>	[Day 3]: Were stuck with troubleshooting conda for a while.
+>   Ended up with a working solution, but too loaded with
+>   implicit rules on how it is supposed to work, which
+>   makes it hard to understand.   
+>   
+><br>
+
+<br> 
+
+
 __What worked well__  
 __What could be improved__  
 * Paying attention to our energy levels  
@@ -56,8 +67,8 @@ __What could be improved__
 
 __Tools used__  
 Visual brainstorming -> [Excalidraw](excalidraw.com)  
-Package manager -> miniforge3  (comunity managed version of conda)
-^ (? might wanna switch, turned out to be unreliable)  --> Maybe Python build module?
+Package manager -> uv open source package manager written in Rust,   
+very fast and easy to use.   
 
 <br>
 
@@ -93,3 +104,5 @@ Pair programming: https://www.youtube.com/watch?v=E4cg5mmvpwo
 Merge conflict handling: https://www.geeksforgeeks.org/git/merge-conflicts-and-how-to-handle-them/  
 
 Oh My Git Game: https://ohmygit.org  
+
+UV Documentation: https://docs.astral.sh/uv/  
