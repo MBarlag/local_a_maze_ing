@@ -10,7 +10,7 @@ LINT_FLAGS:=--warn-return-any \
 
 
 all: run
-lint: 
+lint:
 	$(MAKE) ready
 	uvx mypy $(LINT_FLAGS) . || true
 	uvx flake8 --exclude $(VENV_DIR) . || true
