@@ -59,12 +59,13 @@ clean:
 
 # removes uv package manager, and it's .venv
 # also removes build folders and the file ready
-uninstall:
-	./uv_uninstall.sh
-	$(MAKE) clean
-	rm -rf $(VENV_DIR)
-	rm -rf dist
-	rm -rf *.egg-info
-	rm -f ready
 
-.PHONY:	all uninstall install run clean lint lint-strict
+# uninstall:
+# 	./uv_uninstall.sh
+# 	$(MAKE) clean
+# 	rm -rf $(VENV_DIR)
+# 	rm -rf dist
+# 	rm -rf *.egg-info
+# 	rm -f ready
+
+.PHONY:	all install run clean lint lint-strict # uninstall
