@@ -1,13 +1,12 @@
 VENV_DIR:=.venv
 WHICH_UV:=$(shell which uv)
 PIP_REQUIREMENTS:=requirements.txt
-PY_VERSION:=.python-version
+PY_VERSION:=.python_v
 LINT_FLAGS:=--warn-return-any \
 --warn-unused-ignores \
 --ignore-missing-imports \
 --disallow-untyped-defs \
 --check-untyped-defs
-
 
 all: run
 lint:
@@ -36,7 +35,7 @@ endif
 $(VENV_DIR): $(PY_VERSION)
 	$(MAKE) uv_install
 	rm -rf $(VENV_DIR)
-	uv venv
+	uv venv --python $(shell cat $(PY_VERSION))
 
 # make sure the environment is up to date
 # and create a file "ready" when its ready
