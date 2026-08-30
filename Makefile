@@ -7,6 +7,7 @@ LINT_FLAGS:=--warn-return-any \
 --ignore-missing-imports \
 --disallow-untyped-defs \
 --check-untyped-defs
+PY_VER:=$(shell cat $(PY_VERSION))
 
 all: run
 lint:
@@ -35,7 +36,7 @@ endif
 $(VENV_DIR): $(PY_VERSION)
 	$(MAKE) uv_install
 	rm -rf $(VENV_DIR)
-	uv venv --python $(shell cat $(PY_VERSION))
+	uv venv --python $(PY_VER)
 
 # make sure the environment is up to date
 # and create a file "ready" when its ready
@@ -51,7 +52,8 @@ install:
 
 run:
 	$(MAKE) ready
-	uv run test.py
+	echo $(PY_VER)
+	uv run --python $(PY_VER) test.py
 
 clean:
 	rm -rf __pycache__
