@@ -56,6 +56,13 @@ Aiming for 2 to 2,5 weeks for the project.
 >   
 ><br>
 
+<br>
+
+><br>
+>	[Day 4]: Changed the package manager from Conda to uv. Got it to work on both Linux and Mac. Decided to print python version when running program (still has to be implemeted). Started on writing python code to parse the config file.
+>   
+><br>
+
 <br> 
 
 
@@ -64,6 +71,8 @@ __What could be improved__
 * Paying attention to our energy levels  
 * Booking a silent room beforehand where we can work without distraction  
 * Talked about using bigger fonts for ease of following during pair programming
+* Maud would like some self study time in between two hours of pair programming sessions
+to let the new knowledge sink in.
 
 __Tools used__  
 Visual brainstorming -> [Excalidraw](excalidraw.com)  
