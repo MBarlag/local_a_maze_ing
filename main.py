@@ -33,6 +33,29 @@ class Config(BaseModel):
             # self.build_realted = 3
             # self.display_related = 3
 
+from collections import abc
+
+class Shape(abc):
+    
+    # some syntax here that makes it mandatory
+    def get_area(self):
+        pass
+    
+    # some other syntax that makes this function not needed to be defined
+    def some_other(self):
+        pass
+    
+class Box(Shape):
+    def box_specific_func(self):
+        pass
+    def get_area(self):
+        self.box_specific_func()
+        
+
+arr = [box, circle, triangle]
+
+def print_all(list: list[Shape])
+
 if __name__ == '__main__':
     config = Config.read_config()
     maze_build(Config)
