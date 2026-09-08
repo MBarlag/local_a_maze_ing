@@ -53,6 +53,14 @@ class Box(Shape):
         self.box_specific_func()
         
 
+class Walls(Enum):
+    0 = None, None, None, None
+    def has_top(self):
+        return self.top is not None
+    
+if Walls(cell.hex).top:
+    
+
 arr = [box, circle, triangle]
 
 def print_all(list: list[Shape])
