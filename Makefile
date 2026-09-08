@@ -1,7 +1,7 @@
 VENV_DIR:=.venv
 WHICH_UV:=$(shell which uv)
-PIP_REQUIREMENTS:=requirements.txt
-PY_VERSION:=.python_v
+PIP_REQUIREMENTS:=dev_config/requirements.txt
+PY_VERSION:=dev_config/.python_v
 LINT_FLAGS:=--warn-return-any \
 --warn-unused-ignores \
 --ignore-missing-imports \
@@ -63,7 +63,7 @@ clean:
 # also removes build folders and the file ready
 
 # uninstall:
-# 	./uv_uninstall.sh
+# 	dev_config/uv_uninstall.sh
 # 	$(MAKE) clean
 # 	rm -rf $(VENV_DIR)
 # 	rm -rf dist
@@ -71,3 +71,5 @@ clean:
 # 	rm -f ready
 
 .PHONY:	all install run clean lint lint-strict # uninstall
+
+# DON'T FORGET DEBUG

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 import platform
+import pytest
 
 def error() -> None:
     print("Error")
