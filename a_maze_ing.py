@@ -1,71 +1,28 @@
-from pydantic import BaseModel
-import platform
-import pytest
+"""
+     a_maze_ing.py
 
-def error() -> None:
-    print("Error")
+    Is responsible for being a dispatcher tower for all of the classes in the program,
+    the orchestrator, 
 
-class Config(BaseModel):
+    It will talk with multiple classes and ask them to do their job, 
+    without overwhelming each of the class with information that is not needed.        
 
-    def set_height(self, height: int) -> None:
-        pass
+"""
 
-    def read_config(cls) -> 'Config':
-        if cls.instance == None:
-            cls.instance = cls(height, width, something, ...)
-        return cls.instance
 
-    def __init__(self, filename) -> None:
-        # we are reading from file
-        with open(filename, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-            for line in lines:
-                # handling comments
-                if line.strip()[0] == '#':
-                    continue
-                splitted = line.split("=")
-                if len(splitted) != 2:
-                    error()
-                    return
-                setattr(self, splitted[0], splitted[1])
-                
-            # self.width = 3
-            # self.something = True
-            # self.build_realted = 3
-            # self.display_related = 3
-
-from collections import abc
-
-class Shape(abc):
-    
-    # some syntax here that makes it mandatory
-    def get_area(self):
-        pass
-    
-    # some other syntax that makes this function not needed to be defined
-    def some_other(self):
-        pass
-    
-class Box(Shape):
-    def box_specific_func(self):
-        pass
-    def get_area(self):
-        self.box_specific_func()
-        
-
-class Walls(Enum):
-    0 = None, None, None, None
-    def has_top(self):
-        return self.top is not None
-    
-if Walls(cell.hex).top:
-    
-
-arr = [box, circle, triangle]
-
-def print_all(list: list[Shape])
+# from submodules.config import Config
+# from submodules.display import MazePrinter
 
 if __name__ == '__main__':
-    config = Config.read_config()
-    maze_build(Config)
-    print_maze(Config)
+    # config = config("config.txt").parse_config()
+    # # config looks like: {'height': '4', ...}
+
+    # maze_gen = MazeGen(**config)
+    # # under the hood it will call the MazeGen constructor method, 
+    # # it will look something like this:
+    # #   MazeGen(name="maze_name", height="4", color='red') 
+    # # it will not care about parameters that are not defined in its class
+    # # and will just take what it actually needs
+
+    # maze_printer = MazePrinter(**config)
+    # maze_printer.display()

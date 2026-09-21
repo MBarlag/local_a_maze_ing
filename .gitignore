@@ -3,3 +3,5 @@
 ready
 build
 dist
+.mypy_cache
+.ruff_cache
