@@ -1,7 +1,6 @@
 from dataclasses import dataclass
-
-def error() -> None:
-    print("Error")
+from pydantic import BaseModel, PrivateAttr
+import re
 
 @dataclass
 class Config:
@@ -9,19 +8,17 @@ class Config:
     _filename: str
 
     def parse_config(self) -> dict[str, str]:
-        with open(filename, "r", encoding="utf-8") as f:
-            lines = f.readlines()
-            for line in lines:
+        result: dict[str, str] = {}
+        with open(self._filename, "r", encoding="utf-8") as f:
+            for line in f.readlines():
                 # handling comments
-                if line.strip()[0] == '#':
+                line = re.sub("(^#.*$)|(#.*$)", "", line)
+                line = line.strip()
+                if not line:
                     continue
                 splitted = line.split("=")
                 if len(splitted) != 2:
-                    error()
-                    return
-                setattr(self, splitted[0], splitted[1])
-                
-            # self.width = 3
-            # self.something = True
-            # self.build_realted = 3
-            # self.display_related = 3
+                    raise Exception               
+                key, value = splitted
+                result[key] = value
+        return result
