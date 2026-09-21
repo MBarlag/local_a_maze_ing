@@ -2,14 +2,15 @@ from submodules.config import Config
 import pytest
 from os import remove
 
-VALID={
-    "":{}, 
-    "\n":{}, 
-    "\n\n":{}, 
-    "OUTPUT=file#2.txt":
-        {"OUTPUT": "file#2.txt"}, 
-    "#comment\nOUT=3.txt #comment 2": 
-        {"OUT": "3.txt"}}.items()
+VALID=[
+    ("", {}), 
+    ("\n", {}), 
+    ("\n\n", {}), 
+    ("OUTPUT=file#2.txt",
+        {"OUTPUT": "file#2.txt"}), 
+    ("#comment\nOUT=3.txt #comment 2", 
+        {"OUT": "3.txt"})
+]
 
 INVALID=["OUTPUT#=file2.txt", "A=3, B=4", "C==3", "D=my=file.txt"]
 FILENAME="test_config.txt"
