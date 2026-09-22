@@ -14,6 +14,7 @@
 # from submodules.display import MazePrinter
 
 if __name__ == '__main__':
+    pass
     # config = config("config.txt").parse_config()
     # # config looks like: {'height': '4', ...}
 
