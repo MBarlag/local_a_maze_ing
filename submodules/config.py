@@ -13,10 +13,6 @@ class Config:
         return re.sub(pattern="(#.*$)", repl="", string=line)
 
     @staticmethod
-    def _process(line: str) -> str:
-        return Config._strip_comments(line).strip()
-    
-    @staticmethod
     def _extract(line: str, default: Any = None) -> bool:
         if not line:
             return default
@@ -29,7 +25,7 @@ class Config:
         result: dict[str, str] = {}
         with open(self._filename, "r", encoding="utf-8") as f:
             for line in f.readlines():
-                line = Config._process(line)
+                line = Config._strip_comments(line).strip()
                 if not (extracted := Config._extract(line)):
                     continue
                 key, value = extracted

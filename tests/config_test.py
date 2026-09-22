@@ -10,7 +10,7 @@ VALID=[
         {"OUTPUT": "file"}), 
     ("#comment\nOUT=3.txt #comment 2", 
         {"OUT": "3.txt"}),
-    ("#comment\nOUT=3com#m=ent=#### 2#\n#\n\n#", 
+    ("######comment\nOUT=3com#m=ent=#### 2#\n#\n\n#", 
             {"OUT": "3com"})
 ]
 
