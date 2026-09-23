@@ -7,11 +7,11 @@ VALID=[
     ("\n", {}), 
     ("\n\n", {}), 
     ("OUTPUT=file#2.txt",
-        {"OUTPUT": "file"}), 
+        {"output": "file"}), 
     ("#comment\nOUT=3.txt #comment 2", 
-        {"OUT": "3.txt"}),
+        {"out": "3.txt"}),
     ("######comment\nOUT=3com#m=ent=#### 2#\n#\n\n#", 
-            {"OUT": "3com"})
+            {"out": "3com"})
 ]
 
 INVALID=["OUTPUT#=file2.txt", "A=3, B=4", "C==3", "D=my=file.txt"]

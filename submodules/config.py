@@ -29,5 +29,5 @@ class Config:
                 if not (extracted := Config._extract(line)):
                     continue
                 key, value = extracted
-                result[key] = value
+                result[key.lower()] = value
         return result
