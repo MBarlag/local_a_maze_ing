@@ -58,6 +58,12 @@ run:
 clean:
 	rm -rf __pycache__
 	rm -rf .mypy_cache
+	rm -rf .ruff_cache
+	rm -rf .pytest_cache
+	rm -rf */__pycache__
+	rm -rf */.mypy_cache
+	rm -rf */.ruff_cache
+	rm -rf */.pytest_cache
 
 # removes uv package manager, and it's .venv
 # also removes build folders and the file ready
