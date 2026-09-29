@@ -34,7 +34,7 @@ class Walls(Flag):
 #         result += (self.__repr['south'] if self.walls[3] else '    ') + '\n'
 #         return result
 
-
+# TODO think if we even need low level here? maybe just maze is ok?
 @dataclass(repr=False)
 class Grid(list):
     width: int
@@ -54,6 +54,8 @@ class Grid(list):
         for index in range(len(self)):
             yield self[index][n]
  
+    # TODO: move to higher level class
+    # TODO: add validation of neighbors and breaking their walls too
     # def break_wall(self, y, x, to_break: Walls):
     #     if to_break in self[y][x]:
     #         self[y][x] ^= to_break
