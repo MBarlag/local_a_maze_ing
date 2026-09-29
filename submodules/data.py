@@ -3,6 +3,17 @@ from dataclasses import dataclass, field
 from enum import Enum, IntEnum, Flag, IntFlag
 from functools import wraps
 
+# @dataclass
+# class Cell:
+#     x:      int
+#     y:      int
+
+#     def __len__(self): return 2
+    
+#     def __iter__(self):
+#         for i in range(len(self)):
+#             yield (self.x, self.y)[i]
+
 class Walls(Flag):
     W =     0b1000
     S =     0b0100
@@ -10,6 +21,7 @@ class Walls(Flag):
     N =     0b0001
     EMPTY = 0b0000
     BLOCK = 0b1111        
+
 
 # TODO think if we even need low level here? maybe just maze is ok?
 @dataclass(repr=False)
