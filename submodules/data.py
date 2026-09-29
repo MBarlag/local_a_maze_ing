@@ -21,18 +21,18 @@ class Walls(Flag):
     EMPTY = 0b0000
     BLOCK = 0b1111        
 
-    def __neg__(self):
+    def opposite(self):
         opposites = {Walls.W: Walls.E,
                      Walls.E: Walls.W,
                      Walls.N: Walls.S,
                      Walls.S: Walls.N}
-        return opposites[self]
+        return opposites.get(self, Walls.EMPTY)
     
     def __iter__(self):
         for wall in [Walls.W, Walls.S, Walls.E, Walls.N]:
             if wall in self:
                 yield wall
-            else: continue
+            else: yield Walls.EMPTY
 
 
 # TODO think if we even need low level here? maybe just maze is ok?
