@@ -3,16 +3,15 @@ from dataclasses import dataclass, field
 from enum import Enum, IntEnum, Flag, IntFlag
 from functools import wraps
 
-# @dataclass
+# TODO: think about rwriting methods to using Cell instead of y, x?
+# could be something like maze.shell(Cell(3,2)) -> Cell
+# or maze.break_wall(Cell(2,15), Walls.N)
 # class Cell:
-#     x:      int
-#     y:      int
-
-#     def __len__(self): return 2
-    
-#     def __iter__(self):
-#         for i in range(len(self)):
-#             yield (self.x, self.y)[i]
+#     # use singleton?
+#     # use it as a more readable access point
+#     # to replace all of the coords x, y?
+#     # implement addition against a tuple?
+#     maze_ref: 'Maze' # only assigned one time
 
 class Walls(Flag):
     W =     0b1000
@@ -37,16 +36,24 @@ class Walls(Flag):
 
 
 # TODO think if we even need low level here? maybe just maze is ok?
+# TODO reeval if dataclass needed here
 @dataclass(repr=False)
 class Grid(list):
     width: int
     height: int
+    # TODO make generic later
+    default: Any
 
     def __init__(self, width: int, height: int, default: Any):
         self.width = width
         self.height = height
         super().__init__([[default for x in range(self.width)] 
                           for y in range(self.height)])
+    
+    def cant_reach(self, y: int, x: int):
+        return (x < 0 or y < 0 \
+            or x >= self.width \
+            or y >= self.height)
     
     def row(self, n):
         for index in range(len(self)):
