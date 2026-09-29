@@ -62,17 +62,73 @@ class Grid(list):
     def column(self, n):
         for index in range(len(self)):
             yield self[index][n]
- 
-    # TODO: move to higher level class
-    # TODO: add validation of neighbors and breaking their walls too
-    # def break_wall(self, y, x, to_break: Walls):
-    #     if to_break in self[y][x]:
-    #         self[y][x] ^= to_break
-    #     else: raise ValueError("Walls requested dont exist")
 
-    def neighbours(self, y,  x):
-        coords = [(x - 1, y), (x, y + 1), (x + 1, y), (x, y - 1)]
-        for x, y in coords:
-            if x < 0 or y < 0 or x >= self.width or y >= self.height:
+    def validate(self):
+        for x in range(self.width):
+            for y in range(self.height):
+                self.validate_cell(y, x) # implement Cell interface?
+        print("Valid!")
+
+
+@dataclass
+class Orientier:
+    wall: Walls
+    yd: int
+    xd: int
+
+class Direction(Orientier, Enum):
+    LEFT = Walls.W, 0, -1
+    DOWN = Walls.S, 1, 0
+    RIGHT = Walls.E, 0, 1
+    UP = Walls.N, -1, 0
+
+    def __iter__(self):
+        for i in range(len(Orientier.__dataclass_fields__)):
+            yield self._value_[i]
+
+
+
+class Maze(Grid):
+
+    def __init__(self, width, height, default: Walls):
+        super().__init__(width, height, default)
+
+    def shell(self, y,  x):
+        shell = Walls.BLOCK
+        for wall, yd, xd in list(Direction):
+            y_new = y = yd
+            x_new = x + xd
+            if self.cant_reach(y_new, x_new):
                 continue
-            yield self[y][x]
+            if wall.opposite() not in self[y][x]:
+                shell ^= wall
+        return shell
+
+    # can be offloaded to Cell(1,2).validate()?
+    def validate_cell(self, y, x):
+        # TODO: fix access outside of boundaries later
+        if self[y][x] != self.shell(y, x):
+            raise Exception("Maze not valid")
+                
+    # TODO: add validation of neighbors and breaking their walls too
+    # can be offloaded to Cell(3,3).break_wall(to_break: Walls)
+    def break_wall(self, y, x, to_break: Walls):
+        if to_break in self[y][x]:
+            self[y][x] ^= to_break
+        for wall, yd, xd in list(Direction):
+            if wall not in to_break \
+                or self.cant_reach(y + yd, x + xd):
+                continue
+
+            
+            
+            
+        else: raise ValueError("Walls requested dont exist")
+        
+a = Maze(3,3,Walls.BLOCK)
+a.validate()
+a.break_wall(0,0,Walls.S)
+a.break_wall(1,0,Walls.N)
+a.validate()
+b = Maze(4, 1, Walls.BLOCK)
+b.validate()
