@@ -18,7 +18,8 @@ class Wall(Flag):
     E =     0b0010
     N =     0b0001
     EMPTY = 0b0000
-    BLOCK = 0b1111        
+    BLOCK = 0b1111
+
 
     @property
     def opposite(self):
@@ -114,13 +115,14 @@ class Cell:
 
     @property
     def valid(self):
-        return self.walls != sum(self.surrounded)
+        ...
 
 
     # use singleton?
     # use it as a more readable access point
     # to replace all of the coords x, y?
     # implement addition against a tuple?
+
 
 class Room(Cell):
     @property
@@ -130,14 +132,14 @@ class Room(Cell):
             neighbour = self + move
             if neighbour is None:
                 continue
-            if wall.opposite not in neighbour:
-                surrounded ^= wall
+            if wall.opposite not in neighbour.walls:
+                surrounded -= wall
         return surrounded
 
     # TODO: add validation of neighbors and breaking their walls too
     def break_wall(self, y, x, to_break: Wall):
         if to_break in self[y][x]:
-            self[y][x] ^= to_break
+            self[y][x] -= to_break
         for wall, yd, xd in list(zip(Wall, Move)):
             if wall not in to_break \
                 or self.cant_reach(y + yd, x + xd):
