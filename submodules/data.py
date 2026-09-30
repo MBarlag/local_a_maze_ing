@@ -114,8 +114,15 @@ class Cell:
 
     @property
     def valid(self):
-        return self.walls != self.surrounded
+        return self.walls != sum(self.surrounded)
 
+
+    # use singleton?
+    # use it as a more readable access point
+    # to replace all of the coords x, y?
+    # implement addition against a tuple?
+
+class Room(Cell):
     @property
     def surrounded(self) -> Wall:
         surrounded = Wall.BLOCK
@@ -127,11 +134,15 @@ class Cell:
                 surrounded ^= wall
         return surrounded
 
-    # use singleton?
-    # use it as a more readable access point
-    # to replace all of the coords x, y?
-    # implement addition against a tuple?
-
+    # TODO: add validation of neighbors and breaking their walls too
+    def break_wall(self, y, x, to_break: Wall):
+        if to_break in self[y][x]:
+            self[y][x] ^= to_break
+        for wall, yd, xd in list(zip(Wall, Move)):
+            if wall not in to_break \
+                or self.cant_reach(y + yd, x + xd):
+                continue
+        else: raise ValueError("Walls requested dont exist")
 
 class Maze(Grid):
     _cell: Cell
@@ -147,21 +158,6 @@ class Maze(Grid):
                 self.validate_cell(y, x) # implement Cell interface?
         print("Valid!")
 
-    
-    # TODO: add validation of neighbors and breaking their walls too
-    # can be offloaded to Cell(3,3).break_wall(to_break: Walls)
-    def break_wall(self, y, x, to_break: Wall):
-        if to_break in self[y][x]:
-            self[y][x] ^= to_break
-        for wall, yd, xd in list(zip(Wall, Move)):
-            if wall not in to_break \
-                or self.cant_reach(y + yd, x + xd):
-                continue
-
-            
-            
-
-        else: raise ValueError("Walls requested dont exist")
 
 a = Maze(3,3,Wall.BLOCK)
 a.validate()
