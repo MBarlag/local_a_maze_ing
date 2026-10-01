@@ -2,7 +2,8 @@ from typing import Any, Generic, TypeVar
 from dataclasses import dataclass, field
 from enum import Enum, IntEnum, Flag, IntFlag
 from functools import wraps
-from collections.abc import Callable, Iterable, Container
+from collections.abc import Callable, Iterable, Iterator
+from abc import ABC
 
 
 class Move(Enum):
@@ -47,17 +48,20 @@ class Wall(Flag):
 
 T = TypeVar('T')
 class Grid(Generic[T]):
-    width: int
-    height: int
-    # TODO make generic later
-    default: T
-    _cell: Cell
 
+    _cell: '_Cell'
     def __init__(self, width: int, height: int, default: Any):
+        self.default = default
         self.width = width
         self.height = height
         super().__init__([[default for x in range(self.width)] 
                           for y in range(self.height)])
+
+    @property
+    def valid(self) -> bool:
+        for y in self.height:
+            for x in self.width:
+                self._cell
     
     def cant_reach(self, y: int, x: int):
         return (x < 0 or y < 0 \
@@ -73,55 +77,47 @@ class Grid(Generic[T]):
             yield self[index][n]
 
 
-# TODO: think about rwriting methods to using Cell instead of y, x?
-# could be something like maze.shell(Cell(3,2)) -> Cell
-# or maze.break_wall(Cell(2,15), Walls.N)
-class Cell:
-    _maze_ref: Grid = None # only assigned one time
+class _Cell(Generic[T]):
 
-    def __add__(self, other: tuple[int, int]) -> 'Cell':
-        y_move, x_move = other
-        return Cell(self.y + y_move, self.x + x_move)
+    def __new__(cls, ref: Grid[T]):
+        if ref:
+            return cls(ref)
+        else: raise ValueError("Grid is None")
+    def __init__(self, ref: Grid[T]):
+        self._grid = ref
+        setattr(self, T.__name__.lower(), self._get_t)
+        self(y=0, x=0)
 
-    @property
-    def walls(self) -> Wall:
-        y, x = self.y, self.x
-        if not self._maze_ref:
-            raise Exception("Cell view is not linked to maze")
-        return self._maze_ref[y][x]
-
-    def __contains__(self, item: Wall):
-        return item in self.walls
-
-    @classmethod
-    def __call__(cls, ref: Grid):
-        if not cls._maze_ref:
-            cls._maze_ref = ref
-        else:
-            raise Exception("Cell already is linked to an existing Maze")
-
-    @classmethod
-    def __new__(cls, y: int, x: int) -> 'Cell' | None:
-        if cls._maze_ref.cant_reach(y, x):
+    def __call__(self, y: int, x: int) -> '_Cell[T]':
+        if self._grid.cant_reach(y, x):
             return None
-        else: return cls(y, x)
+        else: 
+            self.y, self.x = y, x
+            return self
 
-    def __init__(self, y: int, x: int):
-        self.y = y
-        self.x = x
+    def __iter__(self):
+        for i in vars(self):
+            yield i
+
+    def __add__(self, other: tuple[int, int]) -> '_Cell[T]':
+        y_move, x_move = other
+        return self(self.y + y_move, self.x + x_move)
+
+    def neighbour(self, other: tuple[int, int]) -> '_Cell[T]':
+        return self + other
 
     @property
-    def valid(self):
-        ...
+    def _get_t(self) -> T:
+        y, x = self.y, self.x
+        return self._grid[y][x]
+
+    @property
+    def valid(self) -> bool:
+        pass
 
 
-    # use singleton?
-    # use it as a more readable access point
-    # to replace all of the coords x, y?
-    # implement addition against a tuple?
 
-
-class Room(Cell):
+class Room(Grid.Cell):
     @property
     def surrounded(self) -> Wall:
         surrounded = Wall.BLOCK
