@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Generic, TypeVar
 from dataclasses import dataclass, field
 from enum import Enum, IntEnum, Flag, IntFlag
 from functools import wraps
@@ -45,16 +45,13 @@ class Wall(Flag):
     def __rsub__(self, other: Flag | int):
         return Wall(other) ^ self
 
-
-# TODO think if we even need low level here? maybe just maze is ok?
-# TODO reeval if dataclass needed here
-@dataclass(repr=False)
-class Grid(list):
+T = TypeVar('T')
+class Grid(Generic[T]):
     width: int
     height: int
     # TODO make generic later
-    default: Any
-    _elem_view: Callable | Iterable | Container
+    default: T
+    _cell: Cell
 
     def __init__(self, width: int, height: int, default: Any):
         self.width = width
