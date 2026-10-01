@@ -77,15 +77,18 @@ class MazePrinter(BaseModel):
         Args:
             hex_row (list[int]): One line of hexadecimal characters.
         """
+        north = 1
+        west = 8
+
         for top_type in hex_row:
-            if top_type in (0, 2, 4, 6):
-                print("   ", end="")
-            elif top_type in (1, 3, 5, 7):
-                print("---", end="")
-            elif top_type in (8, 10, 12, 14):
-                print("+  ", end="")
-            elif top_type in (9, 11, 13, 15):
+            if (top_type & north) and (top_type & west):
                 print("+--", end="")
+            elif top_type in (0, 2, 4, 6):
+                print("   ", end="")
+            elif top_type & north:
+                print("---", end="")
+            elif top_type & west:
+                print("+  ", end="")
         print("+")
 
         for cell_type in hex_row:
@@ -120,3 +123,19 @@ class MazePrinter(BaseModel):
         for row in ascii_maze:
             self._display_row(row)
         self._display_bottom(ascii_maze)
+
+
+
+
+
+    def display_per_bit(self, hex_row: list[int]) -> None:
+        north = 1
+        west = 8
+        for cell in hex_row:
+            print("+" + ("---" if cell & north else "   "), end="")
+        print("+")
+
+        for cell in hex_row:
+            print(("|" if cell & west else " ") + "   ", end="")
+        print("|")
+        
