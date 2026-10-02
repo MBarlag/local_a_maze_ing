@@ -39,3 +39,4 @@ class Wall(Flag):
         return self ^ Wall(other)
     def __rsub__(self, other: Flag | int):
         return Wall(other) ^ self
+

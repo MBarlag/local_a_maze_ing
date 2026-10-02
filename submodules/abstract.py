@@ -1,5 +1,7 @@
 
 from typing import Any, Generic, TypeVar
+from enums import Move
+
 
 T = TypeVar('T')
 
@@ -15,7 +17,6 @@ class Cell(Generic[T]):
         self._grid = ref
         self._data = data
         self.y, self.x = y, x
-
     def __call__(self, y: int, x: int) -> 'Cell[T]':
         if self._grid.cant_reach(y, x):
             return None
@@ -28,10 +29,13 @@ class Cell(Generic[T]):
     def __add__(self, other: tuple[int, int]) -> 'Cell[T]':
         y_move, x_move = other
         return self(self.y + y_move, self.x + x_move)
-
+ 
     def __getattr__(self, name) -> Any:
-        y, x = self.y, self.x
-        return getattr(self.data, name)
+        if name in ['y', 'x', '_grid', '_data']:
+            return vars(self)[name]
+        return getattr(self._data, name)
+
+
 
     def neighbour(self, other: tuple[int, int]) -> 'Cell[T]':
         return self + other
