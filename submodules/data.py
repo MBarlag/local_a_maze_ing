@@ -10,7 +10,7 @@ class RoomData:
     walls: Wall
 
 class Room(Cell[RoomData]):
-
+    
 
     @property
     def surrounded(self) -> Wall:
@@ -28,7 +28,7 @@ class Room(Cell[RoomData]):
         if to_break in self[y][x]:
             self[y][x] -= to_break
         for wall, yd, xd in list(zip(Wall, Move)):
-            if wall not in to_break \
+            if wall not in to_break
                 or self.cant_reach(y + yd, x + xd):
                 continue
         else: raise ValueError("Walls requested dont exist")

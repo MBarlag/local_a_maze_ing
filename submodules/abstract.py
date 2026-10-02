@@ -42,7 +42,7 @@ class Cell(Generic[T]):
 
     @property
     def valid(self) -> bool:
-        pass
+        return True
 
 
 class Grid(Generic[T]):

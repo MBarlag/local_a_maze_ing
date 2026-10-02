@@ -30,7 +30,6 @@ class Wall(Flag):
             if wall in self:
                 yield wall
             else: yield Wall.EMPTY
-    
     def __add__(self, other: Flag | int):
         return self | Wall(other)
     def __radd__(self, other: Flag | int):
@@ -39,4 +38,3 @@ class Wall(Flag):
         return self ^ Wall(other)
     def __rsub__(self, other: Flag | int):
         return Wall(other) ^ self
-
