@@ -24,7 +24,7 @@ class Wall(Flag):
     BLOCK = 0b1111
 
 
-    @property.getter
+    @property
     def opposite(self):
         opposites = \
             {Wall.W: Wall.E,
@@ -33,7 +33,7 @@ class Wall(Flag):
              Wall.S: Wall.N}
         return opposites.get(self, Wall.EMPTY)
 
-    @property.getter
+    @property
     def direction(self) -> Move:
         if self == Wall.W:
             return Move.LEFT

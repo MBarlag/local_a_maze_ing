@@ -10,7 +10,7 @@ class RoomData:
 
 
 class Room(Cell[RoomData]):
-    @property.getter
+    @property
     def surrounded(self) -> list[Wall]:
         surrounded = [Wall.W, Wall.E, Wall.N, Wall.S]
         for wall in list(surrounded):
@@ -21,7 +21,7 @@ class Room(Cell[RoomData]):
                 surrounded.remove(wall)
         return surrounded
 
-    @property.getter
+    @property
     def valid(self) -> bool:
         return self.walls == self.surrounded
 
@@ -38,5 +38,5 @@ class Room(Cell[RoomData]):
 
 class Maze(Grid[RoomData]):
     def __init__(self, width: int, height: int, 
-                 default: RoomData = RoomData(visited=False, walls=Wall.BLOCK)):
-        super().__init__(width, height, default)
+                 default: RoomData):
+        super().__init__(width, height, default = RoomData(visited=False, walls=Wall.BLOCK))
