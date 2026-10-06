@@ -52,18 +52,16 @@ class Cell(Generic[T]):
         for i in vars(self):
             yield i
 
-    def __add__(self, other: tuple[int, int]) -> 'Cell[T]':
+    def __add__(self, other: Vector | tuple[int, int]) -> 'Cell[T]':
         y_move, x_move = other
         return self(self.y + y_move, self.x + x_move)
- 
+
     def __getattr__(self, name) -> Any:
-        if name in ['y', 'x', '_grid', '_data']:
-            return vars(self)[name]
+        if name in dir(self):
+            return dir(self)[name]
         return getattr(self._data, name)
 
-
-
-    def neighbour(self, other: tuple[int, int]) -> 'Cell[T]':
+    def neighbour(self, other: Vector | tuple[int, int]) -> 'Cell[T]':
         return self + other
 
     @property
@@ -73,47 +71,49 @@ class Cell(Generic[T]):
 
 class Grid(Generic[T]):
 
+    def __new__(cls, width: int, height: int, default: T):
+        if width < 1 or height < 1:
+            raise ValueError("Grid can't have zero/negative width or height")
+        return super().__new__(cls)
 
     def __init__(self, width: int, height: int, default: T):
         self.default = default
         self.height = height
         self.width = width
-        self._grid = [[Cell(y, x, default, self) for x in range(self.width)] 
-                          for y in range(self.height)]
+        self._grid = [[Cell(y, x, default, self) for x in range(self.width)]
+                      for y in range(self.height)]
         self._cell = self._grid[0][0]
 
     def __iter__(self):
-        yield 
-    
-    def __getitem__(self, y: int) -> list[Cell[T]]:
-        return self._grid[y]
-
-    def __iter__(self):
-        for y in self.height:
-            for x in self.width:
-                yield self._cell(y, x)
+        for y in range(self.height):
+            for x in range(self.width):
+                yield self.cell(y, x)
 
     @property
     def cell(self):
         return self._cell
-    
+
     @property
     def valid(self) -> bool:
-        for y in self.height:
-            for x in self.width:
-                if not self._cell(y, x).valid:
+        for y in range(self.height):
+            for x in range(self.width):
+                if not self.cell(y, x).valid:
                     return False
         return True
-    
+
     def cant_reach(self, y: int, x: int):
-        return (x < 0 or y < 0 \
-            or x >= self.width \
-            or y >= self.height)
-    
+        return (x < 0 or y < 0
+                or x >= self.width
+                or y >= self.height)
+
+    def __getitem__(self, y: int) -> list[Cell[T]]:
+        return self._grid[y]
+
     def row(self, y: int):
-        for index in range(len(self)):
-            yield self._cell(y, index)
+        for index in range(self.width):
+            yield self.cell(y, index)
 
     def column(self, x: int):
-        for index in range(len(self)):
-            yield self._cell(index, x)
+        for index in range(self.height):
+            yield self.cell(index, x)
+
