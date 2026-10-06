@@ -3,7 +3,6 @@ from enums import Wall, Move
 from abstract import Grid, Cell
 
 
-
 @dataclass
 class RoomData:
     visited: bool
