@@ -253,8 +253,8 @@
         "type": 3
       },
       "seed": 1301977371,
-      "version": 980,
-      "versionNonce": 2048718658,
+      "version": 1012,
+      "versionNonce": 12826664,
       "isDeleted": false,
       "boundElements": [
         {
@@ -262,7 +262,7 @@
           "id": "zYKKmyf24qNr_H15yzyk_"
         }
       ],
-      "updated": 1788794182640,
+      "updated": 1791291790318,
       "link": null,
       "locked": false,
       "created": null
@@ -272,7 +272,7 @@
       "type": "text",
       "x": 28.95321900069564,
       "y": 208.69967522305168,
-      "width": 451,
+      "width": 450.99945068359375,
       "height": 550,
       "angle": 0,
       "strokeColor": "#1e1e1e",
@@ -287,11 +287,11 @@
       "index": "aF",
       "roundness": null,
       "seed": 183928661,
-      "version": 1896,
-      "versionNonce": 2076349918,
+      "version": 1929,
+      "versionNonce": 1391096616,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1788794182640,
+      "updated": 1791291790330,
       "link": null,
       "locked": false,
       "text": "class MazeGen(BaseModel):\n    height     : int\n    width      : int\n    perfect    : bool\n    entry      : Vector<int, int>\n    exit       : Vector<int, int>\n    output_file: str\n    seed       : int\n\n# it has all of the needed data to be\nable to generate the maze that we need\n# it should have a method that we call\nthat is gonna do the generation (its\ngonnabe its main contact point with other\nparts of program, so basically => main\ninterface)\n\n1. Break walls of a specific cell.\n1.1 Break mirroring walls.\n2. Do algorithms to know which wall to\nbreak.\n",

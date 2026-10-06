@@ -8,12 +8,13 @@ class RoomData:
     visited: bool
     walls: Wall
 
+
 class Room(Cell[RoomData]):
     @property.getter
     def surrounded(self) -> list[Wall]:
         surrounded = [Wall.W, Wall.E, Wall.N, Wall.S]
-        for wall, direction in zip(Wall, Move):
-            neighbour = self + direction
+        for wall in list(surrounded):
+            neighbour = self + wall.direction
             if neighbour is None:
                 continue
             if wall.opposite not in neighbour.walls:
@@ -24,28 +25,18 @@ class Room(Cell[RoomData]):
     def valid(self) -> bool:
         return self.walls == self.surrounded
 
+    def break_wall(self, to_break: Wall) -> None:
+        if to_break in self.walls:
+            self.walls -= to_break
+            neighbour = self + to_break.direction
+            if neighbour is None:
+                raise ValueError("Can't break borders of the maze")
+            neighbour.walls -= to_break.opposite
+        else:
+            raise ValueError("Walls requested don't exist")
 
-
-    # TODO: add validation of neighbors and breaking their walls too
-    def break_wall(self, to_break: Wall):
-        if to_break in self[y][x]:
-            self[y][x] -= to_break
-        for wall, yd, xd in list(zip(Wall, Move)):
-            if wall not in to_break
-                or self.cant_reach(y + yd, x + xd):
-                continue
-        else: raise ValueError("Walls requested dont exist")
 
 class Maze(Grid[RoomData]):
-    pass
-
-
-maze = Maze(3,3,RoomData(visited=False, walls=Wall.BLOCK))
-room = maze.cell
-
-
-maze.validate()
-cell(0,4).walls = Wall.S
-cell.break_wall(0,0,Wall.S)
-cell.break_wall(1,0,Wall.N)
-maze.validate()
+    def __init__(self, width: int, height: int, 
+                 default: RoomData = RoomData(visited=False, walls=Wall.BLOCK)):
+        super().__init__(width, height, default)
