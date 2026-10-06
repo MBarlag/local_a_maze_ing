@@ -30,13 +30,13 @@ T = TypeVar('T')
 
 
 class Cell(Generic[T]):
-    def __new__(cls, y: int, x: int, data: T, ref: 'Grid[T]'):
-        if ref is not None and data is not None:
+    def __new__(cls, y: int, x: int, ref: 'Grid[T]', data: T = None):
+        if ref is not None:
             if ref.cant_reach(y, x):
                 raise ValueError("Coordinates are not reachable")
             return super().__new__(cls)
         else:
-            raise ValueError("ref and default cant be None")
+            raise ValueError("ref cant be None")
 
     def __init__(self, y: int, x: int, data: T, ref: 'Grid[T]'):
         self._grid = ref
@@ -71,12 +71,12 @@ class Cell(Generic[T]):
 
 class Grid(Generic[T]):
 
-    def __new__(cls, width: int, height: int, default: T):
+    def __new__(cls, width: int, height: int, default: T = None):
         if width < 1 or height < 1:
             raise ValueError("Grid can't have zero/negative width or height")
         return super().__new__(cls)
 
-    def __init__(self, width: int, height: int, default: T):
+    def __init__(self, width: int, height: int, default: T = None):
         self.default = default
         self.height = height
         self.width = width
