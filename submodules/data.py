@@ -37,6 +37,8 @@ class Room(Cell[RoomData]):
 
 
 class Maze(Grid[RoomData]):
+
+    _cell_class = Room
     def __init__(self, width: int, height: int, 
                  default: RoomData = RoomData(visited=False, walls=Wall.BLOCK)):
         super().__init__(width, height, default)

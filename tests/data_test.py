@@ -6,7 +6,8 @@ def test_room():
 	maze = Maze(3, 3)
 	assert maze.valid == True
 
-	room = maze.cell
+	room : Room = maze.cell
+    
 	room(0, 0).break_wall(Wall.S)
 	assert room.valid == True
 
@@ -15,6 +16,10 @@ def test_room():
 
 
 
+if __name__ == '__main__':
+    test_room()
 
 # with pytest.raises(Exception):
-	# input for test
+# 	# input for test
+# maze = Maze(3, 3)
+# room : Room = maze.cell

@@ -57,9 +57,13 @@ class Cell(Generic[T]):
         return self(self.y + y_move, self.x + x_move)
 
     def __getattr__(self, name) -> Any:
-        if name in dir(self):
-            return dir(self)[name]
+        if name in dir(self) or name in dir():
+            return self.__getattribute__(name)
         return getattr(self._data, name)
+
+    # TODO write setattr
+    # def __setattr__(self, name, value):
+        
 
     def neighbour(self, other: Vector | tuple[int, int]) -> 'Cell[T]':
         return self + other
@@ -74,13 +78,14 @@ class Grid(Generic[T]):
     def __new__(cls, width: int, height: int, default: T = None):
         if width < 1 or height < 1:
             raise ValueError("Grid can't have zero/negative width or height")
+        Grid._cell_class = getattr(cls, '_cell_class', Cell)
         return super().__new__(cls)
 
     def __init__(self, width: int, height: int, default: T = None):
         self.default = default
         self.height = height
         self.width = width
-        self._grid = [[Cell(y, x, self, default) for x in range(self.width)]
+        self._grid = [[Grid._cell_class(y, x, self, default) for x in range(self.width)]
                       for y in range(self.height)]
         self._cell = self._grid[0][0]
 
