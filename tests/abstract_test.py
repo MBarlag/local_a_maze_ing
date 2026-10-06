@@ -24,7 +24,7 @@ def test_grid():
 
 def test_cell():
     with pytest.raises(ValueError):
-        Cell(-2, -3, 0, Grid(3, 2, 0))
+        Cell(-2, -3, Grid(3, 2, 0))
     grid = Grid(2, 2, Wall.BLOCK)
     assert grid.cell + Move.RIGHT == grid.cell(0, 1)
     assert grid.cell + Move.RIGHT * 6 == None

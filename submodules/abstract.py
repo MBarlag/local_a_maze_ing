@@ -38,7 +38,7 @@ class Cell(Generic[T]):
         else:
             raise ValueError("ref cant be None")
 
-    def __init__(self, y: int, x: int, data: T, ref: 'Grid[T]'):
+    def __init__(self, y: int, x: int, ref: 'Grid[T]', data: T = None):
         self._grid = ref
         self._data = data
         self.y, self.x = y, x
@@ -80,7 +80,7 @@ class Grid(Generic[T]):
         self.default = default
         self.height = height
         self.width = width
-        self._grid = [[Cell(y, x, default, self) for x in range(self.width)]
+        self._grid = [[Cell(y, x, self, default) for x in range(self.width)]
                       for y in range(self.height)]
         self._cell = self._grid[0][0]
 
