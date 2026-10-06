@@ -23,7 +23,8 @@ class Wall(Flag):
     EMPTY = 0b0000
     BLOCK = 0b1111
 
-    @property
+
+    @property.getter
     def opposite(self):
         opposites = \
             {Wall.W: Wall.E,
@@ -32,6 +33,17 @@ class Wall(Flag):
              Wall.S: Wall.N}
         return opposites.get(self, Wall.EMPTY)
 
+    @property.getter
+    def direction(self) -> Move:
+        if self == Wall.W:
+            return Move.LEFT
+        elif self == Wall.E:
+            return Move.RIGHT
+        elif self == Wall.N:
+            return Move.UP
+        elif self == Wall.S:
+            return Move.DOWN
+    
     def __iter__(self):
         for wall in [Wall.W, Wall.S, Wall.E, Wall.N]:
             if wall in self:
