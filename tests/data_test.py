@@ -2,7 +2,7 @@ from data import *
 import pytest
 
 
-def test_function():
+def test_room():
 	maze = Maze(3, 3)
 	assert maze.valid == True
 
