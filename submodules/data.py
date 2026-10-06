@@ -9,18 +9,22 @@ class RoomData:
     walls: Wall
 
 class Room(Cell[RoomData]):
-    
-
-    @property
-    def surrounded(self) -> Wall:
-        surrounded = Wall.BLOCK
-        for wall, move in list(zip(Wall, Move)):
-            neighbour = self + move
+    @property.getter
+    def surrounded(self) -> list[Wall]:
+        surrounded = [Wall.W, Wall.E, Wall.N, Wall.S]
+        for wall, direction in zip(Wall, Move):
+            neighbour = self + direction
             if neighbour is None:
                 continue
             if wall.opposite not in neighbour.walls:
-                surrounded -= wall
+                surrounded.remove(wall)
         return surrounded
+
+    @property.getter
+    def valid(self) -> bool:
+        return self.walls == self.surrounded
+
+
 
     # TODO: add validation of neighbors and breaking their walls too
     def break_wall(self, to_break: Wall):
