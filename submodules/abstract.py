@@ -1,22 +1,48 @@
 
-from typing import Any, Generic, TypeVar
-from enums import Move
+from typing import Any, Generic, TypeVar, Type
+from dataclasses import dataclass
 
+@dataclass
+class Vector:
+    y: int
+    x: int
+
+    def __iter__(self):
+        return iter([self.y, self.x])
+    def __add__(self, other: Type['Vector'] | tuple[int, int]):
+        y, x = other
+        return Vector(self.y + y, self.x + x)
+    def __radd__(self, other: Type['Vector'] | tuple[int, int]):
+        return self + other
+    def __mul__(self, other: int):
+        return Vector(self.y * other, self.x  * other)
+    def __sub__(self, other: Type['Vector'] | tuple[int, int]):
+        y, x = other
+        return Vector(self.y - y, self.x - x)
+    def __rsub__(self, other: Type['Vector'] | tuple[int, int]):
+        y, x = other
+        return Vector(y - self.y, x - self.x)
+    def __eq__(self, other: Type['Vector'] | tuple[int, int]):
+        y, x = other
+        return self.y == y and self.x == x
 
 T = TypeVar('T')
 
+
 class Cell(Generic[T]):
     def __new__(cls, y: int, x: int, data: T, ref: 'Grid[T]'):
-        if ref and data:
+        if ref is not None and data is not None:
             if ref.cant_reach(y, x):
-                return None
-            return cls(y, x, data, ref)
-        else: raise AttributeError("ref and default cant be None")
+                raise ValueError("Coordinates are not reachable")
+            return super().__new__(cls)
+        else:
+            raise ValueError("ref and default cant be None")
 
     def __init__(self, y: int, x: int, data: T, ref: 'Grid[T]'):
         self._grid = ref
         self._data = data
         self.y, self.x = y, x
+
     def __call__(self, y: int, x: int) -> 'Cell[T]':
         if self._grid.cant_reach(y, x):
             return None
