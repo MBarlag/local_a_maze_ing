@@ -12,18 +12,18 @@ class RoomData:
 class Room(Cell[RoomData]):
     @property
     def surrounded(self) -> list[Wall]:
-        surrounded = [Wall.W, Wall.E, Wall.N, Wall.S]
-        for wall in list(surrounded):
+        surrounded = Wall.BLOCK
+        for wall in Wall.BLOCK:
             neighbour = self + wall.direction
             if neighbour is None:
                 continue
             if wall.opposite not in neighbour.walls:
-                surrounded.remove(wall)
+                surrounded -= wall
         return surrounded
 
     @property
     def valid(self) -> bool:
-        return self.walls == self.surrounded
+        return self.walls == sum(self.surrounded)
 
     def break_wall(self, to_break: Wall) -> None:
         if to_break in self.walls:
