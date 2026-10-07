@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from copy import copy
 
 N = TypeVar('N', int, float)
+
 @dataclass
 class Vector(Generic[N]):
     y: N
