@@ -39,8 +39,8 @@ class Cell(Generic[T]):
         else:
             raise ValueError("ref cant be None")
     def __init__(self, y: int, x: int, ref: 'Grid[T]', value: T = None):
+        self._value = value # should be set as first value
         self._grid = ref
-        self._value = value
         self.y, self.x = y, x
         # if not hasattr(value, '__dict__'):
         #     self._value = value
@@ -67,7 +67,7 @@ class Cell(Generic[T]):
         return getattr(self._value, name)
 
     def __setattr__(self, name, value):
-        if name in ['x', 'y', '_value', '_grid', 'valid']:
+        if name == '_value' or name not in dir(self._value):
             return super().__setattr__(name, value)
         return setattr(self._value, name, value)
 
@@ -129,4 +129,3 @@ class Grid(Generic[T]):
     def column(self, x: int):
         for index in range(self.height):
             yield self.cell(index, x)
-

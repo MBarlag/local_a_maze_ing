@@ -164,7 +164,7 @@
       "height": 446.0151672363281,
       "angle": 0,
       "strokeColor": "#9c36b5",
-      "backgroundColor": "transparent",
+      "backgroundColor": "#b2f2bb",
       "fillStyle": "solid",
       "strokeWidth": 2,
       "strokeStyle": "solid",
@@ -177,8 +177,8 @@
         "type": 3
       },
       "seed": 2146685980,
-      "version": 1080,
-      "versionNonce": 1084655548,
+      "version": 1081,
+      "versionNonce": 1379299541,
       "isDeleted": false,
       "boundElements": [
         {
@@ -186,7 +186,7 @@
           "id": "KrT2O2P9aqKLtzwi9sJo8"
         }
       ],
-      "updated": 1788867997068,
+      "updated": 1791391937550,
       "link": null,
       "locked": false,
       "created": null
@@ -287,20 +287,20 @@
       "index": "aF",
       "roundness": null,
       "seed": 183928661,
-      "version": 1929,
-      "versionNonce": 1391096616,
+      "version": 1941,
+      "versionNonce": 1905340343,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1791291790330,
+      "updated": 1791372239357,
       "link": null,
       "locked": false,
-      "text": "class MazeGen(BaseModel):\n    height     : int\n    width      : int\n    perfect    : bool\n    entry      : Vector<int, int>\n    exit       : Vector<int, int>\n    output_file: str\n    seed       : int\n\n# it has all of the needed data to be\nable to generate the maze that we need\n# it should have a method that we call\nthat is gonna do the generation (its\ngonnabe its main contact point with other\nparts of program, so basically => main\ninterface)\n\n1. Break walls of a specific cell.\n1.1 Break mirroring walls.\n2. Do algorithms to know which wall to\nbreak.\n",
+      "text": "class MazeGen(BaseModel):\n    height     : int\n    width      : int\n    perfect    : bool\n    entry      : Vector[int]\n    exit       : Vector[int]\n    output_file: str\n    seed       : int\n\n# it has all of the needed data to be\nable to generate the maze that we need\n# it should have a method that we call\nthat is gonna do the generation (its\ngonnabe its main contact point with other\nparts of program, so basically => main\ninterface)\n\n1. Break walls of a specific cell.\n1.1 Break mirroring walls.\n2. Do algorithms to know which wall to\nbreak.\n",
       "fontSize": 20,
       "fontFamily": 8,
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": "G2Q54kd1ZeNFT09K-0yMv",
-      "originalText": "class MazeGen(BaseModel):\n    height     : int\n    width      : int\n    perfect    : bool\n    entry      : Vector<int, int>\n    exit       : Vector<int, int>\n    output_file: str\n    seed       : int\n\n# it has all of the needed data to be able to generate the maze that we need\n# it should have a method that we call that is gonna do the generation (its gonnabe its main contact point with other parts of program, so basically => main interface)\n\n1. Break walls of a specific cell.\n1.1 Break mirroring walls.\n2. Do algorithms to know which wall to break.\n",
+      "originalText": "class MazeGen(BaseModel):\n    height     : int\n    width      : int\n    perfect    : bool\n    entry      : Vector[int]\n    exit       : Vector[int]\n    output_file: str\n    seed       : int\n\n# it has all of the needed data to be able to generate the maze that we need\n# it should have a method that we call that is gonna do the generation (its gonnabe its main contact point with other parts of program, so basically => main interface)\n\n1. Break walls of a specific cell.\n1.1 Break mirroring walls.\n2. Do algorithms to know which wall to break.\n",
       "autoResize": true,
       "lineHeight": 1.25,
       "created": null,
@@ -3963,7 +3963,7 @@
       "x": -194.16395108068673,
       "y": -539.5039443385313,
       "width": 473.9008225661057,
-      "height": 375,
+      "height": 475,
       "angle": 0,
       "strokeColor": "#e8590c",
       "backgroundColor": "transparent",
@@ -3977,20 +3977,20 @@
       "index": "b1LV",
       "roundness": null,
       "seed": 2012860673,
-      "version": 689,
-      "versionNonce": 921509252,
+      "version": 722,
+      "versionNonce": 1632395927,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1788868337596,
+      "updated": 1791376426700,
       "link": null,
       "locked": false,
-      "text": "menu.py\n\n# some logic that constantly asks from user\nfor instructions out of options it displays,\ngiven the option then it will \n\n* in some way * communicate with the rest of\nthe classes that this change needs to happen,\nfor example: \n1) make new maze and display it \n2) display / hide shortest path\n3) change wall colors and redraw\n4) set specific color to display the '42' pattern\n5) can be more optional commands\n6) exit?",
+      "text": "menu.py\n\n# some logic that constantly asks from user\nfor instructions out of options it displays,\ngiven the option then it will \n\n* in some way * communicate with the rest of\nthe classes that this change needs to happen,\nfor example: \n1) make new maze and display it \n2) display / hide shortest path\n3) change wall colors and redraw\n4) set specific color to display the '42' pattern\n5) can be more optional commands\n6) exit?\nmaybe look into inquirer\nhttps://python-\ninquirer.readthedocs.io/en/latest/installation.ht\nml",
       "fontSize": 20,
       "fontFamily": 5,
       "textAlign": "left",
       "verticalAlign": "top",
       "containerId": null,
-      "originalText": "menu.py\n\n# some logic that constantly asks from user for instructions out of options it displays, given the option then it will \n\n* in some way * communicate with the rest of the classes that this change needs to happen, for example: \n1) make new maze and display it \n2) display / hide shortest path\n3) change wall colors and redraw\n4) set specific color to display the '42' pattern\n5) can be more optional commands\n6) exit?",
+      "originalText": "menu.py\n\n# some logic that constantly asks from user for instructions out of options it displays, given the option then it will \n\n* in some way * communicate with the rest of the classes that this change needs to happen, for example: \n1) make new maze and display it \n2) display / hide shortest path\n3) change wall colors and redraw\n4) set specific color to display the '42' pattern\n5) can be more optional commands\n6) exit?\nmaybe look into inquirer\nhttps://python-inquirer.readthedocs.io/en/latest/installation.html",
       "autoResize": false,
       "lineHeight": 1.25,
       "created": null,
@@ -4002,8 +4002,8 @@
       "type": "frame",
       "x": -227.5904882276218,
       "y": -561.3617664633059,
-      "width": 538.3037860576926,
-      "height": 448.0715766319862,
+      "width": 546.6520526592551,
+      "height": 522.45188669058,
       "angle": 0,
       "strokeColor": "#bbb",
       "backgroundColor": "transparent",
@@ -4017,11 +4017,11 @@
       "index": "b1M",
       "roundness": null,
       "seed": 1691046017,
-      "version": 541,
-      "versionNonce": 1306197892,
+      "version": 556,
+      "versionNonce": 892891545,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1788868320106,
+      "updated": 1791376418501,
       "link": null,
       "locked": false,
       "name": "menu.py",
@@ -5041,472 +5041,6 @@
       "baseFontSize": null
     },
     {
-      "id": "57G0NQcuWK2pb5Z-b6v__",
-      "type": "line",
-      "x": -2733.039435549589,
-      "y": -249.11515542391328,
-      "width": 641.244496226067,
-      "height": 634.7622631997759,
-      "angle": 0,
-      "strokeColor": "transparent",
-      "backgroundColor": "#b2f2bb",
-      "fillStyle": "solid",
-      "strokeWidth": 1,
-      "strokeStyle": "solid",
-      "roughness": 0,
-      "opacity": 100,
-      "groupIds": [],
-      "frameId": "3zTwtazFy-akw4oAReaKK",
-      "index": "b2B4",
-      "roundness": null,
-      "seed": 2115476542,
-      "version": 2,
-      "versionNonce": 1173212834,
-      "isDeleted": false,
-      "boundElements": [],
-      "updated": 1790954075600,
-      "created": 1790954075599,
-      "link": null,
-      "locked": false,
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          641.2408517763138,
-          0
-        ],
-        [
-          641.2444962260665,
-          633.3404350484986
-        ],
-        [
-          -4.547473508864641e-13,
-          634.7622631997759
-        ],
-        [
-          42.32099018949157,
-          506.22209333106935
-        ],
-        [
-          56.32099018949157,
-          508.22209333106935
-        ],
-        [
-          559.7760697819413,
-          508.22209333106935
-        ],
-        [
-          573.7760697819413,
-          506.22209333106935
-        ],
-        [
-          583.7760697819413,
-          500.22209333106935
-        ],
-        [
-          589.7760697819413,
-          490.22209333106935
-        ],
-        [
-          591.7760697819413,
-          476.22209333106935
-        ],
-        [
-          591.7760697819413,
-          180.22209333106935
-        ],
-        [
-          589.7760697819413,
-          166.22209333106935
-        ],
-        [
-          583.7760697819413,
-          156.22209333106935
-        ],
-        [
-          573.7760697819413,
-          150.22209333106935
-        ],
-        [
-          559.7760697819413,
-          148.22209333106935
-        ],
-        [
-          56.32099018949157,
-          148.22209333106935
-        ],
-        [
-          42.32099018949157,
-          150.22209333106935
-        ],
-        [
-          46.05535075080206,
-          134.66280089319343
-        ],
-        [
-          541.3870463074427,
-          134.66280089319343
-        ],
-        [
-          550.7207379044276,
-          133.32941637933845
-        ],
-        [
-          557.3876604737025,
-          129.3292628377735
-        ],
-        [
-          561.3878140152674,
-          122.66234026849861
-        ],
-        [
-          562.7211985291224,
-          113.32864867151375
-        ],
-        [
-          562.7211985291224,
-          70.66034422815437
-        ],
-        [
-          561.3878140152674,
-          61.32665263116951
-        ],
-        [
-          557.3876604737025,
-          54.65973006189461
-        ],
-        [
-          550.7207379044276,
-          50.659576520329665
-        ],
-        [
-          541.3870463074427,
-          49.326192006474685
-        ],
-        [
-          46.05535075080206,
-          49.326192006474685
-        ],
-        [
-          36.7216591538172,
-          50.659576520329665
-        ],
-        [
-          30.054736584542297,
-          54.65973006189461
-        ],
-        [
-          26.054583042977356,
-          61.32665263116951
-        ],
-        [
-          24.721198529122375,
-          70.66034422815437
-        ],
-        [
-          24.721198529122375,
-          113.32864867151375
-        ],
-        [
-          26.054583042977356,
-          122.66234026849861
-        ],
-        [
-          30.054736584542297,
-          129.3292628377735
-        ],
-        [
-          36.7216591538172,
-          133.32941637933845
-        ],
-        [
-          46.05535075080206,
-          134.66280089319343
-        ],
-        [
-          42.32099018949157,
-          150.22209333106935
-        ],
-        [
-          32.32099018949157,
-          156.22209333106935
-        ],
-        [
-          26.320990189491567,
-          166.22209333106935
-        ],
-        [
-          24.320990189491567,
-          180.22209333106935
-        ],
-        [
-          24.320990189491567,
-          476.22209333106935
-        ],
-        [
-          26.320990189491567,
-          490.22209333106935
-        ],
-        [
-          32.32099018949157,
-          500.22209333106935
-        ],
-        [
-          42.32099018949157,
-          506.22209333106935
-        ],
-        [
-          -4.547473508864641e-13,
-          634.7622631997759
-        ],
-        [
-          0,
-          0
-        ]
-      ],
-      "startBinding": null,
-      "endBinding": null,
-      "startArrowhead": null,
-      "endArrowhead": null,
-      "polygon": true,
-      "lastCommittedPoint": null
-    },
-    {
-      "id": "UaMZhvLlErYJG4uZJSS6I",
-      "type": "line",
-      "x": -2091.7949393235226,
-      "y": 384.22527962458537,
-      "width": 641.2508517763144,
-      "height": 1104.491398375415,
-      "angle": 0,
-      "strokeColor": "transparent",
-      "backgroundColor": "#b2f2bb",
-      "fillStyle": "solid",
-      "strokeWidth": 1,
-      "strokeStyle": "solid",
-      "roughness": 0,
-      "opacity": 100,
-      "groupIds": [],
-      "frameId": "3zTwtazFy-akw4oAReaKK",
-      "index": "b2B6",
-      "roundness": null,
-      "seed": 1051731134,
-      "version": 2,
-      "versionNonce": 1600130594,
-      "isDeleted": false,
-      "boundElements": [],
-      "updated": 1790954078334,
-      "created": 1790954078333,
-      "link": null,
-      "locked": false,
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          -30.972256676477173,
-          159.03560869755017
-        ],
-        [
-          -44.97225667647717,
-          157.03560869755017
-        ],
-        [
-          -586.9672040181226,
-          157.03560869755017
-        ],
-        [
-          -600.9672040181226,
-          159.03560869755017
-        ],
-        [
-          -610.9672040181226,
-          165.03560869755017
-        ],
-        [
-          -616.9672040181226,
-          175.03560869755017
-        ],
-        [
-          -618.9672040181226,
-          189.03560869755017
-        ],
-        [
-          -618.9672040181226,
-          610.0356086975502
-        ],
-        [
-          -616.9672040181226,
-          624.0356086975502
-        ],
-        [
-          -610.9672040181226,
-          634.0356086975502
-        ],
-        [
-          -600.9672040181226,
-          640.0356086975502
-        ],
-        [
-          -586.9672040181226,
-          642.0356086975502
-        ],
-        [
-          -586.3516106108127,
-          676.3493293788946
-        ],
-        [
-          -596.3516106108127,
-          682.3493293788946
-        ],
-        [
-          -602.3516106108127,
-          692.3493293788946
-        ],
-        [
-          -604.3516106108127,
-          706.3493293788946
-        ],
-        [
-          -604.3516106108127,
-          1002.3493293788946
-        ],
-        [
-          -602.3516106108127,
-          1016.3493293788946
-        ],
-        [
-          -596.3516106108127,
-          1026.3493293788947
-        ],
-        [
-          -586.3516106108127,
-          1032.3493293788947
-        ],
-        [
-          -572.3516106108127,
-          1034.3493293788947
-        ],
-        [
-          -68.89653101836348,
-          1034.3493293788947
-        ],
-        [
-          -54.896531018363476,
-          1032.3493293788947
-        ],
-        [
-          -44.896531018363476,
-          1026.3493293788947
-        ],
-        [
-          -38.896531018363476,
-          1016.3493293788946
-        ],
-        [
-          -36.896531018363476,
-          1002.3493293788946
-        ],
-        [
-          -36.896531018363476,
-          706.3493293788946
-        ],
-        [
-          -38.896531018363476,
-          692.3493293788946
-        ],
-        [
-          -44.896531018363476,
-          682.3493293788946
-        ],
-        [
-          -54.896531018363476,
-          676.3493293788946
-        ],
-        [
-          -68.89653101836348,
-          674.3493293788946
-        ],
-        [
-          -572.3516106108127,
-          674.3493293788946
-        ],
-        [
-          -586.3516106108127,
-          676.3493293788946
-        ],
-        [
-          -586.9672040181226,
-          642.0356086975502
-        ],
-        [
-          -44.97225667647717,
-          642.0356086975502
-        ],
-        [
-          -30.972256676477173,
-          640.0356086975502
-        ],
-        [
-          -20.972256676477173,
-          634.0356086975502
-        ],
-        [
-          -14.972256676477173,
-          624.0356086975502
-        ],
-        [
-          -12.972256676477173,
-          610.0356086975502
-        ],
-        [
-          -12.972256676477173,
-          189.03560869755017
-        ],
-        [
-          -14.972256676477173,
-          175.03560869755017
-        ],
-        [
-          -20.972256676477173,
-          165.03560869755017
-        ],
-        [
-          -30.972256676477173,
-          159.03560869755017
-        ],
-        [
-          0,
-          0
-        ],
-        [
-          0.006355550247462816,
-          1104.4813983754148
-        ],
-        [
-          -641.2444962260665,
-          1104.491398375415
-        ],
-        [
-          -641.244496226067,
-          1.421828151277282
-        ],
-        [
-          0,
-          0
-        ]
-      ],
-      "startBinding": null,
-      "endBinding": null,
-      "startArrowhead": null,
-      "endArrowhead": null,
-      "polygon": true,
-      "lastCommittedPoint": null
-    },
-    {
       "id": "6M0EHyriC5Sskuh7y100W",
       "type": "rectangle",
       "x": -2708.3182370204668,
@@ -5515,7 +5049,7 @@
       "height": 85.33660888671874,
       "angle": 0,
       "strokeColor": "#9c36b5",
-      "backgroundColor": "transparent",
+      "backgroundColor": "#b2f2bb",
       "fillStyle": "solid",
       "strokeWidth": 2,
       "strokeStyle": "solid",
@@ -5528,8 +5062,8 @@
         "type": 3
       },
       "seed": 465954948,
-      "version": 1001,
-      "versionNonce": 704982974,
+      "version": 1002,
+      "versionNonce": 1827732313,
       "isDeleted": false,
       "boundElements": [
         {
@@ -5537,7 +5071,7 @@
           "type": "text"
         }
       ],
-      "updated": 1790953893481,
+      "updated": 1791376700253,
       "link": null,
       "locked": false,
       "created": null
@@ -5671,7 +5205,7 @@
       "height": 485,
       "angle": 0,
       "strokeColor": "#9c36b5",
-      "backgroundColor": "transparent",
+      "backgroundColor": "#b2f2bb",
       "fillStyle": "solid",
       "strokeWidth": 2,
       "strokeStyle": "solid",
@@ -5684,8 +5218,8 @@
         "type": 3
       },
       "seed": 1550065701,
-      "version": 2612,
-      "versionNonce": 1542379582,
+      "version": 2623,
+      "versionNonce": 128933371,
       "isDeleted": false,
       "boundElements": [
         {
@@ -5693,7 +5227,7 @@
           "id": "L5qXUIhgX99NCaX7Bnpk7"
         }
       ],
-      "updated": 1790953893481,
+      "updated": 1791391900209,
       "link": null,
       "locked": false,
       "created": null
@@ -5703,7 +5237,7 @@
       "type": "text",
       "x": -2705.7621433416452,
       "y": 546.2608883221355,
-      "width": 556.1428833007812,
+      "width": 560.999267578125,
       "height": 475,
       "angle": 0,
       "strokeColor": "#9c36b5",
@@ -5718,11 +5252,11 @@
       "index": "b2Bl",
       "roundness": null,
       "seed": 227988357,
-      "version": 5052,
-      "versionNonce": 1094210210,
+      "version": 5063,
+      "versionNonce": 531097243,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1790953893481,
+      "updated": 1791391900225,
       "link": null,
       "locked": false,
       "text": "class Walls(Flag, Iterable):\n# Provides readable way to store wall states\nSupports addition and substruction to other enum or\nint\n--------------------------------------------------\n        W = 1000\n        S = 0100\n        E = 0010\n        N = 0001\n    BLOCK = 1111\n    EMPTY = 0000\n--------------------------------------------------\n+ __iter__(self): Iterator(Wall) -> Wall.N in wall\n+ property(oppostite): Wall \n    -> Wall.N.opposite == Wall.S etc\n+ __add__(self, other: Flag | int)\n+ __radd__\n+ __sub__\n+ __rsub__",
@@ -5747,7 +5281,7 @@
       "height": 360,
       "angle": 0,
       "strokeColor": "#9c36b5",
-      "backgroundColor": "transparent",
+      "backgroundColor": "#b2f2bb",
       "fillStyle": "solid",
       "strokeWidth": 2,
       "strokeStyle": "solid",
@@ -5760,8 +5294,8 @@
         "type": 3
       },
       "seed": 1244846571,
-      "version": 2575,
-      "versionNonce": 1260724350,
+      "version": 2576,
+      "versionNonce": 1618556023,
       "isDeleted": false,
       "boundElements": [
         {
@@ -5769,7 +5303,7 @@
           "id": "Qg0YszI9HF29lJbcENkRT"
         }
       ],
-      "updated": 1790953893481,
+      "updated": 1791376695821,
       "link": null,
       "locked": false,
       "created": null
@@ -5815,82 +5349,6 @@
       "baseFontSize": null
     },
     {
-      "id": "I7fYa8SJXpXXUMUnFCKvU",
-      "type": "rectangle",
-      "x": -2696.2350116569833,
-      "y": 1058.7293780138275,
-      "width": 567.4550795924495,
-      "height": 360,
-      "angle": 0,
-      "strokeColor": "#9c36b5",
-      "backgroundColor": "transparent",
-      "fillStyle": "solid",
-      "strokeWidth": 2,
-      "strokeStyle": "solid",
-      "roughness": 1,
-      "opacity": 100,
-      "groupIds": [],
-      "frameId": "3zTwtazFy-akw4oAReaKK",
-      "index": "b2DV",
-      "roundness": {
-        "type": 3
-      },
-      "seed": 746523006,
-      "version": 2619,
-      "versionNonce": 204843564,
-      "isDeleted": false,
-      "boundElements": [
-        {
-          "type": "text",
-          "id": "roT-kTbZdS_6Z_QbUhc0Y"
-        }
-      ],
-      "updated": 1790954593726,
-      "link": null,
-      "locked": false,
-      "created": 1790953564484
-    },
-    {
-      "id": "roT-kTbZdS_6Z_QbUhc0Y",
-      "type": "text",
-      "x": -2691.2350116569833,
-      "y": 1063.7293780138275,
-      "width": 550,
-      "height": 225,
-      "angle": 0,
-      "strokeColor": "#9c36b5",
-      "backgroundColor": "transparent",
-      "fillStyle": "solid",
-      "strokeWidth": 2,
-      "strokeStyle": "solid",
-      "roughness": 1,
-      "opacity": 100,
-      "groupIds": [],
-      "frameId": "3zTwtazFy-akw4oAReaKK",
-      "index": "b2E",
-      "roundness": null,
-      "seed": 354232766,
-      "version": 5552,
-      "versionNonce": 1860349100,
-      "isDeleted": false,
-      "boundElements": [],
-      "updated": 1790954601646,
-      "link": null,
-      "locked": false,
-      "text": "class Color(Flag):\n# Provides readable way to store colors\n--------------------------------------------------\n    RED = 0b111000000\n    GREEN = 0b000111000\n    BLUE = 0b000000111\n    WHITE = 0b000000000\n    BLACK = RED | GREEN | BLUE\n--------------------------------------------------",
-      "fontSize": 20,
-      "fontFamily": 8,
-      "textAlign": "left",
-      "verticalAlign": "top",
-      "containerId": "I7fYa8SJXpXXUMUnFCKvU",
-      "originalText": "class Color(Flag):\n# Provides readable way to store colors\n--------------------------------------------------\n    RED = 0b111000000\n    GREEN = 0b000111000\n    BLUE = 0b000000111\n    WHITE = 0b000000000\n    BLACK = RED | GREEN | BLUE\n--------------------------------------------------",
-      "autoResize": true,
-      "lineHeight": 1.25,
-      "created": 1790953564484,
-      "labelPosition": null,
-      "baseFontSize": null
-    },
-    {
       "id": "3zTwtazFy-akw4oAReaKK",
       "type": "frame",
       "x": -2733.0494355495894,
@@ -5921,239 +5379,6 @@
       "created": null
     },
     {
-      "id": "ceiLHOpoz6WqGxkcJz2Cw",
-      "type": "line",
-      "x": -2001.2795659634369,
-      "y": -980.8939540000001,
-      "width": 1754.9777744411617,
-      "height": 1321.587998698827,
-      "angle": 0,
-      "strokeColor": "transparent",
-      "backgroundColor": "#ffec99",
-      "fillStyle": "solid",
-      "strokeWidth": 1,
-      "strokeStyle": "solid",
-      "roughness": 0,
-      "opacity": 100,
-      "groupIds": [],
-      "frameId": "2PMapooio1SxNxo2GLmuA",
-      "index": "b2P4",
-      "roundness": null,
-      "seed": 156775806,
-      "version": 2,
-      "versionNonce": 2140039522,
-      "isDeleted": false,
-      "boundElements": [],
-      "updated": 1790954090717,
-      "created": 1790954090717,
-      "link": null,
-      "locked": false,
-      "points": [
-        [
-          0,
-          0
-        ],
-        [
-          1754.9677744411617,
-          0
-        ],
-        [
-          1754.9777744411617,
-          1321.577998698827
-        ],
-        [
-          1446.4253608352662,
-          1265.531915076303
-        ],
-        [
-          1448.4253608352662,
-          1251.531915076303
-        ],
-        [
-          1448.4253608352662,
-          105.53191507630288
-        ],
-        [
-          1446.4253608352662,
-          91.53191507630288
-        ],
-        [
-          1440.4253608352662,
-          81.53191507630288
-        ],
-        [
-          1430.4253608352662,
-          75.53191507630288
-        ],
-        [
-          1416.4253608352662,
-          73.53191507630288
-        ],
-        [
-          802.4942608514996,
-          73.53191507630288
-        ],
-        [
-          788.4942608514996,
-          75.53191507630288
-        ],
-        [
-          778.4942608514996,
-          81.53191507630288
-        ],
-        [
-          772.4942608514996,
-          91.53191507630288
-        ],
-        [
-          770.4942608514996,
-          105.53191507630288
-        ],
-        [
-          738.7592696421959,
-          105.95498163783691
-        ],
-        [
-          736.7592696421959,
-          91.95498163783691
-        ],
-        [
-          730.7592696421959,
-          81.95498163783691
-        ],
-        [
-          720.7592696421959,
-          75.95498163783691
-        ],
-        [
-          706.7592696421959,
-          73.95498163783691
-        ],
-        [
-          78.91464694361457,
-          73.95498163783691
-        ],
-        [
-          64.91464694361457,
-          75.95498163783691
-        ],
-        [
-          54.91464694361457,
-          81.95498163783691
-        ],
-        [
-          48.91464694361457,
-          91.95498163783691
-        ],
-        [
-          46.91464694361457,
-          105.95498163783691
-        ],
-        [
-          46.91464694361457,
-          926.9549816378369
-        ],
-        [
-          48.91464694361457,
-          940.9549816378369
-        ],
-        [
-          54.91464694361457,
-          950.9549816378369
-        ],
-        [
-          64.91464694361457,
-          956.9549816378369
-        ],
-        [
-          78.91464694361457,
-          958.9549816378369
-        ],
-        [
-          706.7592696421959,
-          958.9549816378369
-        ],
-        [
-          720.7592696421959,
-          956.9549816378369
-        ],
-        [
-          730.7592696421959,
-          950.9549816378369
-        ],
-        [
-          736.7592696421959,
-          940.9549816378369
-        ],
-        [
-          738.7592696421959,
-          926.9549816378369
-        ],
-        [
-          738.7592696421959,
-          105.95498163783691
-        ],
-        [
-          770.4942608514996,
-          105.53191507630288
-        ],
-        [
-          770.4942608514996,
-          1251.531915076303
-        ],
-        [
-          772.4942608514996,
-          1265.531915076303
-        ],
-        [
-          778.4942608514996,
-          1275.531915076303
-        ],
-        [
-          788.4942608514996,
-          1281.531915076303
-        ],
-        [
-          802.4942608514996,
-          1283.531915076303
-        ],
-        [
-          1416.4253608352662,
-          1283.531915076303
-        ],
-        [
-          1430.4253608352662,
-          1281.531915076303
-        ],
-        [
-          1440.4253608352662,
-          1275.531915076303
-        ],
-        [
-          1446.4253608352662,
-          1265.531915076303
-        ],
-        [
-          1754.9777744411617,
-          1321.577998698827
-        ],
-        [
-          0,
-          1321.587998698827
-        ],
-        [
-          0,
-          0
-        ]
-      ],
-      "startBinding": null,
-      "endBinding": null,
-      "startArrowhead": null,
-      "endArrowhead": null,
-      "polygon": true,
-      "lastCommittedPoint": null
-    },
-    {
       "id": "WWGztZaqtw-9E-TZuScvU",
       "type": "rectangle",
       "x": -1954.3649190198223,
@@ -6162,7 +5387,7 @@
       "height": 885,
       "angle": 0,
       "strokeColor": "#9c36b5",
-      "backgroundColor": "transparent",
+      "backgroundColor": "#ffec99",
       "fillStyle": "solid",
       "strokeWidth": 2,
       "strokeStyle": "solid",
@@ -6175,8 +5400,8 @@
         "type": 3
       },
       "seed": 51932249,
-      "version": 2833,
-      "versionNonce": 558208249,
+      "version": 2834,
+      "versionNonce": 2007959675,
       "isDeleted": false,
       "boundElements": [
         {
@@ -6184,7 +5409,7 @@
           "id": "3LRIKikIpe76NE-9tqjRy"
         }
       ],
-      "updated": 1790950770685,
+      "updated": 1791391913828,
       "link": null,
       "locked": false,
       "created": null
@@ -6238,7 +5463,7 @@
       "height": 1210,
       "angle": 0,
       "strokeColor": "#9c36b5",
-      "backgroundColor": "transparent",
+      "backgroundColor": "#ffec99",
       "fillStyle": "solid",
       "strokeWidth": 2,
       "strokeStyle": "solid",
@@ -6251,8 +5476,8 @@
         "type": 3
       },
       "seed": 750867641,
-      "version": 3067,
-      "versionNonce": 41614178,
+      "version": 3068,
+      "versionNonce": 478556693,
       "isDeleted": false,
       "boundElements": [
         {
@@ -6260,7 +5485,7 @@
           "type": "text"
         }
       ],
-      "updated": 1790952053524,
+      "updated": 1791391916497,
       "link": null,
       "locked": false,
       "created": null
@@ -6423,7 +5648,7 @@
       "width": 684.3759169947932,
       "height": 460,
       "angle": 0,
-      "strokeColor": "#9c36b5",
+      "strokeColor": "#e8590c",
       "backgroundColor": "transparent",
       "fillStyle": "solid",
       "strokeWidth": 2,
@@ -6437,8 +5662,8 @@
         "type": 3
       },
       "seed": 914570010,
-      "version": 2437,
-      "versionNonce": 23283774,
+      "version": 2439,
+      "versionNonce": 447740985,
       "isDeleted": false,
       "boundElements": [
         {
@@ -6446,7 +5671,7 @@
           "type": "text"
         }
       ],
-      "updated": 1790953430082,
+      "updated": 1791372041318,
       "link": null,
       "locked": false,
       "created": null
@@ -6459,7 +5684,7 @@
       "width": 643.3809814453125,
       "height": 250,
       "angle": 0,
-      "strokeColor": "#9c36b5",
+      "strokeColor": "#e8590c",
       "backgroundColor": "transparent",
       "fillStyle": "solid",
       "strokeWidth": 2,
@@ -6471,11 +5696,11 @@
       "index": "b2cl",
       "roundness": null,
       "seed": 861980634,
-      "version": 4820,
-      "versionNonce": 537539134,
+      "version": 4822,
+      "versionNonce": 629653463,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1790953513115,
+      "updated": 1791372041318,
       "link": null,
       "locked": false,
       "text": "class Maze(Grid[RoomData]):\n___________________________________________________________\nWill have maze specific logic here and maze specific\nattributes\n\n----------------------------------------------------------\n(attributes)\n\nexit: Room[RoomData]\nentrance: Room[RoomData]",
@@ -6499,7 +5724,7 @@
       "width": 556.4589248072932,
       "height": 460,
       "angle": 0,
-      "strokeColor": "#9c36b5",
+      "strokeColor": "#e8590c",
       "backgroundColor": "transparent",
       "fillStyle": "solid",
       "strokeWidth": 2,
@@ -6513,8 +5738,8 @@
         "type": 3
       },
       "seed": 1757447258,
-      "version": 2483,
-      "versionNonce": 1994957924,
+      "version": 2484,
+      "versionNonce": 1334247929,
       "isDeleted": false,
       "boundElements": [
         {
@@ -6522,7 +5747,7 @@
           "type": "text"
         }
       ],
-      "updated": 1790944961592,
+      "updated": 1791372048793,
       "link": null,
       "locked": false,
       "created": null
@@ -6535,7 +5760,7 @@
       "width": 545.2380981445312,
       "height": 425,
       "angle": 0,
-      "strokeColor": "#9c36b5",
+      "strokeColor": "#e8590c",
       "backgroundColor": "transparent",
       "fillStyle": "solid",
       "strokeWidth": 2,
@@ -6547,11 +5772,11 @@
       "index": "b2dV",
       "roundness": null,
       "seed": 1503848730,
-      "version": 5303,
-      "versionNonce": 121477566,
+      "version": 5304,
+      "versionNonce": 299693591,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1790953136347,
+      "updated": 1791372048793,
       "link": null,
       "locked": false,
       "text": "class Room(Cell[RoomData])\n__________________________________________\nWill redefine valid property from base class\nCell[T]\nAdds 'room within grid'- related methods like\nproperty(surrounded), break_wall\n \nWill use most of the \ndefault implementation of Cell[T]\nWill add property(surrounded), break_wall(w: Wall)\n-------------------------------------------------\n-------------------------------------------------\n+ property(valid): bool\n+ property(surrounded): list[T]\n+ break_wall(w: Wall): None\n+ property(is_exit): bool\n    return self._grid.exit == (self.y, self.x)",
@@ -6575,7 +5800,7 @@
       "width": 556.4589248072932,
       "height": 460,
       "angle": 0,
-      "strokeColor": "#9c36b5",
+      "strokeColor": "#e8590c",
       "backgroundColor": "transparent",
       "fillStyle": "solid",
       "strokeWidth": 2,
@@ -6589,8 +5814,8 @@
         "type": 3
       },
       "seed": 1313475315,
-      "version": 2523,
-      "versionNonce": 446592996,
+      "version": 2524,
+      "versionNonce": 925341625,
       "isDeleted": false,
       "boundElements": [
         {
@@ -6598,7 +5823,7 @@
           "id": "6WI5jahHDrsmz-auw3VVa"
         }
       ],
-      "updated": 1790944961592,
+      "updated": 1791372055146,
       "link": null,
       "locked": false,
       "created": null
@@ -6611,7 +5836,7 @@
       "width": 534.3333129882812,
       "height": 225,
       "angle": 0,
-      "strokeColor": "#9c36b5",
+      "strokeColor": "#e8590c",
       "backgroundColor": "transparent",
       "fillStyle": "solid",
       "strokeWidth": 2,
@@ -6623,11 +5848,11 @@
       "index": "b2f",
       "roundness": null,
       "seed": 559035539,
-      "version": 5086,
-      "versionNonce": 399551650,
+      "version": 5087,
+      "versionNonce": 1653185623,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1790953049559,
+      "updated": 1791372055146,
       "link": null,
       "locked": false,
       "text": "@dataclass\nclass RoomData (the class we will use as T)\nThe dataclass, will store all needed data\nfor room logic\n-------------------------------------------------\n+ x: int\n+ y: int\n+ visited: bool\n",
@@ -7197,7 +6422,7 @@
       "version": 37,
       "versionNonce": 689819773,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1791308505666,
       "link": null,
       "locked": false
@@ -7557,7 +6782,7 @@
       "version": 158,
       "versionNonce": 186327763,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1791308482257,
       "link": null,
       "locked": false
@@ -7705,7 +6930,7 @@
       "version": 117,
       "versionNonce": 1968407645,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1791308563914,
       "link": null,
       "locked": false,
@@ -7742,7 +6967,7 @@
       "version": 719,
       "versionNonce": 1140968701,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1791309332123,
       "link": null,
       "locked": false,
@@ -7779,7 +7004,7 @@
       "version": 46,
       "versionNonce": 1612587389,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1791308905016,
       "link": null,
       "locked": false,
@@ -7816,7 +7041,7 @@
       "version": 35,
       "versionNonce": 590296541,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1791308907067,
       "link": null,
       "locked": false,
@@ -7853,7 +7078,7 @@
       "version": 106,
       "versionNonce": 213123155,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1791308941543,
       "link": null,
       "locked": false,
@@ -8281,10 +7506,7 @@
       ],
       "pressures": [],
       "simulatePressure": true,
-      "lastCommittedPoint": [
-        374.4446818033855,
-        85.55567423502612
-      ]
+      "lastCommittedPoint": null
     },
     {
       "id": "o_V2PXLLbNJRypzhUS70z",
@@ -8309,7 +7531,7 @@
       "version": 147,
       "versionNonce": 1393902227,
       "isDeleted": false,
-      "boundElements": null,
+      "boundElements": [],
       "updated": 1791309395510,
       "link": null,
       "locked": false,
@@ -8322,6 +7544,82 @@
       "originalText": "gen_maze(solution: list[Move], perfect)",
       "autoResize": true,
       "lineHeight": 1.25
+    },
+    {
+      "id": "-HDvtbh06C8uwfUuzaWmt",
+      "type": "rectangle",
+      "x": -1901.2384990499168,
+      "y": 6.946182954901587,
+      "width": 567.4550795924495,
+      "height": 302.854736328125,
+      "angle": 0,
+      "strokeColor": "#9c36b5",
+      "backgroundColor": "#b2f2bb",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": "2PMapooio1SxNxo2GLmuA",
+      "index": "b3c",
+      "roundness": {
+        "type": 3
+      },
+      "seed": 1626433079,
+      "version": 2632,
+      "versionNonce": 1439773307,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "type": "text",
+          "id": "gtbwUdXDzVK2wFa5YwOZi"
+        }
+      ],
+      "updated": 1791391965027,
+      "link": null,
+      "locked": false,
+      "created": null
+    },
+    {
+      "id": "gtbwUdXDzVK2wFa5YwOZi",
+      "type": "text",
+      "x": -1896.2384990499168,
+      "y": 11.946182954901587,
+      "width": 549.999267578125,
+      "height": 225,
+      "angle": 0,
+      "strokeColor": "#9c36b5",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": "2PMapooio1SxNxo2GLmuA",
+      "index": "b3d",
+      "roundness": null,
+      "seed": 544573271,
+      "version": 5467,
+      "versionNonce": 1671113499,
+      "isDeleted": false,
+      "boundElements": [],
+      "updated": 1791391965027,
+      "link": null,
+      "locked": false,
+      "text": "class Vector(Generic[N]):\nCoordinate class, stores y and x in it, supports\nVector operations like +, - and * by singular\nvalue\n--------------------------------------------------\ny: N\nx: N\n--------------------------------------------------\n",
+      "fontSize": 20,
+      "fontFamily": 8,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": "-HDvtbh06C8uwfUuzaWmt",
+      "originalText": "class Vector(Generic[N]):\nCoordinate class, stores y and x in it, supports\nVector operations like +, - and * by singular value\n--------------------------------------------------\ny: N\nx: N\n--------------------------------------------------\n",
+      "autoResize": true,
+      "lineHeight": 1.25,
+      "created": null,
+      "labelPosition": null,
+      "baseFontSize": null
     }
   ],
   "appState": {
