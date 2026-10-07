@@ -18,7 +18,7 @@ def test_grid():
     for cell in grid.column(1):
         assert cell.x == 1
     grid_int = Grid(2, 2, 0)
-    assert grid_int.cell._data == 0
+    assert grid_int.cell._value == 0
     assert grid.cell.opposite == Wall.EMPTY
     assert grid.cell.__class__ == Cell
 

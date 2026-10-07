@@ -11,7 +11,7 @@ class Move(Vector, Enum):
 
     def __iter__(self):
         return iter(self.value)
-    def __eq__(self, other: Vector | Type['Move'] | tuple[int, int]):
+    def __eq__(self, other: Vector[int] | Type['Move'] | tuple[int, int]):
         y, x = other
         return y == self.y and x == self.x
 

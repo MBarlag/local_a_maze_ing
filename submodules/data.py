@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from enums import Wall, Move
+from enums import Wall
 from abstract import Grid, Cell
 
 
@@ -11,7 +11,7 @@ class RoomData:
 
 class Room(Cell[RoomData]):
     @property
-    def surrounded(self) -> list[Wall]:
+    def surrounded(self) -> Wall:
         surrounded = Wall.BLOCK
         for wall in Wall.BLOCK:
             neighbour = self + wall.direction
@@ -36,9 +36,8 @@ class Room(Cell[RoomData]):
             raise ValueError("Walls requested don't exist")
 
 
-class Maze(Grid[RoomData]):
+class Maze(Grid[RoomData], cell_class = Room):
 
-    _cell_class = Room
-    def __init__(self, width: int, height: int, 
+    def __init__(self, width: int, height: int,
                  default: RoomData = RoomData(visited=False, walls=Wall.BLOCK)):
         super().__init__(width, height, default)
