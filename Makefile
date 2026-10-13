@@ -53,7 +53,7 @@ install:
 run:
 	$(MAKE) ready
 	echo $(PY_VER)
-	uv run --python $(PY_VER) test.py
+	uv run --python $(PY_VER) a_maze_ing.py
 
 clean:
 	rm -rf __pycache__
