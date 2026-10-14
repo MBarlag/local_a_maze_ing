@@ -1,6 +1,7 @@
-from submodules.enums import *
 from functools import reduce
-import pytest
+
+from submodules.enums import *
+
 
 def test_move_add():
     assert reduce(Vector.__add__, [Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN]) == Move.NOWHERE

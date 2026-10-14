@@ -1,9 +1,10 @@
 
-from typing import Any, Generic, TypeVar, Type
-from dataclasses import dataclass
 from copy import copy
+from dataclasses import dataclass
+from typing import Any, Generic, TypeVar
 
 N = TypeVar('N', int, float)
+
 
 @dataclass
 class Vector(Generic[N]):
@@ -12,24 +13,33 @@ class Vector(Generic[N]):
 
     def __iter__(self):
         return iter([self.y, self.x])
-    def __add__(self, other: Type['Vector[N]'] | tuple[N, N]):
+
+    def __add__(self, other: type['Vector[N]'] | tuple[N, N]):
         y, x = other
         return Vector(self.y + y, self.x + x)
-    def __radd__(self, other: Type['Vector[N]'] | tuple[N, N]):
+
+    def __radd__(self, other: type['Vector[N]'] | tuple[N, N]):
         return self + other
+
     def __mul__(self, other: N):
-        return Vector(self.y * other, self.x  * other)
-    def __sub__(self, other: Type['Vector[N]'] | tuple[N, N]):
+        return Vector(self.y * other, self.x * other)
+
+    def __sub__(self, other: type['Vector[N]'] | tuple[N, N]):
         y, x = other
         return Vector(self.y - y, self.x - x)
-    def __rsub__(self, other: Type['Vector[N]'] | tuple[N, N]):
+
+    def __rsub__(self, other: type['Vector[N]'] | tuple[N, N]):
         y, x = other
         return Vector(y - self.y, x - self.x)
-    def __eq__(self, other: Type['Vector[N]'] | tuple[N, N]):
+
+    def __eq__(self, other: type['Vector[N]'] | tuple[N, N]):
         y, x = other
         return self.y == y and self.x == x
 
+
 T = TypeVar('T')
+
+
 class Cell(Generic[T]):
     def __new__(cls, y: int, x: int, ref: 'Grid[T]', value: T = None):
         if ref is not None:
@@ -38,8 +48,9 @@ class Cell(Generic[T]):
             return super().__new__(cls)
         else:
             raise ValueError("ref cant be None")
+
     def __init__(self, y: int, x: int, ref: 'Grid[T]', value: T = None):
-        self._value = value # should be set as first value
+        self._value = value  # should be set as first value
         self._grid = ref
         self.y, self.x = y, x
         # if not hasattr(value, '__dict__'):
@@ -54,8 +65,7 @@ class Cell(Generic[T]):
         return self._grid[y][x]
 
     def __iter__(self):
-        for i in vars(self):
-            yield i
+        yield from vars(self)
 
     def __add__(self, other: Vector[int] | tuple[int, int]) -> 'Cell[T]':
         y_move, x_move = other
@@ -83,7 +93,9 @@ class Grid(Generic[T]):
 
     _cell_class = Cell[T]
 
-    def __init_subclass__(cls, cell_class : Type['Cell[T]'] = Cell[T], **kwargs):
+    def __init_subclass__(cls,
+                          cell_class: type['Cell[T]'] = Cell[T],
+                          **kwargs):
         cls._cell_class = cell_class
 
     def __init__(self, width: int, height: int, default: T = None):
@@ -92,9 +104,9 @@ class Grid(Generic[T]):
         self.default = default
         self.height = height
         self.width = width
-        self._grid = [  [self._cell_class(y, x, self, copy(default)) 
-                         for x in range(self.width)]
-                      for y in range(self.height)   ]
+        self._grid = [[self._cell_class(y, x, self, copy(default))
+                       for x in range(self.width)]
+                      for y in range(self.height)]
         self._cell = self._grid[0][0]
 
     def __iter__(self):

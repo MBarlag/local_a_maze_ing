@@ -1,5 +1,6 @@
-from submodules.data import *
 import pytest
+
+from submodules.data import *
 
 
 def test_room():

@@ -1,11 +1,11 @@
 #!/bin/python
 """a_maze_ing.py.
 
-Is responsible for being a dispatcher tower for all of the classes in the program,
-the orchestrator, 
+Is responsible for being a dispatcher tower
+for all of the classes in the program, the orchestrator,
 
-It will talk with multiple classes and ask them to do their job, 
-without overwhelming each of the class with information that is not needed.        
+It will talk with multiple classes and ask them to do their job,
+without overwhelming each of the class with information that is not needed.
 
 """
 

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
+
+from submodules.abstract import Cell, Grid, Vector
 from submodules.enums import Wall
-from submodules.abstract import Vector, Grid, Cell
 
 
 @dataclass
@@ -36,7 +37,7 @@ class Room(Cell[RoomData]):
             raise ValueError("Walls requested don't exist")
 
 
-class Maze(Grid[RoomData], cell_class = Room):
+class Maze(Grid[RoomData], cell_class=Room):
     _default_data = RoomData(visited=False, walls=Wall.BLOCK)
 
     def __init__(self, width: int, height: int, entry: Vector[int],
@@ -45,7 +46,7 @@ class Maze(Grid[RoomData], cell_class = Room):
         super().__init__(width, height, default)
         self._set_entry(entry)
         self._set_exit(exit)
-    
+
     @property
     def entry(self) -> Vector[int]:
         return self._entry
@@ -54,7 +55,7 @@ class Maze(Grid[RoomData], cell_class = Room):
         if self.cant_reach(*coord):
             raise ValueError("Coordinates are not reachable")
         self._entry = coord
-    
+
     @property
     def exit(self) -> Vector[int]:
         return self._exit

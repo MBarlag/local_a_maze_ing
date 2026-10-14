@@ -1,6 +1,7 @@
 from enum import Enum, Flag
-from typing import Type
+
 from submodules.abstract import Vector
+
 
 class Move(Vector, Enum):
     LEFT = 0, -1
@@ -11,9 +12,11 @@ class Move(Vector, Enum):
 
     def __iter__(self):
         return iter(self.value)
-    def __eq__(self, other: Vector[int] | Type['Move'] | tuple[int, int]):
+
+    def __eq__(self, other: Vector[int] | type['Move'] | tuple[int, int]):
         y, x = other
         return y == self.y and x == self.x
+
 
 class Wall(Flag):
     W = 0b1000
@@ -22,7 +25,6 @@ class Wall(Flag):
     N = 0b0001
     EMPTY = 0b0000
     BLOCK = 0b1111
-
 
     @property
     def opposite(self):
@@ -43,7 +45,7 @@ class Wall(Flag):
             return Move.UP
         elif self == Wall.S:
             return Move.DOWN
-    
+
     def __iter__(self):
         for wall in [Wall.W, Wall.S, Wall.E, Wall.N]:
             if wall in self:
@@ -51,14 +53,14 @@ class Wall(Flag):
             else:
                 yield Wall.EMPTY
 
-    def __add__(self, other: Type['Wall'] | int):
+    def __add__(self, other: type['Wall'] | int):
         return self | Wall(other)
 
-    def __radd__(self, other: Type['Wall'] | int):
+    def __radd__(self, other: type['Wall'] | int):
         return self | Wall(other)
 
-    def __sub__(self, other: Type['Wall'] | int):
+    def __sub__(self, other: type['Wall'] | int):
         return self ^ Wall(other)
 
-    def __rsub__(self, other: Type['Wall'] | int):
+    def __rsub__(self, other: type['Wall'] | int):
         return Wall(other) ^ self

@@ -1,7 +1,7 @@
-from dataclasses import dataclass
-from pydantic import BaseModel, PrivateAttr
-from typing import Any
 import re
+from dataclasses import dataclass
+from typing import Any
+
 
 @dataclass
 class Config:
@@ -20,11 +20,11 @@ class Config:
         if (len(split_result) != 2):
             raise Exception
         return split_result
-    
+
     def parse_config(self) -> dict[str, str]:
         result: dict[str, str] = {}
         with open(self._filename, "r", encoding="utf-8") as f:
-            for line in f.readlines():
+            for line in f:
                 line = Config._strip_comments(line).strip()
                 if not (extracted := Config._extract(line)):
                     continue

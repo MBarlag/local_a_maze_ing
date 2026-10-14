@@ -71,12 +71,14 @@ def choose_action() -> Action:
         to_choose_action, raise_keyboard_interrupt=True)
     return choice.get('action', Action.QUIT)
 
+
 def prompt_loop() -> None:
     """Runs a prompt loop to get next action from the user."""
     print("Welcome to Emma's amazing maze!")
     user = inquirer.text(message='First, please enter your name')
     input(
-        f"Nice to meet you, {user}! Press enter to generate your first maze.\n")
+        f"Nice to meet you, {user}! \
+            Press enter to generate your first maze.\n")
     choice = Action.GENERATE
     while choice:
         choice()

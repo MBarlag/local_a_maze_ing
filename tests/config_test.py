@@ -1,6 +1,8 @@
-from submodules.config import Config
-import pytest
 from os import remove
+
+import pytest
+
+from submodules.config import Config
 
 VALID=[
     ("", {}), 
@@ -20,7 +22,7 @@ FILENAME="test_config.txt"
 @pytest.fixture(autouse=True)
 def file_handling():
     # code before the test
-    with open(FILENAME, "w", encoding="utf-8") as f:
+    with open(FILENAME, "w", encoding="utf-8"):
         pass
     yield
     # code after test

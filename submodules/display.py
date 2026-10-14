@@ -114,7 +114,7 @@ class MazePrinter(BaseModel):
 
     def display_maze(self) -> None:
         """Method to print the maze in the terminal.
-        
+
         Calls private methods in the class in the right order.
         """
         ascii_maze = self._parse_hex()

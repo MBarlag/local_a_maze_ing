@@ -12,8 +12,8 @@ PY_VER:=$(shell cat $(PY_VERSION))
 all: run
 lint:
 	$(MAKE) ready
-	uvx mypy $(LINT_FLAGS) . || true
-	uvx flake8 --exclude $(VENV_DIR) . || true
+	mypy $(LINT_FLAGS) --exclude tests . || true
+	uvx flake8 a_maze_ing.py submodules || true
 
 lint-strict:
 	$(MAKE) ready

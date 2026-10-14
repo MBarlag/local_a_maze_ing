@@ -1,7 +1,9 @@
-from submodules.abstract import *
-from submodules.enums import Wall, Move
-from functools import reduce
+
 import pytest
+
+from submodules.abstract import *
+from submodules.enums import Move, Wall
+
 
 def test_vector():
     assert Vector(0, 3) * 3 == (0, 9)
