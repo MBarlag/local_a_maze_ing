@@ -7,7 +7,7 @@ def test_small_maze() -> None:
                               "entry": "0,0", "exit": "2,2",
                               "output_file": "tests/hex_small_maze.txt"}
     printer = MazePrinter(**config)
-    printer.display_maze(file="temp_output.txt")
+    printer.display_maze()
 
     #TODO find out how to compare temp_output.txt against tests/hex_small_maze.txt
 

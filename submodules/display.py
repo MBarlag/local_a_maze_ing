@@ -18,6 +18,7 @@ class MazePrinter(BaseModel):
     exit: str
     output_file: str
 
+    # TODO redifine print
     def _print(self, value):
         print(value, file=self.file)
 
