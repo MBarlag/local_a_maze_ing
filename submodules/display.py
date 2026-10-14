@@ -54,8 +54,7 @@ class MazePrinter(BaseModel):
         return hex_maze
 
     def _mark_point(self, point_type: int, hex_maze: list[list[int]]) -> None:
-        """With the entry/exit coordinates, this method changes this cell in
-        hex_maze by adding 16 for entry and 32 for exit.
+        """Adds entry or exit point to hex_maze file.
 
         Args:
             point_type (int): Is 16 for entry or 32 for exit.
@@ -76,8 +75,7 @@ class MazePrinter(BaseModel):
         hex_maze[y][x] += point_type
 
     def _display_row(self, hex_row: list[int]) -> None:
-        """Prints the North and West walls of a maze row.
-        Closes the row with a + and │ character.
+        """Prints North and West walls of maze row and closes with + and |.
 
         Args:
             hex_row (list[int]): One line of hexadecimal characters.
@@ -110,16 +108,16 @@ class MazePrinter(BaseModel):
         print("|")
 
     def _display_bottom(self) -> None:
-        """Prints the closing South walls of the maze.
-        """
+        """Prints the closing South walls of the maze."""
 
         for _ in range(self.width):
             print("+---", end="")
         print("+")
 
     def display_maze(self) -> None:
-        """Calls private methods in the class in the right order to
-        print the maze in the terminal.
+        """Method to print the maze in the terminal.
+        
+        Calls private methods in the class in the right order.
         """
 
         ascii_maze = self._parse_hex()

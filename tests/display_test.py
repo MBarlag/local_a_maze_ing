@@ -1,5 +1,4 @@
 from submodules.display import MazePrinter
-
 # Run from project root as a module: python3 -m tests.display_test
 
 if __name__ == '__main__':
