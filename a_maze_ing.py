@@ -11,13 +11,13 @@ without overwhelming each of the class with information that is not needed.
 
 from submodules import menu
 
-# from submodules.config import Config
-# from submodules.display import MazePrinter
+from submodules.config import Config
+from submodules.display import MazePrinter
 
 if __name__ == '__main__':
 
-    # config = config("config.txt").parse_config()
-    # # config looks like: {'height': '4', ...}
+    config = Config("config.txt").parse_config()
+    # config looks like: {'height': '4', ...}
 
     # maze_gen = MazeGen(**config)
     # # under the hood it will call the MazeGen constructor method,
@@ -26,8 +26,9 @@ if __name__ == '__main__':
     # # it will not care about parameters that are not defined in its class
     # # and will just take what it actually needs
 
-    # maze_printer = MazePrinter(**config)
-    # maze_printer.display()
+    maze_printer = MazePrinter(**config)
+    maze_printer.display_maze()
+
     try:
         menu.prompt_loop()
     except (KeyboardInterrupt, Exception) as error:
