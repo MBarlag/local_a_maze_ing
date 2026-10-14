@@ -1,9 +1,9 @@
-from data import *
+from submodules.data import *
 import pytest
 
 
 def test_room():
-    maze = Maze(3, 3)
+    maze = Maze(3, 3, Vector(0, 0), Vector(0, 1))
     assert maze.valid == True
 
     room : Room = maze.cell

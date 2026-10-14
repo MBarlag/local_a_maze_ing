@@ -1,5 +1,5 @@
-from abstract import *
-from enums import Wall, Move
+from submodules.abstract import *
+from submodules.enums import Wall, Move
 from functools import reduce
 import pytest
 

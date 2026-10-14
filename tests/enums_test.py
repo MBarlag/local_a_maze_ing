@@ -1,4 +1,4 @@
-from enums import *
+from submodules.enums import *
 from functools import reduce
 import pytest
 

@@ -1,7 +1,4 @@
 #!/bin/bash
 ROOT=$(pwd)
-cd submodules
-SRC=$(pwd)
-cd $ROOT
-export PYTHONPATH=$SRC
+export PYTHONPATH=$ROOT
 source .venv/bin/activate

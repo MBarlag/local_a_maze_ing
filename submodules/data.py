@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from enums import Wall
-from abstract import Vector, Grid, Cell
+from submodules.enums import Wall
+from submodules.abstract import Vector, Grid, Cell
 
 
 @dataclass

@@ -1,6 +1,6 @@
 from enum import Enum, Flag
 from typing import Type
-from abstract import Vector
+from submodules.abstract import Vector
 
 class Move(Vector, Enum):
     LEFT = 0, -1
