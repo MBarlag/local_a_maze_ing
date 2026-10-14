@@ -1,3 +1,7 @@
 pydantic
 pytest
 inquirer
+pylint
+flake8
+mypy
+ruff

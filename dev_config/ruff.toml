@@ -1,0 +1,16 @@
+[lint]
+extend-select = [
+    # ...
+    "D",   # pydocstyle - https://docs.astral.sh/ruff/rules/#pydocstyle-d
+    # ...
+]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.per-file-ignores]
+"tests/**/*" = [
+    # ...
+    "D",      # Don't check docstrings in tests
+    # ...
+]
