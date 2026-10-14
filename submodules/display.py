@@ -28,7 +28,6 @@ class MazePrinter(BaseModel):
         Returns:
             tuple[int, int]: The coordinates parsed to a tuple.
         """
-
         xy = coord.split(",")
         x = int(xy[0])
         y = int(xy[1])
@@ -40,7 +39,6 @@ class MazePrinter(BaseModel):
         Returns:
             list[list[int]]: Holds maze cells and entry/exit points.
         """
-
         hex_maze: list[list[int]] = []
         with open(self.output_file, "r") as file_obj:
             for line in file_obj:
@@ -60,7 +58,6 @@ class MazePrinter(BaseModel):
             point_type (int): Is 16 for entry or 32 for exit.
             hex_maze (list[list[int]]): Holds maze cells and entry/exit points.
         """
-
         coord: tuple[int, int]
         if point_type == 16:
             coord = self._parse_coords(self.entry)
@@ -80,7 +77,6 @@ class MazePrinter(BaseModel):
         Args:
             hex_row (list[int]): One line of hexadecimal characters.
         """
-
         north = 1
         west = 8
         block = 15
@@ -112,7 +108,6 @@ class MazePrinter(BaseModel):
 
     def _display_bottom(self) -> None:
         """Prints the closing South walls of the maze."""
-
         for _ in range(self.width):
             print("+---", end="")
         print("+")
@@ -122,7 +117,6 @@ class MazePrinter(BaseModel):
         
         Calls private methods in the class in the right order.
         """
-
         ascii_maze = self._parse_hex()
         for row in ascii_maze:
             self._display_row(row)
