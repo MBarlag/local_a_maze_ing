@@ -114,4 +114,6 @@ Merge conflict handling: https://www.geeksforgeeks.org/git/merge-conflicts-and-h
 
 Oh My Git Game: https://ohmygit.org  
 
-UV Documentation: https://docs.astral.sh/uv/  
+UV Documentation: https://docs.astral.sh/uv/
+
+List of lists explanation: https://www.youtube.com/watch?v=JeNUZ0qSzvo
