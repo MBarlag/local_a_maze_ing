@@ -83,6 +83,7 @@ class MazePrinter(BaseModel):
 
         north = 1
         west = 8
+        block = 15
         entry = 16
         exit = 32
         for cell in hex_row:
@@ -103,6 +104,8 @@ class MazePrinter(BaseModel):
                 print(" A ", end="")
             elif cell & exit:
                 print(" B ", end="")
+            elif (cell & block) == block:
+                print("███", end="")
             else:
                 print("   ", end="")
         print("|")
