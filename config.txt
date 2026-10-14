@@ -2,7 +2,7 @@ WIDTH=20
 HEIGHT=20
 ENTRY=0,0
 EXIT=19,14
-OUTPUT_FILE=maze.txt
+OUTPUT_FILE=maze#2.txt #comment
 PERFECT=True
 SEED=42
 # Maybe set the seed with user input.
