@@ -10,7 +10,6 @@ without overwhelming each of the class with information that is not needed.
 """
 
 from submodules import menu
-
 from submodules.config import Config
 from submodules.display import MazePrinter
 
