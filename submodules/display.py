@@ -5,7 +5,7 @@ class MazePrinter(BaseModel):
     """Parses and displays hexadecimal file as readable maze in terminal.
 
     Attributes:
-        width (int): Number of cells per row.
+        width (int): Number of columns.
         height (int): Number of rows.
         entry (str): Coordinates of entry point.
         exit (str): Coordinates of exit point.
@@ -18,7 +18,7 @@ class MazePrinter(BaseModel):
     exit: str
     output_file: str
 
-    # TODO redifine print
+    # TODO redefine print
     def _print(self, value):
         print(value, file=self.file)
 

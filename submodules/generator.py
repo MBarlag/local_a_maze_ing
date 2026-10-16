@@ -4,6 +4,7 @@ from submodules.abstract import Vector
 from submodules.data import Maze, Room, RoomData
 from submodules.enums import Move, Wall
 
+from functools import cache
 
 class MazeGenerator(BaseModel):
     """Generates maze and stores all needed data for doing so.
@@ -25,9 +26,29 @@ class MazeGenerator(BaseModel):
     output_file: str
     seed: int
 
-    def generate(self) -> Maze[RoomData]:
+    # _maze: Maze[Room]
+    @property
+    def maze(self) -> Maze[RoomData]:
         """Generates maze.
         """
 
     # @property
     # def solution(self) -> list[]
+
+    def shortest_path(self) -> list[Move]:
+        """Finds a path through the given maze.
+
+        Args:
+            maze: The maze in which to find the path.
+
+        Returns:
+            list[Move]: _description_
+        """
+
+    def hex_output(self) -> list[list[int]]:
+        """Create a file that stores the maze in hexadecimal.
+
+        Returns:
+            list[list[int]]: Holds maze, entry/exit and path.
+        """
+    
