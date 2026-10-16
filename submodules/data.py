@@ -8,6 +8,7 @@ from submodules.enums import Wall
 class RoomData:
     visited: bool
     walls: Wall
+    locked: bool
 
 
 class Room(Cell[RoomData]):

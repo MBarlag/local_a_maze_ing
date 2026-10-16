@@ -2,7 +2,7 @@ from random import randint
 
 from pydantic import BaseModel
 
-from submodules.abstract import Vector
+from submodules.abstract import Vector, Grid
 from submodules.data import Maze, RoomData
 from submodules.enums import Move
 
@@ -49,8 +49,25 @@ class MazeGenerator(BaseModel):
 
         Returns:
             Maze[RoomData]: Maze data structure.
-        """        
+        """
+        if new_seed == True:
+            self._refresh_seed()    
 
+    def add_pattern(self) -> None:
+        pattern = Grid(7, 5, False)
+
+        with open("pattern.txt", "r") as file:
+            for y, line in enumerate(file.readlines()):
+                for x, character in enumerate(line):
+                    pattern[y][x] = character
+        
+        # Set the rooms that are part of the pattern to locked: true.
+        # To be able to avoid destructing walls of the pattern when generating maze.
+        left_top_corner = y = self.height / 2 
+
+        # Open the pattern.txt and 
+        # Min width for pattern: 7 cells
+        # Min height for pattern: 5 cells
 
     @property
     def last_maze(self) -> Maze[RoomData] | None:
