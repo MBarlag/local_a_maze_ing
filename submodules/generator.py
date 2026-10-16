@@ -91,9 +91,6 @@ class MazeGenerator(BaseModel):
     @property
     def last_maze(self) -> Maze[RoomData] | None:
         """Property that stores the Maze from last generate() call.
-
-        Returns:
-            Maze[RoomData] | None: Maze data structure, or None in case nothing was generated.
         """        
         return self._last_maze
 

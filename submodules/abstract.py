@@ -129,8 +129,9 @@ class Grid(Generic[T]):
                 yield self.cell(y, x)
 
     @property
-    def cell(self):
+    def cell(self) -> Cell[T]:
         return self._cell
+
 
     @property
     def valid(self) -> bool:
