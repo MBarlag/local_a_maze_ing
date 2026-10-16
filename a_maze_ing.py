@@ -13,7 +13,6 @@ from submodules import menu
 from submodules.config import Config
 from submodules.display import MazePrinter
 
-
 if __name__ == '__main__':
 
     config = Config("config.txt").parse_config()
