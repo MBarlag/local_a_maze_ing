@@ -39,7 +39,9 @@ class Room(Cell[RoomData]):
 
 
 class Maze(Grid[RoomData], cell_class=Room):
-    _default_data = RoomData(visited=False, walls=Wall.BLOCK)
+    _default_data = RoomData(visited=False, 
+                             walls=Wall.BLOCK, 
+                             blocked=False)
 
     def __init__(self, width: int, height: int, entry: Vector[int],
                  exit: Vector[int], default: RoomData = None):
@@ -49,9 +51,10 @@ class Maze(Grid[RoomData], cell_class=Room):
         self._set_exit(exit)
 
     # TODO make a property .room, that basically wraps around .cell and returns so that semantically it makes more sense
-    @property
-    def room(self) -> Room[RoomData]:
-        return self._cell
+    # TODO look into fixing the error that occurs when this property is added
+    # @property
+    # def room(self) -> Room[RoomData]:
+    #     return self._cell
 
     @property
     def entry(self) -> Vector[int]:

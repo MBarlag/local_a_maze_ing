@@ -44,6 +44,7 @@ class MazeGenerator(BaseModel):
 
     # TODO create constructor that doesnt interfere with the BaseModel underlying logic (lookup how to do it)
     # TODO set self._last_maze to be None here
+
     def _refresh_seed(self) -> None:
         MIN_INT = -2 ** 31
         MAX_INT = 2 ** 31 - 1
@@ -60,34 +61,53 @@ class MazeGenerator(BaseModel):
         """
         if new_seed == True:
             self._refresh_seed()    
+        self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
+        self._add_pattern()
+        self._build_maze()
+        if self._draft_maze.valid == False:
+            raise Exception("Error during generation of Maze")
+        self.last_maze = self._draft_maze
+        return self.last_maze
+        
 
-    def add_pattern(self) -> None:
+    def _build_maze(self) -> None:
+        """Break walls of Maze keeping it valid to the constraints.
+        """
+        # here we have to constantly check with maze.valid
+        # and if it became not valid, then we know we did something wrong
+        # and we revert the changes back and try something else
+        
+        # trying something else means: we need to somehow know
+        # our options, to choose from -> aka list that we iterate over
+
+        # feel like drawing, goingto excalidraw 
+
+    def _add_pattern(self) -> None:
+        """Set the rooms that are part of the pattern to blocked true.
+        
+        To be able to avoid destructing walls of the pattern when generating maze. Should be called only after the self._draft_maze has been initialized.
+        """
+        # width for 42 pattern: 7 cells
+        # height for 42 pattern: 5 cells
         pattern = Grid(7, 5, False)
 
         for y, line in enumerate(PATTERN_STRING.split('\n')):
             for x, character in enumerate(line):
+                # 1 represents True, 0 represents False in the PATTERN_STRING
                 pattern[y][x] = True if character == '1' else False
 
+
+        left_top = Vector(0, 0)
+        left_top.y = (self.height - pattern.height) / 2
+        left_top.x = (self.width- pattern.width) / 2
+
+        left_top_room = self._draft_maze.cell + left_top
+        # setting rooms that are corresponding to the pattern to blocked = True
         
-        
-        # Set the rooms that are part of the pattern to blocked: true.
-        # To be able to avoid destructing walls of the pattern when generating maze.
-
-        # TODO think about using something else, like self._draft_maze and working with that, so that we dont set last_maze to an unready or in the making state Maze, because that can be confusing and we also said in documentation that last_maze stores result of generate() and not something in between.
-    
-        left_top_corner = self.last_maze.cell(self.height / 2 - pattern.height / 2,  self.width / 2 - pattern.width / 2)
-
-        room: Room = left_top_corner
-
         for cell in pattern:
-            room = left_top_corner + (cell.y, cell.x) # can return None if goes out of boundaries
-            
+            room: Room | None = left_top_room + (cell.y, cell.x)
             room.blocked = cell._value
-
-        # Open the pattern.txt and 
-        # Min width for pattern: 7 cells
-        # Min height for pattern: 5 cells
-
+        
     @property
     def last_maze(self) -> Maze[RoomData] | None:
         """Property that stores the Maze from last generate() call.
