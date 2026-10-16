@@ -8,7 +8,7 @@ from submodules.enums import Wall
 class RoomData:
     visited: bool
     walls: Wall
-    locked: bool
+    blocked: bool
 
 
 class Room(Cell[RoomData]):
@@ -47,6 +47,8 @@ class Maze(Grid[RoomData], cell_class=Room):
         super().__init__(width, height, default)
         self._set_entry(entry)
         self._set_exit(exit)
+
+    # TODO make a property .room, that basically wraps around .cell and returns so that semantically it makes more sense
 
     @property
     def entry(self) -> Vector[int]:
