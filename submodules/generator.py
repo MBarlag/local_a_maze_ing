@@ -107,6 +107,23 @@ class MazeGenerator(BaseModel):
         for cell in pattern:
             room: Room | None = left_top_room + (cell.y, cell.x)
             room.blocked = cell._value
+
+    def bfs(self) -> None:
+        queue: list[Room] = []
+        start = self._draft_maze.cell + self.entry
+        queue.append(start)
+        while queue:
+            popped = queue.pop()
+            popped.visited = True
+            neighbours = [popped + direction for direction in list(Move)]
+            neighbours = filter(self.valid_neighbour, neighbours)
+            for neighbour in neighbours:
+                queue.append(neighbour)
+
+    def valid_neighbour(self, neighbour: Room[RoomData]) -> bool:
+        if neighbour == None | neighbour.visited == True | neighbour.blocked == True:
+            return False
+        return True
         
     @property
     def last_maze(self) -> Maze[RoomData] | None:
