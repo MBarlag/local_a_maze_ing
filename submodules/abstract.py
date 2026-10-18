@@ -9,6 +9,7 @@ from typing import Any, Generic, TypeVar
 from typing_extensions import Self
 
 N = TypeVar("N", int, float)
+CLike = TypeVar("CLike", bound="Cell")
 
 
 @dataclass
@@ -78,7 +79,7 @@ class Vector(Generic[N]):
 class Cell:
     """Stores y, x as coordinates, and reference to grid it belongs to."""
 
-    def __init__(self, y: int, x: int, ref: "Grid") -> None:
+    def __init__(self, y: int, x: int, ref: "Grid[CLike]") -> None:
         """Creates an instance of Cell only if Cell can be made.
 
         Args:
@@ -96,10 +97,10 @@ class Cell:
             raise ValueError("ref cant be None")
         if ref.cant_reach(y, x):
             raise ValueError("Coordinates are not reachable")
-        self._grid: Grid = ref
+        self._grid: Grid[CLike] = ref
         self.y, self.x = y, x
 
-    def __call__(self, y: int, x: int) -> Self | None:
+    def __call__(self, y: int, x: int) -> "Self | None":
         """Visit another cell within a grid.
 
         Args:
@@ -121,7 +122,7 @@ class Cell:
         """
         return iter([self.y, self.x])
 
-    def __add__(self, other: Vector[int] | tuple[int, int]) -> Self | None:
+    def __add__(self, other: Vector[int] | tuple[int, int]) -> "Self | None":
         """Add coordinates and lookup a cell at that position.
 
         Args:
@@ -134,7 +135,7 @@ class Cell:
         y_move, x_move = other
         return self(self.y + y_move, self.x + x_move)
 
-    def neighbour(self, other: Vector[int] | tuple[int, int]) -> Self | None:
+    def neighbour(self, other: Vector[int] | tuple[int, int]) -> "Self | None":
         """Same as __add__."""
         return self + other
 
@@ -144,7 +145,7 @@ class Cell:
         return True
 
 
-class Grid:
+class Grid(Generic[CLike]):
     """Stores Cells. Has basic navigation and validation methods.
 
     Attributes:
@@ -152,7 +153,7 @@ class Grid:
         width: How many columns in the grid.
     """
 
-    def __init__(self, height: int, width: int, cell_class: type[Cell] = Cell) -> None:
+    def __init__(self, height: int, width: int, cell_class: type[CLike] = Cell) -> None:
         """Create a Grid of Cells.
 
         Args:
@@ -169,23 +170,27 @@ class Grid:
         self._cell_class = cell_class
         self.height = height
         self.width = width
-        self._grid = [
+        self._matrix = [
             [cell_class(y, x, self) for x in range(self.width)]
             for y in range(self.height)
         ]
 
-    def __iter__(self) -> Generator[Cell]:
+    def __getitem__(self, y: int) -> list[CLike]:
+        """Makes possible to access cells using Grid[y][x] syntax."""
+        return self._matrix[y]
+
+    def __iter__(self) -> Generator[CLike]:
         """Iterate over Cells within Grid."""
         for y in range(self.height):
             for x in range(self.width):
-                yield self._grid[y][x]
+                yield self[y][x]
 
     @property
     def valid(self) -> bool:
         """Grid's validity."""
         for y in range(self.height):
             for x in range(self.width):
-                if not self._grid[y][x].valid:
+                if not self[y][x].valid:
                     return False
         return True
 
@@ -193,16 +198,12 @@ class Grid:
         """Check if coordinates are unreachable."""
         return x < 0 or y < 0 or x >= self.width or y >= self.height
 
-    def __getitem__(self, y: int) -> list[Cell]:
-        """Makes possible to access cells using Grid[y][x] syntax."""
-        return self._grid[y]
-
-    def row(self, y: int) -> Generator[Cell]:
+    def row(self, y: int) -> Generator[CLike]:
         """Yield a row within a Grid."""
         for index in range(self.width):
-            yield self._grid[y][index]
+            yield self[y][index]
 
-    def column(self, x: int) -> Generator[Cell, Any, None]:
+    def column(self, x: int) -> Generator[CLike]:
         """Yield a column within a Grid."""
         for index in range(self.height):
-            yield self._grid[index][x]
+            yield self[index][x]

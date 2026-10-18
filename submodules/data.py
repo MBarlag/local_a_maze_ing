@@ -1,5 +1,7 @@
 from submodules.abstract import Cell, Grid, Vector
 from submodules.enums import Wall
+from typing import TYPE_CHECKING
+
 
 
 class Room(Cell):
@@ -14,7 +16,7 @@ class Room(Cell):
     def surrounded(self) -> Wall:
         surrounded = Wall.BLOCK
         for wall in Wall.BLOCK:
-            neighbour: Room | None = self + wall.direction
+            neighbour = self + wall.direction
             if neighbour is None:
                 continue
             if wall.opposite not in neighbour.walls:
@@ -35,7 +37,6 @@ class Room(Cell):
         else:
             raise ValueError("Walls requested don't exist")
 
-
 class Maze(Grid):
 
     def __init__(self, width: int, height: int, entry: Vector[int],
@@ -46,7 +47,7 @@ class Maze(Grid):
 
     @property
     def room(self) -> Room:
-        return self._grid[0][0]
+        return self[0][0]
 
     @property
     def entry(self) -> Vector[int]:
