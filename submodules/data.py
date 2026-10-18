@@ -1,10 +1,9 @@
-
 from submodules.abstract import Cell, Grid, Vector
 from submodules.enums import Wall
 
 
 class Room(Cell):
-    
+
     def __init__(self, y: int, x: int, ref: Grid):
         super().__init__(y, x, ref)
         self.visited = False
@@ -15,7 +14,7 @@ class Room(Cell):
     def surrounded(self) -> Wall:
         surrounded = Wall.BLOCK
         for wall in Wall.BLOCK:
-            neighbour = self + wall.direction
+            neighbour: Room | None = self + wall.direction
             if neighbour is None:
                 continue
             if wall.opposite not in neighbour.walls:
@@ -39,8 +38,7 @@ class Room(Cell):
 
 class Maze(Grid):
 
-    def __init__(self, width: int, height: int, 
-                 entry: Vector[int],
+    def __init__(self, width: int, height: int, entry: Vector[int],
                  exit: Vector[int]) -> None:
         super().__init__(width, height, Room)
         self._set_entry(entry)

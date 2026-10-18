@@ -6,6 +6,7 @@
 from collections.abc import Generator, Iterable, Iterator
 from dataclasses import dataclass
 from typing import Any, Generic, TypeVar
+from typing_extensions import Self
 
 N = TypeVar("N", int, float)
 
@@ -98,7 +99,7 @@ class Cell:
         self._grid: Grid = ref
         self.y, self.x = y, x
 
-    def __call__(self, y: int, x: int) -> "Cell | None":
+    def __call__(self, y: int, x: int) -> Self | None:
         """Visit another cell within a grid.
 
         Args:
@@ -120,7 +121,7 @@ class Cell:
         """
         return iter([self.y, self.x])
 
-    def __add__(self, other: Vector[int] | tuple[int, int]) -> "Cell | None":
+    def __add__(self, other: Vector[int] | tuple[int, int]) -> Self | None:
         """Add coordinates and lookup a cell at that position.
 
         Args:
@@ -133,7 +134,7 @@ class Cell:
         y_move, x_move = other
         return self(self.y + y_move, self.x + x_move)
 
-    def neighbour(self, other: Vector[int] | tuple[int, int]) -> "Cell | None":
+    def neighbour(self, other: Vector[int] | tuple[int, int]) -> Self | None:
         """Same as __add__."""
         return self + other
 
@@ -151,10 +152,7 @@ class Grid:
         width: How many columns in the grid.
     """
 
-    def __init__(self,
-                 height: int,
-                 width: int,
-                 cell_class: type[Cell] = Cell) -> None:
+    def __init__(self, height: int, width: int, cell_class: type[Cell] = Cell) -> None:
         """Create a Grid of Cells.
 
         Args:
@@ -171,8 +169,10 @@ class Grid:
         self._cell_class = cell_class
         self.height = height
         self.width = width
-        self._grid = [[cell_class(y, x, self) for x in range(self.width)]
-                      for y in range(self.height)]
+        self._grid = [
+            [cell_class(y, x, self) for x in range(self.width)]
+            for y in range(self.height)
+        ]
 
     def __iter__(self) -> Generator[Cell]:
         """Iterate over Cells within Grid."""
