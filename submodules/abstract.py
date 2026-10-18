@@ -1,3 +1,9 @@
+"""Abstract data classes that enable data manipulation with coordinates.
+
+[TODO:description]
+"""
+
+from collections.abc import Generator, Iterator
 from copy import copy
 from dataclasses import dataclass
 from typing import Any, Generic, TypeVar
@@ -14,36 +20,45 @@ class Vector(Generic[N]):
 
     Supports tuple unpacking => y, x = Vector(4, 5)
 
-    Args:
-        Generic (_type_): Abstract parent class that enables
-        the support of different types for the coordinates.
+    Attributes:
+        y: height dimension
+        x: width dimension
     """
 
     y: N
     x: N
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[N]:
+        """Iterate over y and x of the vector."""
         return iter([self.y, self.x])
 
-    def __add__(self, other: "Vector[N] | tuple[N, N]"):
+    def __add__(self, other: "Vector[N] | tuple[N, N]") -> "Vector[N]":
+        """Does coordinate addition logic between vectors or tuples.
+
+        Args:
+            other: Vector or tuple that stores two coordinates of the same type.
+
+        Returns:
+            New Vector, with the coordinates storing the result of sum.
+        """
         y, x = other
         return Vector(self.y + y, self.x + x)
 
-    def __radd__(self, other: "Vector[N] | tuple[N, N]"):
+    def __radd__(self, other: "Vector[N] | tuple[N, N]") -> "Vector[N]":
         return self + other
 
-    def __mul__(self, other: N):
+    def __mul__(self, other: N) -> "Vector[N]":
         return Vector(self.y * other, self.x * other)
 
-    def __sub__(self, other: "Vector[N] | tuple[N, N]"):
+    def __sub__(self, other: "Vector[N] | tuple[N, N]") -> "Vector[N]":
         y, x = other
         return Vector(self.y - y, self.x - x)
 
-    def __rsub__(self, other: "Vector[N] | tuple[N, N]"):
+    def __rsub__(self, other: "Vector[N] | tuple[N, N]") -> "Vector[N]":
         y, x = other
         return Vector(y - self.y, x - self.x)
 
-    def __eq__(self, other: object):
+    def __eq__(self, other: object) -> Any:
         y, x = other
         return self.y == y and self.x == x
 
@@ -53,7 +68,11 @@ T = TypeVar("T")
 
 class Cell(Generic[T]):
 
-    def __new__(cls, y: int, x: int, ref: "Grid[T]", value: T | None = None):
+    def __new__(cls,
+                y: int,
+                x: int,
+                ref: "Grid[T]",
+                value: T | None = None) -> "Cell[T]":
         if ref is not None:
             if ref.cant_reach(y, x):
                 raise ValueError("Coordinates are not reachable")
@@ -61,7 +80,11 @@ class Cell(Generic[T]):
         else:
             raise ValueError("ref cant be None")
 
-    def __init__(self, y: int, x: int, ref: "Grid[T]", value: T | None = None):
+    def __init__(self,
+                 y: int,
+                 x: int,
+                 ref: "Grid[T]",
+                 value: T | None = None) -> None:
         self._value = value  # should be set as first value
         self._grid = ref
         self.y, self.x = y, x
@@ -76,7 +99,7 @@ class Cell(Generic[T]):
             return None
         return self._grid[y][x]
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[str]:
         yield from vars(self)
 
     def __add__(self,
@@ -84,12 +107,12 @@ class Cell(Generic[T]):
         y_move, x_move = other
         return self(self.y + y_move, self.x + x_move)
 
-    def __getattr__(self, name) -> Any:
+    def __getattr__(self, name: str) -> Any:
         if name in dir(self):
             return self.__getattribute__(name)
         return getattr(self._value, name)
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name, value) -> None:
         if name == "_value" or name not in dir(self._value):
             return super().__setattr__(name, value)
         return setattr(self._value, name, value)
@@ -108,10 +131,13 @@ class Grid(Generic[T]):
 
     def __init_subclass__(cls,
                           cell_class: type["Cell[T]"] = Cell[T],
-                          **kwargs):
+                          **kwargs) -> None:
         cls._cell_class = cell_class
 
-    def __init__(self, width: int, height: int, default: T | None = None):
+    def __init__(self,
+                 width: int,
+                 height: int,
+                 default: T | None = None) -> None:
         if width < 1 or height < 1:
             raise ValueError("Grid can't have zero/negative width or height")
         self.default = default
@@ -123,7 +149,7 @@ class Grid(Generic[T]):
         ] for y in range(self.height)]
         self._cell = self._grid[0][0]
 
-    def __iter__(self):
+    def __iter__(self) -> Generator[Cell[T] | None, Any, None]:
         for y in range(self.height):
             for x in range(self.width):
                 yield self.cell(y, x)
@@ -131,7 +157,6 @@ class Grid(Generic[T]):
     @property
     def cell(self) -> Cell[T]:
         return self._cell
-
 
     @property
     def valid(self) -> bool:
@@ -141,16 +166,16 @@ class Grid(Generic[T]):
                     return False
         return True
 
-    def cant_reach(self, y: int, x: int):
+    def cant_reach(self, y: int, x: int) -> bool:
         return x < 0 or y < 0 or x >= self.width or y >= self.height
 
     def __getitem__(self, y: int) -> list[Cell[T]]:
         return self._grid[y]
 
-    def row(self, y: int):
+    def row(self, y: int) -> Generator[Cell[T] | None, Any, None]:
         for index in range(self.width):
             yield self.cell(y, index)
 
-    def column(self, x: int):
+    def column(self, x: int) -> Generator[Cell[T] | None, Any, None]:
         for index in range(self.height):
             yield self.cell(index, x)
