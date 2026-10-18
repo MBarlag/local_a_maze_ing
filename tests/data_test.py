@@ -7,7 +7,7 @@ def test_room():
     maze = Maze(3, 3, Vector(0, 0), Vector(0, 1))
     assert maze.valid == True
 
-    room : Room = maze.cell
+    room : Room = maze.room
     
     room(0, 0).break_wall(Wall.S)
     assert room.valid == True

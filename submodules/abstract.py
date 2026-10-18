@@ -3,10 +3,9 @@
 [TODO:description]
 """
 
-from collections.abc import Generator, Iterator
-from copy import copy
+from collections.abc import Generator, Iterable, Iterator
 from dataclasses import dataclass
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, Self, TypeVar
 
 N = TypeVar("N", int, float)
 
@@ -33,46 +32,51 @@ class Vector(Generic[N]):
         return iter([self.y, self.x])
 
     def __add__(self, other: "Vector[N] | tuple[N, N]") -> "Vector[N]":
-        """Does coordinate addition logic between vectors or tuples.
-
-        Args:
-            other: Vector or tuple that stores two coordinates of the same type.
-
-        Returns:
-            New Vector, with the coordinates storing the result of sum.
-        """
+        """Add two 2D vectors. (x, y) + (a, b) => Vector(x + a, y + b)."""
         y, x = other
         return Vector(self.y + y, self.x + x)
 
     def __radd__(self, other: "Vector[N] | tuple[N, N]") -> "Vector[N]":
+        """Same as __add__."""
         return self + other
 
     def __mul__(self, other: N) -> "Vector[N]":
+        """Multiply each value of the vector by other value."""
         return Vector(self.y * other, self.x * other)
 
     def __sub__(self, other: "Vector[N] | tuple[N, N]") -> "Vector[N]":
+        """Subtract two 2D vectors. (x, y) - (a, b) => Vector(x - a, y - b)."""
         y, x = other
         return Vector(self.y - y, self.x - x)
 
     def __rsub__(self, other: "Vector[N] | tuple[N, N]") -> "Vector[N]":
+        """Same as __sub__ but reversed."""
         y, x = other
         return Vector(y - self.y, x - self.x)
 
-    def __eq__(self, other: object) -> Any:
-        y, x = other
-        return self.y == y and self.x == x
+    def __eq__(self, other: object) -> bool:
+        """Compare self to other.
+
+        Args:
+            other: Any object.
+
+        Returns:
+            True or False. If the can be tuple unpacked,
+            will return true if the unpacked values are equal to respective
+            values of the Vector: y and x.
+        """
+        if not isinstance(other, Iterable):
+            return NotImplemented
+        if len(list(other)) >= 2:
+            y, x = list(other)[:2]
+            if self.y == y and self.x == x:
+                return True
+        return False
 
 
-T = TypeVar("T")
+class Cell:
 
-
-class Cell(Generic[T]):
-
-    def __new__(cls,
-                y: int,
-                x: int,
-                ref: "Grid[T]",
-                value: T | None = None) -> "Cell[T]":
+    def __new__(cls, y: int, x: int, ref: "Grid") -> Self:
         if ref is not None:
             if ref.cant_reach(y, x):
                 raise ValueError("Coordinates are not reachable")
@@ -80,21 +84,11 @@ class Cell(Generic[T]):
         else:
             raise ValueError("ref cant be None")
 
-    def __init__(self,
-                 y: int,
-                 x: int,
-                 ref: "Grid[T]",
-                 value: T | None = None) -> None:
-        self._value = value  # should be set as first value
-        self._grid = ref
+    def __init__(self, y: int, x: int, ref: "Grid") -> None:
+        self._grid: Grid = ref
         self.y, self.x = y, x
-        # if not hasattr(value, '__dict__'):
-        #     self._value = value
-        #     return
-        # for name, value in list(vars(value).items()):
-        #     setattr(self, name, value)
 
-    def __call__(self, y: int, x: int) -> "Cell[T] | None":
+    def __call__(self, y: int, x: int) -> "Cell | None":
         if self._grid.cant_reach(y, x):
             return None
         return self._grid[y][x]
@@ -102,23 +96,11 @@ class Cell(Generic[T]):
     def __iter__(self) -> Iterator[str]:
         yield from vars(self)
 
-    def __add__(self,
-                other: Vector[int] | tuple[int, int]) -> "Cell[T] | None":
+    def __add__(self, other: Vector[int] | tuple[int, int]) -> "Cell | None":
         y_move, x_move = other
         return self(self.y + y_move, self.x + x_move)
 
-    def __getattr__(self, name: str) -> Any:
-        if name in dir(self):
-            return self.__getattribute__(name)
-        return getattr(self._value, name)
-
-    def __setattr__(self, name, value) -> None:
-        if name == "_value" or name not in dir(self._value):
-            return super().__setattr__(name, value)
-        return setattr(self._value, name, value)
-
-    def neighbour(self,
-                  other: Vector[int] | tuple[int, int]) -> "Cell[T] | None":
+    def neighbour(self, other: Vector[int] | tuple[int, int]) -> "Cell | None":
         return self + other
 
     @property
@@ -126,56 +108,43 @@ class Cell(Generic[T]):
         return True
 
 
-class Grid(Generic[T]):
-    _cell_class: type["Cell[T]"] = Cell[T]
-
-    def __init_subclass__(cls,
-                          cell_class: type["Cell[T]"] = Cell[T],
-                          **kwargs) -> None:
-        cls._cell_class = cell_class
+class Grid:
 
     def __init__(self,
                  width: int,
                  height: int,
-                 default: T | None = None) -> None:
+                 cell_class: type[Cell] = Cell) -> None:
         if width < 1 or height < 1:
             raise ValueError("Grid can't have zero/negative width or height")
-        self.default = default
+        self._cell_class = cell_class
         self.height = height
         self.width = width
-        self._grid = [[
-            self._cell_class(y, x, self, copy(default))
-            for x in range(self.width)
-        ] for y in range(self.height)]
-        self._cell = self._grid[0][0]
+        self._grid = [[cell_class(y, x, self) for x in range(self.width)]
+                      for y in range(self.height)]
 
-    def __iter__(self) -> Generator[Cell[T] | None, Any, None]:
+    def __iter__(self) -> Generator[Cell, Any, None]:
         for y in range(self.height):
             for x in range(self.width):
-                yield self.cell(y, x)
-
-    @property
-    def cell(self) -> Cell[T]:
-        return self._cell
+                yield self._grid[y][x]
 
     @property
     def valid(self) -> bool:
         for y in range(self.height):
             for x in range(self.width):
-                if not self.cell(y, x).valid:
+                if not self._grid[y][x].valid:
                     return False
         return True
 
     def cant_reach(self, y: int, x: int) -> bool:
         return x < 0 or y < 0 or x >= self.width or y >= self.height
 
-    def __getitem__(self, y: int) -> list[Cell[T]]:
+    def __getitem__(self, y: int) -> list[Cell]:
         return self._grid[y]
 
-    def row(self, y: int) -> Generator[Cell[T] | None, Any, None]:
+    def row(self, y: int) -> Generator[Cell, Any, None]:
         for index in range(self.width):
-            yield self.cell(y, index)
+            yield self._grid[y][index]
 
-    def column(self, x: int) -> Generator[Cell[T] | None, Any, None]:
+    def column(self, x: int) -> Generator[Cell, Any, None]:
         for index in range(self.height):
-            yield self.cell(index, x)
+            yield self._grid[index][x]

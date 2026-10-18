@@ -93,7 +93,7 @@ class MazeGenerator(BaseModel):
         for y, line in enumerate(PATTERN_STRING.split("\n")):
             for x, character in enumerate(line):
                 # 1 represents True, 0 represents False in the PATTERN_STRING
-                pattern[y][x] = True if character == "1" else False
+                pattern[y][x] = character == "1"
 
         left_top = Vector(0, 0)
         left_top.y = (self.height - pattern.height) / 2
@@ -119,9 +119,7 @@ class MazeGenerator(BaseModel):
                 queue.append(neighbour)
 
     def valid_neighbour(self, neighbour: Room[RoomData]) -> bool:
-        if neighbour == None | neighbour.visited == True | neighbour.blocked == True:
-            return False
-        return True
+        return not neighbour == None | neighbour.visited == True | neighbour.blocked == True
 
     @property
     def last_maze(self) -> Maze[RoomData] | None:

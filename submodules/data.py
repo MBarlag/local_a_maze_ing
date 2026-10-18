@@ -1,17 +1,16 @@
-from dataclasses import dataclass
 
 from submodules.abstract import Cell, Grid, Vector
 from submodules.enums import Wall
 
 
-@dataclass
-class RoomData:
-    visited: bool
-    walls: Wall
-    blocked: bool
+class Room(Cell):
+    
+    def __init__(self, y: int, x: int, ref: Grid):
+        super().__init__(y, x, ref)
+        self.visited = False
+        self.walls = Wall.BLOCK
+        self.blocked = False
 
-
-class Room(Cell[RoomData]):
     @property
     def surrounded(self) -> Wall:
         surrounded = Wall.BLOCK
@@ -38,23 +37,18 @@ class Room(Cell[RoomData]):
             raise ValueError("Walls requested don't exist")
 
 
-class Maze(Grid[RoomData], cell_class=Room):
-    _default_data = RoomData(visited=False, 
-                             walls=Wall.BLOCK, 
-                             blocked=False)
+class Maze(Grid):
 
-    def __init__(self, width: int, height: int, entry: Vector[int],
-                 exit: Vector[int], default: RoomData = None):
-        default = self._default_data
-        super().__init__(width, height, default)
+    def __init__(self, width: int, height: int, 
+                 entry: Vector[int],
+                 exit: Vector[int]) -> None:
+        super().__init__(width, height, Room)
         self._set_entry(entry)
         self._set_exit(exit)
 
-    # TODO make a property .room, that basically wraps around .cell and returns so that semantically it makes more sense
-    # TODO look into fixing the error that occurs when this property is added
-    # @property
-    # def room(self) -> Room[RoomData]:
-    #     return self._cell
+    @property
+    def room(self) -> Room:
+        return self._grid[0][0]
 
     @property
     def entry(self) -> Vector[int]:
