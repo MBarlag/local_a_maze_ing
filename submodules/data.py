@@ -1,8 +1,10 @@
+from collections.abc import Generator
+from typing import cast
+
+from typing_extensions import Self
+
 from submodules.abstract import Cell, Grid, Vector
 from submodules.enums import Wall
-from typing import cast
-from collections.abc import Generator, Iterable, Iterator
-from typing_extensions import Self
 
 
 class Room(Cell):

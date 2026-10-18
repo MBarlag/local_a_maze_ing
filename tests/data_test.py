@@ -1,7 +1,7 @@
 import pytest
 
-from submodules.data import Maze, Room
 from submodules.abstract import Vector
+from submodules.data import Maze, Room
 from submodules.enums import Wall
 
 

@@ -5,7 +5,8 @@
 
 from collections.abc import Generator, Iterable, Iterator
 from dataclasses import dataclass
-from typing import Any, Generic, TypeVar, cast
+from typing import Generic, TypeVar, cast
+
 from typing_extensions import Self
 
 N = TypeVar("N", int, float)
@@ -153,7 +154,10 @@ class Grid:
         width: How many columns in the grid.
     """
 
-    def __init__(self, height: int, width: int, cell_class: type[Cell] = Cell) -> None:
+    def __init__(self,
+                 height: int,
+                 width: int,
+                 cell_class: type[Cell] = Cell) -> None:
         """Create a Grid of Cells.
 
         Args:
@@ -170,10 +174,8 @@ class Grid:
         self._cell_class = cell_class
         self.height = height
         self.width = width
-        self._matrix = [
-            [cell_class(y, x, self) for x in range(self.width)]
-            for y in range(self.height)
-        ]
+        self._matrix = [[cell_class(y, x, self) for x in range(self.width)]
+                        for y in range(self.height)]
 
     def __getitem__(self, y: int) -> list[Cell]:
         """Makes possible to access cells using Grid[y][x] syntax."""
