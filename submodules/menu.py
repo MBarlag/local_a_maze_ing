@@ -1,12 +1,13 @@
 import sys
 from enum import Enum
+from typing import Any
 
 import inquirer
 
 # placeholder for actions
 
 
-def generate():
+def generate() -> None:
     print("generating")
     print("///// [This is a representation of a possible Maze] /////\n")
     print("+------------------------------+\n"
@@ -39,11 +40,25 @@ def quit_menu() -> None:
 
 
 class Action(Enum):
-    GENERATE = generate
-    TOGGLE_PATH = toggle_path
-    ROTATE_COLORS = rotate_colors
-    INPUT_SEED = seed
-    QUIT = quit_menu
+    GENERATE = 1
+    TOGGLE_PATH = 2
+    ROTATE_COLORS = 3
+    INPUT_SEED = 4
+    QUIT = 5
+
+
+def execute(n: Action) -> None:
+    match n:
+        case Action.GENERATE:
+            generate()
+        case Action.TOGGLE_PATH:
+            toggle_path()
+        case Action.ROTATE_COLORS:
+            rotate_colors()
+        case Action.INPUT_SEED:
+            seed()
+        case Action.QUIT:
+            quit_menu()
 
 
 def choose_action() -> Action:
@@ -67,19 +82,21 @@ def choose_action() -> Action:
     ]
 
     # Here the chosen action is returned. Main will execute the action.
-    choice: Action = inquirer.prompt(
-        to_choose_action, raise_keyboard_interrupt=True)
-    return choice.get('action', Action.QUIT)
+    choice: dict[str, Any] = inquirer.prompt(to_choose_action,
+                                             raise_keyboard_interrupt=True)
+    choice = choice.get("action", Action.QUIT)
+    if isinstance(choice, Action):
+        return choice
+    return Action.QUIT
 
 
 def prompt_loop() -> None:
     """Runs a prompt loop to get next action from the user."""
     print("Welcome to Emma's amazing maze!")
-    user = inquirer.text(message='First, please enter your name')
-    input(
-        f"Nice to meet you, {user}! \
+    user = inquirer.text(message="First, please enter your name")
+    input(f"Nice to meet you, {user}! \
             Press enter to generate your first maze.\n")
     choice = Action.GENERATE
     while choice:
-        choice()
+        execute(choice)
         choice = choose_action()
