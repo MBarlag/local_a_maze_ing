@@ -1,7 +1,8 @@
 from submodules.abstract import Cell, Grid, Vector
 from submodules.enums import Wall
-from typing import TYPE_CHECKING
-
+from typing import cast
+from collections.abc import Generator, Iterable, Iterator
+from typing_extensions import Self
 
 
 class Room(Cell):
@@ -36,6 +37,16 @@ class Room(Cell):
             neighbour.walls -= to_break.opposite
         else:
             raise ValueError("Walls requested don't exist")
+    
+    def __call__(self, y: int, x: int) -> "Self | None":
+        result = super().__call__(y, x)
+        return cast(Self, result)
+    def __add__(self, other: Vector[int] | tuple[int, int]) -> "Self":
+        result = super().__add__(other)
+        return cast(Self, result)
+    def neighbour(self, other: Vector[int] | tuple[int, int]) -> "Self":
+        result = super().neighbour(other)
+        return cast(Self, result)
 
 class Maze(Grid):
 
@@ -45,9 +56,25 @@ class Maze(Grid):
         self._set_entry(entry)
         self._set_exit(exit)
 
+    def __iter__(self) -> Generator[Room]:
+        result = super().__iter__()
+        return cast(Generator[Room], result)
+
+    def row(self, y: int) -> Generator[Room]:
+        """Yield a row within a Grid."""
+        result = super().row(y)
+        return cast(Generator[Room], result)
+
+    def column(self, x: int) -> Generator[Room]:
+        """Yield a column within a Grid."""
+        result = super().column(x)
+        return cast(Generator[Room], result)
+    
+
     @property
     def room(self) -> Room:
-        return self[0][0]
+        result = self[0][0]
+        return cast(Room, result)
 
     @property
     def entry(self) -> Vector[int]:

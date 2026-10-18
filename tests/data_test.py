@@ -1,9 +1,11 @@
 import pytest
 
-from submodules.data import *
+from submodules.data import Maze, Room
+from submodules.abstract import Vector
+from submodules.enums import Wall
 
 
-def test_room():
+def test_room() -> None:
     maze = Maze(3, 3, Vector(0, 0), Vector(0, 1))
     assert maze.valid == True
 
