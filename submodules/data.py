@@ -38,15 +38,20 @@ class Room(Cell[RoomData]):
             raise ValueError("Walls requested don't exist")
 
 
-class Maze(Grid[RoomData], cell_class=Room):
-    _default_data = RoomData(visited=False, 
-                             walls=Wall.BLOCK, 
-                             blocked=False)
+class Maze(Grid[RoomData]):
+    _default_data = RoomData(visited=False, walls=Wall.BLOCK, blocked=False)
 
-    def __init__(self, width: int, height: int, entry: Vector[int],
-                 exit: Vector[int], default: RoomData = None):
+    def __init__(
+        self,
+        width: int,
+        height: int,
+        entry: Vector[int],
+        exit: Vector[int],
+        default: RoomData = None,
+        cell_class=Room[RoomData],
+    ):
         default = self._default_data
-        super().__init__(width, height, default)
+        super().__init__(width, height, default, cell_class)
         self._set_entry(entry)
         self._set_exit(exit)
 
