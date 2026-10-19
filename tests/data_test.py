@@ -1,14 +1,21 @@
+"""[TODO:description]
+
+[TODO:description]
+"""
+
 import pytest
 
-from submodules.data import *
+from submodules.abstract import Vector
+from submodules.data import Maze, Room
+from submodules.enums import Wall
 
 
-def test_room():
+def test_room() -> None:
     maze = Maze(3, 3, Vector(0, 0), Vector(0, 1))
     assert maze.valid == True
 
-    room : Room = maze.cell
-    
+    room: Room = maze.cell
+
     room(0, 0).break_wall(Wall.S)
     assert room.valid == True
     assert maze.valid == True
@@ -25,7 +32,7 @@ def test_room():
     assert room.visited == True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_room()
 
 # with pytest.raises(Exception):

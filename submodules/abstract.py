@@ -6,7 +6,9 @@
 from collections.abc import Generator, Iterator
 from copy import copy
 from dataclasses import dataclass
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, TypeVar, cast, overload
+
+from typing_extensions import Self
 
 N = TypeVar("N", int, float)
 
@@ -64,12 +66,13 @@ class Vector(Generic[N]):
 
 
 T = TypeVar("T")
+C = TypeVar("C", bound="Cell[Any]")
 
 
 class Cell(Generic[T]):
     def __new__(
-        cls, y: int, x: int, ref: "Grid[T]", value: T | None = None
-    ) -> "Cell[T]":
+        cls, y: int, x: int, ref: "Grid[T,Any]", value: T | None = None
+    ) -> Self:
         if ref is not None:
             if ref.cant_reach(y, x):
                 raise ValueError("Coordinates are not reachable")
@@ -77,7 +80,9 @@ class Cell(Generic[T]):
         else:
             raise ValueError("ref cant be None")
 
-    def __init__(self, y: int, x: int, ref: "Grid[T]", value: T | None = None) -> None:
+    def __init__(
+        self, y: int, x: int, ref: "Grid[T, Any]", value: T | None = None
+    ) -> None:
         self._value = value  # should be set as first value
         self._grid = ref
         self.y, self.x = y, x
@@ -87,10 +92,10 @@ class Cell(Generic[T]):
         # for name, value in list(vars(value).items()):
         #     setattr(self, name, value)
 
-    def __call__(self, y: int, x: int) -> "Cell[T] | None":
+    def __call__(self, y: int, x: int) -> Self | None:
         if self._grid.cant_reach(y, x):
             return None
-        return self._grid[y][x]
+        return cast("Self | None", self._grid[y, x])
 
     def __iter__(self) -> Iterator[str]:
         yield from vars(self)
@@ -117,53 +122,60 @@ class Cell(Generic[T]):
         return True
 
 
-class Grid(Generic[T]):
+class Grid(Generic[T, C]):
+    @overload
+    def __init__(self, width: int, height: int, default: T | None = None) -> None: ...
+    @overload
+    def __init__(
+        self, width: int, height: int, default: T | None = None, *, cell_class: type[C]
+    ) -> None: ...
     def __init__(
         self,
         width: int,
         height: int,
         default: T | None = None,
-        cell_class: type["Cell[T]"] = Cell[T],
-    ) -> None:
+        *,
+        cell_class: type[Any] | None = None,
+    ):
         if width < 1 or height < 1:
             raise ValueError("Grid can't have zero/negative width or height")
-        self._cell_class = cell_class
+        self._cell_class: type[Any] = cell_class if cell_class else Cell
         self.default = default
         self.height = height
         self.width = width
-        self._grid = [
+        self._grid: list[list[C]] = [
             [self._cell_class(y, x, self, copy(default)) for x in range(self.width)]
             for y in range(self.height)
         ]
-        self._cell = self._grid[0][0]
 
-    def __iter__(self) -> Generator[Cell[T] | None, Any, None]:
+    def __iter__(self) -> Generator[C]:
         for y in range(self.height):
             for x in range(self.width):
-                yield self.cell(y, x)
+                yield self[y, x]
 
     @property
-    def cell(self) -> Cell[T]:
-        return self._cell
+    def cell(self) -> C:
+        return self[0, 0]
 
     @property
     def valid(self) -> bool:
         for y in range(self.height):
             for x in range(self.width):
-                if not self.cell(y, x).valid:
+                if not self[y, x].valid:
                     return False
         return True
 
     def cant_reach(self, y: int, x: int) -> bool:
         return x < 0 or y < 0 or x >= self.width or y >= self.height
 
-    def __getitem__(self, y: int) -> list[Cell[T]]:
-        return self._grid[y]
+    def __getitem__(self, coords: tuple[int, int]) -> C:
+        y, x = coords
+        return self._grid[y][x]
 
-    def row(self, y: int) -> Generator[Cell[T] | None, Any, None]:
+    def row(self, y: int) -> Generator[C]:
         for index in range(self.width):
-            yield self.cell(y, index)
+            yield self[y, index]
 
-    def column(self, x: int) -> Generator[Cell[T] | None, Any, None]:
+    def column(self, x: int) -> Generator[C]:
         for index in range(self.height):
-            yield self.cell(index, x)
+            yield self[index, x]
