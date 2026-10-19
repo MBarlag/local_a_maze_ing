@@ -1,3 +1,11 @@
+"""An interactive menu which prompts actions to the user.
+
+Enums are used to give each menu option a name. The user sees a list
+of possible actions and uses the arrow and enter keys to choose an action.
+After excecuting, main will lead the user back to the menu until they
+choose to quit the program.
+"""
+
 import sys
 from enum import Enum
 from typing import Any
@@ -65,7 +73,7 @@ def choose_action() -> Action:
     """Prompt user to choose an action.
 
     Returns:
-        Action: Enum that represents possible actions
+        Action: Enum that represents possible actions.
     """
     to_choose_action = [
         inquirer.List(
@@ -81,12 +89,11 @@ def choose_action() -> Action:
         )
     ]
 
-    # Here the chosen action is returned. Main will execute the action.
     choice: dict[str, Any] = inquirer.prompt(to_choose_action,
                                              raise_keyboard_interrupt=True)
-    choice = choice.get("action", Action.QUIT)
-    if isinstance(choice, Action):
-        return choice
+    answer = choice.get("action", Action.QUIT)
+    if isinstance(answer, Action):
+        return answer
     return Action.QUIT
 
 
@@ -94,8 +101,8 @@ def prompt_loop() -> None:
     """Runs a prompt loop to get next action from the user."""
     print("Welcome to Emma's amazing maze!")
     user = inquirer.text(message="First, please enter your name")
-    input(f"Nice to meet you, {user}! \
-            Press enter to generate your first maze.\n")
+    input(f"Nice to meet you, {user}! "
+          "Press enter to generate your first maze.\n")
     choice = Action.GENERATE
     while choice:
         execute(choice)

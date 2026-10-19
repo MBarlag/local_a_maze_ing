@@ -15,7 +15,10 @@ from submodules.display import MazePrinter
 
 if __name__ == '__main__':
 
-    config = Config("config.txt").parse_config()
+    # if len(sys.argv) not 2:
+        # raise Exception
+
+    config = Config("config.txt").parse_config() # Don't forget to use sys.argv[1] here instead of config.txt!
     # config looks like: {'height': '4', ...}
 
     # maze_gen = MazeGen(**config)
