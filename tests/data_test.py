@@ -1,3 +1,8 @@
+"""[TODO:description]
+
+[TODO:description]
+"""
+
 import pytest
 
 from submodules.abstract import Vector
@@ -27,7 +32,7 @@ def test_room() -> None:
     assert room.visited == True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_room()
 
 # with pytest.raises(Exception):

@@ -5,16 +5,16 @@ from typing_extensions import Self
 
 from submodules.abstract import Cell, Grid, Vector
 from submodules.enums import Wall
+from dataclasses import dataclass
+
+@dataclass
+class RoomData:
+    visited: bool = False
+    walls: Wall = Wall.BLOCK
+    blocked: bool = False
 
 
-class Room(Cell):
-
-    def __init__(self, y: int, x: int, ref: Grid):
-        super().__init__(y, x, ref)
-        self.visited = False
-        self.walls = Wall.BLOCK
-        self.blocked = False
-
+class Room(Cell[RoomData]):
     @property
     def surrounded(self) -> Wall:
         surrounded = Wall.BLOCK
@@ -28,7 +28,9 @@ class Room(Cell):
 
     @property
     def valid(self) -> bool:
-        return self.walls == sum(self.surrounded)
+        if self.walls == sum(self.surrounded):
+            return True
+        return False
 
     def break_wall(self, to_break: Wall) -> None:
         if to_break in self.walls:
@@ -39,44 +41,23 @@ class Room(Cell):
             neighbour.walls -= to_break.opposite
         else:
             raise ValueError("Walls requested don't exist")
-    
-    def __call__(self, y: int, x: int) -> "Self | None":
-        result = super().__call__(y, x)
-        return cast(Self, result)
-    def __add__(self, other: Vector[int] | tuple[int, int]) -> "Self":
-        result = super().__add__(other)
-        return cast(Self, result)
-    def neighbour(self, other: Vector[int] | tuple[int, int]) -> "Self":
-        result = super().neighbour(other)
-        return cast(Self, result)
 
-class Maze(Grid):
 
-    def __init__(self, width: int, height: int, entry: Vector[int],
-                 exit: Vector[int]) -> None:
-        super().__init__(width, height, Room)
-        self._set_entry(entry)
-        self._set_exit(exit)
-
-    def __iter__(self) -> Generator[Room]:
-        result = super().__iter__()
-        return cast(Generator[Room], result)
-
-    def row(self, y: int) -> Generator[Room]:
-        """Yield a row within a Grid."""
-        result = super().row(y)
-        return cast(Generator[Room], result)
-
-    def column(self, x: int) -> Generator[Room]:
-        """Yield a column within a Grid."""
-        result = super().column(x)
-        return cast(Generator[Room], result)
-    
+class Maze(Grid[RoomData, Room]):
+    def __init__(
+        self,
+        height: int,
+        width: int,
+        entry: Vector[int] | None = None,
+        exit: Vector[int] | None = None,
+    ):
+        super().__init__(height, width, RoomData(), cell_class=Room)
+        self._set_entry(entry or Vector(0, 0))
+        self._set_exit(exit or Vector(0, 0))
 
     @property
     def room(self) -> Room:
-        result = self[0][0]
-        return cast(Room, result)
+        return self.cell
 
     @property
     def entry(self) -> Vector[int]:
