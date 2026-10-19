@@ -6,7 +6,6 @@ Keys hold specifications for creating the maze.
 
 import re
 from dataclasses import dataclass
-from typing import Any
 
 
 class ConfigException(Exception):
@@ -31,24 +30,23 @@ class Config:
         return re.sub(pattern="(#.*$)", repl="", string=line)
 
     @staticmethod
-    def _extract_pair(line: str, default: Any = None) -> tuple[str, str]:
+    def _extract_pair(line: str) -> tuple[str, str] | None:
         """Splits a line into a tuple of specification and value.
 
         Args:
             line (str): A stripped line from the file.
-            default (Any, optional): Defaults to None
-            and is returned when line is empty.
 
         Returns:
             tuple[str, str]: Extracted pair of key and value.
+            Returns None when line is empty.
 
         Raises:
             ConfigException: If the line doen't contain one '='.
         """
         if not line:
-            return default
+            return None
         split_result = line.split("=")
-        if (len(split_result) != 2):
+        if len(split_result) != 2:
             message = "There can only be one = sign per onfig the line"
             raise ConfigException(message)
         return split_result[0], split_result[1]
@@ -65,7 +63,6 @@ class Config:
                 line = Config._strip_comments(line).strip()
                 if not (extracted := Config._extract_pair(line)):
                     continue
-                extracted = Config._extract_pair(line)
                 key, value = extracted
                 result[key.lower()] = value
         return result
