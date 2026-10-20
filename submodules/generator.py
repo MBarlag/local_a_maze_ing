@@ -93,33 +93,36 @@ class MazeGenerator(BaseModel):
         for y, line in enumerate(PATTERN_STRING.split("\n")):
             for x, character in enumerate(line):
                 # 1 represents True, 0 represents False in the PATTERN_STRING
-                pattern[y][x] = character == "1"
+                pattern[y, x].value = character == "1"
 
         left_top = Vector(0, 0)
-        left_top.y = (self.height - pattern.height) / 2
-        left_top.x = (self.width - pattern.width) / 2
+        left_top.y = (self.height - pattern.height) // 2
+        left_top.x = (self.width - pattern.width) // 2
 
-        left_top_room = self._draft_maze.cell + left_top
+        left_top_room = self._draft_maze[left_top]
         # setting rooms that are corresponding to the pattern to blocked = True
 
         for cell in pattern:
-            room: Room | None = left_top_room + (cell.y, cell.x)
-            room.blocked = cell._value
+            room = left_top_room + cell.as_vector
+            if room:
+                room.blocked = cell._value
+
+    def valid_neighbour(self, neighbour: Room) -> bool:
+        if (neighbour != None and neighbour.visited != True
+                and neighbour.blocked != True):
+            return False
+        return True
 
     def bfs(self) -> None:
         queue: list[Room] = []
-        start = self._draft_maze.cell + self.entry
-        queue.append(start)
+        entry = self._draft_maze[self.entry]
+        queue.append(entry)
         while queue:
             popped = queue.pop()
             popped.visited = True
-            neighbours = [popped + direction for direction in list(Move)]
-            neighbours = filter(self.valid_neighbour, neighbours)
-            for neighbour in neighbours:
-                queue.append(neighbour)
-
-    def valid_neighbour(self, neighbour: Room[RoomData]) -> bool:
-        return not neighbour == None | neighbour.visited == True | neighbour.blocked == True
+            neighbours = [popped.visit(*direction) for direction in list(Move)]
+            neighbours = [x for x in neighbours if x != None]
+            queue = list(neighbours)
 
     @property
     def last_maze(self) -> Maze[RoomData] | None:
@@ -142,4 +145,3 @@ class MazeGenerator(BaseModel):
         Returns:
             list[list[int]]: Holds maze, entry/exit and path.
         """
-

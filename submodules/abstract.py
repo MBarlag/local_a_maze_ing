@@ -90,6 +90,11 @@ class Cell(Generic[_Data]):
         return True
 
     @property
+    def as_vector(self) -> Vector[int]:
+        """Vector representation."""
+        return Vector(*self)
+
+    @property
     def value(self) -> _Data:
         """Data value."""
         return self._value

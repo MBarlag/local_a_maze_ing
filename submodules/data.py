@@ -1,11 +1,13 @@
-from collections.abc import Generator
-from typing import cast
+"""[TODO:description]
 
-from typing_extensions import Self
+[TODO:description]
+"""
+
+from dataclasses import dataclass
 
 from submodules.abstract import Cell, Grid, Vector
 from submodules.enums import Wall
-from dataclasses import dataclass
+
 
 @dataclass
 class RoomData:
@@ -15,6 +17,7 @@ class RoomData:
 
 
 class Room(Cell[RoomData]):
+
     @property
     def surrounded(self) -> Wall:
         surrounded = Wall.BLOCK
@@ -44,6 +47,7 @@ class Room(Cell[RoomData]):
 
 
 class Maze(Grid[RoomData, Room]):
+
     def __init__(
         self,
         height: int,
