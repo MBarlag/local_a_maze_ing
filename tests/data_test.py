@@ -11,12 +11,12 @@ from submodules.enums import Wall
 
 
 def test_room() -> None:
-    maze = Maze(3, 3, Vector(0, 0), Vector(0, 1))
+    maze = Maze(3, 3, Vector(0, 0), Vector(0, 0))
     assert maze.valid == True
 
-    room : Room = maze.room
-    
-    room(0, 0).break_wall(Wall.S)
+    room: Room = maze.room
+
+    room[0, 0].break_wall(Wall.S)
     assert room.valid == True
     assert maze.valid == True
 
@@ -25,7 +25,7 @@ def test_room() -> None:
     assert maze.valid == False
 
     with pytest.raises(ValueError):
-        room(0, 0).break_wall(Wall.N)
+        room[0, 0].break_wall(Wall.N)
 
     assert room.visited == False
     room.visited = True

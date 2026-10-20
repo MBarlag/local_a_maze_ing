@@ -4,13 +4,13 @@
 """
 
 from collections.abc import Generator, Iterable, Iterator
-from dataclasses import dataclass
-from typing import Any, Generic, TypeVar, cast, overload
 from copy import copy
+from dataclasses import dataclass
+from typing import Any, Generic, TypeVar, overload
+
 from typing_extensions import Self
 
 N = TypeVar("N", int, float)
-# CLike = TypeVar("CLike", bound="Cell")
 
 
 @dataclass
@@ -77,18 +77,36 @@ class Vector(Generic[N]):
         return False
 
 
-T = TypeVar("T")
-C = TypeVar("C", bound="Cell[Any]")
+_Data = TypeVar("_Data")
+_Cell = TypeVar("_Cell", bound="Cell[Any]")
 
 
-class Cell(Generic[T]):
-    """Stores y, x as coordinates, and reference to grid it belongs to."""
+class Cell(Generic[_Data]):
+    """Stores y, x coordinates and grid it belongs to."""
 
-    def __init__(
-        self, y: int, x: int, 
-        ref: "Grid[T, Self]", 
-        value: T | None = None
-    ) -> None:
+    @property
+    def valid(self) -> bool:
+        """Validity of cell."""
+        return True
+
+    @property
+    def value(self) -> _Data:
+        """Data value."""
+        return self._value
+
+    @value.setter
+    def value(self, value: _Data) -> None:
+        self._value = value
+
+    def visit(self, dy: int, dx: int) -> Self | None:
+        """Add up coordinates and return the cell at the location or None."""
+        new_position = Vector(*self) + (dy, dx)
+        if self._grid.cant_reach(*new_position):
+            return None
+        return self._grid[new_position]
+
+    def __init__(self, y: int, x: int, ref: "Grid[_Data, Self]",
+                 value: _Data) -> None:
         """Creates an instance of Cell only if Cell can be made.
 
         Args:
@@ -111,19 +129,22 @@ class Cell(Generic[T]):
         self._grid = ref
         self.y, self.x = y, x
 
-    def __call__(self, y: int, x: int) -> Self | None:
-        """Visit another cell within a grid.
+    def __getitem__(self, offset: tuple[int, int] | Vector[int]) -> Self:
+        """Get another cell relative to current cell.
 
         Args:
-            y: Vertical coordinate.
-            x: Horizontal coordinate.
+            offset: typle or Vector of dy, dx to shift current position by.
 
         Returns:
             Cell at the (y, x).
+
+        Raises:
+            IndexError: If out of bounds.
         """
-        if self._grid.cant_reach(y, x):
-            return None
-        return self._grid[y, x]
+        new_position = Vector(*self) + offset
+        if self._grid.cant_reach(*new_position):
+            raise IndexError("Requested Cell is out of bounds")
+        return self._grid[new_position]
 
     def __iter__(self) -> Iterator[int]:
         """Unpack Cell coordinates.
@@ -134,7 +155,7 @@ class Cell(Generic[T]):
         return iter([self.y, self.x])
 
     def __add__(self, other: Vector[int] | tuple[int, int]) -> Self | None:
-        """Jump to position and return cell if exists.
+        """Add up coordinates and return the cell at the location.
 
         Args:
             other: Vector or tuple of ints.
@@ -143,8 +164,7 @@ class Cell(Generic[T]):
         Returns:
             Cell if it exists at resulting coordinates, None otherwise.
         """
-        y_move, x_move = other
-        return self.__call__(self.y + y_move, self.x + x_move)
+        return self.visit(*other)
 
     def __getattr__(self, name: str) -> Any:
         """Get attribute from Cell or it's Data."""
@@ -158,42 +178,52 @@ class Cell(Generic[T]):
             return super().__setattr__(name, value)
         return setattr(self._value, name, value)
 
-    def neighbour(self, other: Vector[int] | tuple[int, int]) -> Self | None:
-        """Same as __add__."""
-        return self + other
 
-    @property
-    def valid(self) -> bool:
-        """Validity of cell."""
-        return True
+class Grid(Generic[_Data, _Cell]):
+    """Stores Cells with Data. Has basic navigation and validation methods.
 
-
-class Grid(Generic[T, C]):
-    """Stores Cells. Has basic navigation and validation methods.
-
-    Attributes:
-        height: How many rows in the grid.
-        width: How many columns in the grid.
+    Access elements via grid[y, x].
     """
+
     @overload
-    def __init__(self, height: int, width: int, default: T | None = None) -> None: ...
+    def __init__(self: "Grid[Any, Cell[Any]]", height: int,
+                 width: int) -> None:
+        ...
+
     @overload
     def __init__(
-        self, height: int, width: int, default: T | None = None, *, cell_class: type[C]
-    ) -> None: ...
+        self: "Grid[_Data, Cell[_Data]]",
+        height: int,
+        width: int,
+        default: _Data,
+    ) -> None:
+        ...
+
+    @overload
     def __init__(
         self,
         height: int,
         width: int,
-        default: T | None = None,
+        default: _Data,
         *,
-        cell_class: type[Any] | None = None,
-    ):
+        cell_class: type[_Cell],
+    ) -> None:
+        ...
+
+    def __init__(
+        self,
+        height: int,
+        width: int,
+        default: Any = None,
+        *,
+        cell_class: Any = None,
+    ) -> None:
         """Create a Grid of Cells.
 
         Args:
             height: How many rows.
             width: How many columns.
+            default: Default data to store.
             cell_class: Class of Grid's elements.
                 Must accept Grid in its constructor.
 
@@ -203,22 +233,22 @@ class Grid(Generic[T, C]):
         if width < 1 or height < 1:
             raise ValueError("Grid can't have zero/negative width or height")
         self._cell_class: type[Any] = cell_class or Cell
-        self.default = default
-        self.height = height
-        self.width = width
-        self._grid: list[list[C]] = [
-            [self._cell_class(y, x, self, copy(default)) for x in range(self.width)]
-            for y in range(self.height)
-        ]
+        self.default: _Data = default
+        self.height: int = height
+        self.width: int = width
+        self._grid: list[list[_Cell]] = [[
+            self._cell_class(y, x, self, copy(self.default))
+            for x in range(self.width)
+        ] for y in range(self.height)]
 
-    def __iter__(self) -> Generator[C]:
+    def __iter__(self) -> Generator[_Cell]:
         """Iterate over Cells within Grid."""
         for y in range(self.height):
             for x in range(self.width):
                 yield self[y, x]
 
     @property
-    def cell(self) -> C:
+    def cell(self) -> _Cell:
         """First Cell of Grid."""
         return self[0, 0]
 
@@ -235,16 +265,17 @@ class Grid(Generic[T, C]):
         """Check if coordinates are unreachable."""
         return x < 0 or y < 0 or x >= self.width or y >= self.height
 
-    def __getitem__(self, coords: tuple[int, int]) -> C:
+    def __getitem__(self, coords: tuple[int, int] | Vector[int]) -> _Cell:
+        """Get Cell at y,x absolute location within the Grid."""
         y, x = coords
         return self._grid[y][x]
 
-    def row(self, y: int) -> Generator[C]:
+    def row(self, y: int) -> Generator[_Cell]:
         """Yield a row within a Grid."""
         for index in range(self.width):
             yield self[y, index]
 
-    def column(self, x: int) -> Generator[C]:
+    def column(self, x: int) -> Generator[_Cell]:
         """Yield a column within a Grid."""
         for index in range(self.height):
             yield self[index, x]
