@@ -18,6 +18,9 @@ def test_grid() -> None:
     assert Grid(3, 3, False).cell.value == False
     assert Grid(1, 1, True).cell.value == True
     a = Grid(1, 3, True)
+    a[0, 0].value = True
+    c = a[0, 1]
+    assert c[0, 2] == c + Vector(0, 2)
     assert a.cell.value == True
     assert Grid(3, 3, 3).cell.value == 3
     grid2 = Grid(2, 2)
@@ -50,6 +53,7 @@ def test_cell_passthrough() -> None:
     val = T()
     grid2.cell.value = val
     assert grid2.cell.x == 0
+    assert grid2.cell.value.x == 9
     assert grid2.cell.y == 0
     assert grid2.cell.z == True
     assert grid2.cell.name == "Hello Test"

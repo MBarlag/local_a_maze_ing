@@ -78,7 +78,7 @@ class Vector(Generic[N]):
 
 
 _Data = TypeVar("_Data")
-_Cell = TypeVar("_Cell", bound="Cell[Any]")
+_Cell = TypeVar("_Cell", bound="Cell[_Data]")
 
 
 class Cell(Generic[_Data]):
@@ -101,7 +101,7 @@ class Cell(Generic[_Data]):
 
     @value.setter
     def value(self, value: _Data) -> None:
-        self._value = value
+        self._value: _Data = value
 
     def visit(self, dy: int, dx: int) -> Self | None:
         """Add up coordinates and return the cell at the location or None."""

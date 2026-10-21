@@ -101,11 +101,13 @@ class MazeGenerator(BaseModel):
 
         left_top_room = self._draft_maze[left_top]
         # setting rooms that are corresponding to the pattern to blocked = True
-
+        left_top_room[Move.LEFT *
+                      2][Move.RIGHT *
+                         2][Move.UP + Move.DOWN] == left_top_room[Move.NOWHERE]
         for cell in pattern:
             room = left_top_room + cell.as_vector
             if room:
-                room.blocked = cell._value
+                room.blocked = cell.value
 
     def valid_neighbour(self, neighbour: Room) -> bool:
         if (neighbour != None and neighbour.visited != True
@@ -120,7 +122,7 @@ class MazeGenerator(BaseModel):
         while queue:
             popped = queue.pop()
             popped.visited = True
-            neighbours = [popped.visit(*direction) for direction in list(Move)]
+            neighbours = [popped + direction for direction in list(Move)]
             neighbours = [x for x in neighbours if x != None]
             queue = list(neighbours)
 
