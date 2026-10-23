@@ -26,8 +26,11 @@ def test_big_maze() -> None:
     }
     printer = MazePrinter(**config)
     printer.display_maze()
+    path = printer._parse_path()
+    print(path)
 
 
 if __name__ == "__main__":
     test_small_maze()
     test_big_maze()
+    

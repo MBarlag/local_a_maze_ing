@@ -1,5 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from submodules.abstract import Vector
+from submodules.enums import Walls
 
+ENTRY_FLAG = 16
+EXIT_FLAG = 32
+PATH_FLAG = 64
 
 class MazePrinter(BaseModel):
     """Parses and displays hexadecimal file as readable maze in terminal.
@@ -16,7 +21,8 @@ class MazePrinter(BaseModel):
     height: int
     entry: str
     exit: str
-    output_file: str
+    output_file: str = Field(alias='input_file')
+    path_visible: bool = True
 
     # # TODO redefine print
     # def _print(self, value):
@@ -49,10 +55,12 @@ class MazePrinter(BaseModel):
                 line = line.strip()
                 if not line:
                     break
-                hex_maze.append([int(char, 16) for char in line])
+                hex_maze.append([int(char, ENTRY_FLAG) for char in line])
 
         self._mark_point(16, hex_maze)
         self._mark_point(32, hex_maze)
+        if self.path_visible:
+            self._mark_path(hex_maze)
         return hex_maze
 
     def _mark_point(self, point_type: int, hex_maze: list[list[int]]) -> None:
@@ -115,6 +123,32 @@ class MazePrinter(BaseModel):
         for _ in range(self.width):
             print("+---", end="")
         print("+")
+
+    def _parse_path(self) -> str:
+        """Reads the path line with moves from the hex_maze file.
+
+        Returns:
+            str: The moves of the path or an empty string.
+        """
+        with open(self.output_file, "r") as file_obj:
+            lines = [line.strip() for line in file_obj]
+        if "" not in lines:
+            return ""
+        pause = lines.index("")
+        if len(lines) <= pause + 3:
+            return ""
+        return lines[pause + 3]
+
+    def _show_path(self, hex_maze: list[list[int]]) -> None:
+        """Reads path starting at entry and flags room on the path"""
+        position = Vector(*self._parse_coords(self.entry))
+        path_str = self._parse_path()
+        for step in path_str:
+            if step not in ("N", "E", "S", "W"):
+                raise ValueError("Invalid path character in output file.")
+            position = position + Walls[step].direction
+            x, y = position
+            hex_maze[y][x] = hex_maze[y][x] + PATH_FLAG
 
     def display_maze(self) -> None:
         """Method to print the maze in the terminal.
