@@ -1,10 +1,12 @@
 from pydantic import BaseModel, Field
+
 from submodules.abstract import Vector
 from submodules.enums import Walls
 
 ENTRY_FLAG = 16
 EXIT_FLAG = 32
 PATH_FLAG = 64
+
 
 class MazePrinter(BaseModel):
     """Parses and displays hexadecimal file as readable maze in terminal.
@@ -21,7 +23,7 @@ class MazePrinter(BaseModel):
     height: int
     entry: str
     exit: str
-    input_file: str = Field(alias='output_file')
+    input_file: str = Field(alias="output_file")
     path_visible: bool = True
 
     # # TODO redefine print
@@ -116,7 +118,7 @@ class MazePrinter(BaseModel):
             elif cell & PATH_FLAG:
                 print("\033[38;5;118m\033[48;5;82m • \033[0m", end="")
             elif (cell & block) == block:
-                print(f"{self.pattern_color}███{#todefault}", end="")
+                print("███", end="")
             else:
                 print("   ", end="")
         print("|")
@@ -140,11 +142,11 @@ class MazePrinter(BaseModel):
 
     def _mark_path(self, hex_maze: list[list[int]]) -> None:
         """Reads path starting at entry and flags room on the path"""
-        position= Vector(*self._parse_coords(self.entry))
+        position = Vector(*self._parse_coords(self.entry))
         path_str = self._parse_path(hex_maze)
         for step in path_str:
-        #     if step not in ("N", "E", "S", "W"):
-        #         raise ValueError("Invalid path character in input file.")
+            #     if step not in ("N", "E", "S", "W"):
+            #         raise ValueError("Invalid path character in input file.")
             position = position + Walls[step].direction
             x, y = position
             hex_maze[y][x] = hex_maze[y][x] + PATH_FLAG
