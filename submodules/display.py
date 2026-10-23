@@ -14,14 +14,14 @@ class MazePrinter(BaseModel):
         height (int): Number of rows.
         entry (str): Coordinates of entry point.
         exit (str): Coordinates of exit point.
-        output_file (str): Path to the hexadecimal file.
+        input_file (str): Path to the hexadecimal file.
     """
 
     width: int
     height: int
     entry: str
     exit: str
-    output_file: str = Field(alias='input_file')
+    input_file: str = Field(alias='output_file')
     path_visible: bool = True
 
     # # TODO redefine print
@@ -50,15 +50,15 @@ class MazePrinter(BaseModel):
             list[list[int]]: Holds maze cells and entry/exit points.
         """
         hex_maze: list[list[int]] = []
-        with open(self.output_file, "r") as file_obj:
+        with open(self.input_file, "r") as file_obj:
             for line in file_obj:
                 line = line.strip()
                 if not line:
                     break
                 hex_maze.append([int(char, ENTRY_FLAG) for char in line])
 
-        self._mark_point(16, hex_maze)
-        self._mark_point(32, hex_maze)
+        self._mark_point(ENTRY_FLAG, hex_maze)
+        self._mark_point(EXIT_FLAG, hex_maze)
         if self.path_visible:
             self._mark_path(hex_maze)
         return hex_maze
@@ -94,6 +94,7 @@ class MazePrinter(BaseModel):
         block = 15
         entry = 16
         exit = 32
+        PATH_FLAG
         for cell in hex_row:
             print("+", end="")
             if cell & north:
@@ -112,8 +113,10 @@ class MazePrinter(BaseModel):
                 print(" A ", end="")
             elif cell & exit:
                 print(" B ", end="")
+            elif cell & PATH_FLAG:
+                print("\033[38;5;118m\033[48;5;82m • \033[0m", end="")
             elif (cell & block) == block:
-                print("███", end="")
+                print(f"{self.pattern_color}███{#todefault}", end="")
             else:
                 print("   ", end="")
         print("|")
@@ -124,28 +127,24 @@ class MazePrinter(BaseModel):
             print("+---", end="")
         print("+")
 
-    def _parse_path(self) -> str:
+    def _parse_path(self, hex_maze: list[list[int]]) -> str:
         """Reads the path line with moves from the hex_maze file.
 
         Returns:
             str: The moves of the path or an empty string.
         """
-        with open(self.output_file, "r") as file_obj:
+        with open(self.input_file, "r") as file_obj:
             lines = [line.strip() for line in file_obj]
-        if "" not in lines:
-            return ""
-        pause = lines.index("")
-        if len(lines) <= pause + 3:
-            return ""
-        return lines[pause + 3]
 
-    def _show_path(self, hex_maze: list[list[int]]) -> None:
+        return lines[-1]
+
+    def _mark_path(self, hex_maze: list[list[int]]) -> None:
         """Reads path starting at entry and flags room on the path"""
-        position = Vector(*self._parse_coords(self.entry))
-        path_str = self._parse_path()
+        position= Vector(*self._parse_coords(self.entry))
+        path_str = self._parse_path(hex_maze)
         for step in path_str:
-            if step not in ("N", "E", "S", "W"):
-                raise ValueError("Invalid path character in output file.")
+        #     if step not in ("N", "E", "S", "W"):
+        #         raise ValueError("Invalid path character in input file.")
             position = position + Walls[step].direction
             x, y = position
             hex_maze[y][x] = hex_maze[y][x] + PATH_FLAG

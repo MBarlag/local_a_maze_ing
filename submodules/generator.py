@@ -108,6 +108,11 @@ class MazeGenerator(BaseModel):
         pattern = Grid(
             7, 5, from_file="42.txt", map_char=lambda c: Walls(int(c, 16))
         )
+        
+        another_pattern = Grid(7, 5, from_file="42.txt", map_char=lambda c: c == 'f')
+
+        path = "EWNSNENWNNNEWN"
+        transformed_path = [x for x in map(lambda c: 1, path)]
 
         x = (self.width - pattern.width) // 2
         y = (self.height - pattern.height) // 2

@@ -77,6 +77,14 @@ class Walls(Flag):
             return Move.DOWN
         return Move.NOWHERE
 
+    @classmethod
+    def __getitem__(cls, repr: str) -> 'Walls':
+        allowed_values = {"W": Walls.W, "S":Walls.S, "E":Walls.E, "N":Walls.N}
+        if repr in allowed_values:
+            return allowed_values[repr]
+        else:
+            raise ValueError("Wrong representation.")
+
     def __iter__(self) -> Generator["Walls"]:
         """Yields all the base wall states within the combined wall state."""
         for wall in [Walls.W, Walls.S, Walls.E, Walls.N]:
