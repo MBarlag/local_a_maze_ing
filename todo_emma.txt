@@ -1,0 +1,24 @@
+To Do A-Maze-ing
+emkulpa & mabarlag
+
+[x] Make sure config -> pydantic pipeline works correctly in MazeGen
+	[ ] Make sure the coordinates specified in config / subject 
+	match the internal program config.
+	[x] Write tests to brute force bad configs
+[ ] d) Algorithm for generating maze by breaking walls.
+[ ] a) Specify exceptions and handle them in main.
+[ ] f) Creating a standalone module for the maze generator.
+[ ] c) Let user give input for the seed. (basically connect with menu.py)
+
+b) Toggle Path and Rotate Colors functions. -> Maud, on her workdays.
+e) Algorithm for finding shortest path. Maud -> This Friday and if needed Saturday.
+g) Writing docstrings for data.py. -> Maud, on her workdays.
+h) Writing a better test for display.
+i) Writing the license.
+g) Write README.md
+
+When program is finished and works:
+- Checking if all docstrings are there and add missing docstrings. -> Maud
+- Checking flake8 and easy mypy --strict fixes. -> Maud
+- Complicated mypy --strict fixes. -> Emy
+- Making sure program runs on the Linux machines at Codam -> Emy takes lead.

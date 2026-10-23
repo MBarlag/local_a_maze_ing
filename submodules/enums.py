@@ -13,17 +13,17 @@ class Move(Vector[int], Enum):
     """Enum for possible one step moves on 2D plane with Y axis looking down.
 
     Attributes:
-        LEFT: Corresponds to Vector(0, -1)
-        DOWN: Corresponds to Vector(1, 0)
-        RIGHT: Corresponds to Vector(0, 1)
-        UP: Corresponds to Vector(-1, 0)
+        LEFT: Corresponds to Vector(-1, 0)
+        DOWN: Corresponds to Vector(0, 1)
+        RIGHT: Corresponds to Vector(1, 0)
+        UP: Corresponds to Vector(0, -1)
         NOWHERE: Corresponds to Vector(0, 0)
     """
 
-    LEFT = 0, -1
-    DOWN = 1, 0
-    RIGHT = 0, 1
-    UP = -1, 0
+    LEFT = -1, 0
+    DOWN = 0, 1
+    RIGHT = 1, 0
+    UP = 0, -1
     NOWHERE = 0, 0
 
     # def __iter__(self) -> Iterator[int]:
@@ -34,7 +34,7 @@ class Move(Vector[int], Enum):
     #   return y == self.y and x == self.x
 
 
-class Wall(Flag):
+class Walls(Flag):
     """Enum representing combination of wall locations.
 
     Attributes:
@@ -54,49 +54,49 @@ class Wall(Flag):
     BLOCK = 0b1111
 
     @property
-    def opposite(self) -> "Wall":
+    def opposite(self) -> "Walls":
         """Opposite wall."""
-        opposites: dict[Wall, Wall] = {
-            Wall.W: Wall.E,
-            Wall.E: Wall.W,
-            Wall.N: Wall.S,
-            Wall.S: Wall.N,
+        opposites: dict[Walls, Walls] = {
+            Walls.W: Walls.E,
+            Walls.E: Walls.W,
+            Walls.N: Walls.S,
+            Walls.S: Walls.N,
         }
-        return opposites.get(self, Wall.EMPTY)
+        return opposites.get(self, Walls.EMPTY)
 
     @property
     def direction(self) -> Move:
         """Direction the Wall is located at."""
-        if self == Wall.W:
+        if self == Walls.W:
             return Move.LEFT
-        elif self == Wall.E:
+        elif self == Walls.E:
             return Move.RIGHT
-        elif self == Wall.N:
+        elif self == Walls.N:
             return Move.UP
-        elif self == Wall.S:
+        elif self == Walls.S:
             return Move.DOWN
         return Move.NOWHERE
 
-    def __iter__(self) -> Generator["Wall"]:
+    def __iter__(self) -> Generator["Walls"]:
         """Yields all the base wall states within the combined wall state."""
-        for wall in [Wall.W, Wall.S, Wall.E, Wall.N]:
+        for wall in [Walls.W, Walls.S, Walls.E, Walls.N]:
             if wall in self:
                 yield wall
             else:
-                yield Wall.EMPTY
+                yield Walls.EMPTY
 
-    def __add__(self, other: "Wall | int") -> "Wall":
+    def __add__(self, other: "Walls | int") -> "Walls":
         """Adds to current wall state another wall state."""
-        return self | Wall(other)
+        return self | Walls(other)
 
-    def __radd__(self, other: "Wall | int") -> "Wall":
+    def __radd__(self, other: "Walls | int") -> "Walls":
         """Same as __add__."""
-        return self | Wall(other)
+        return self | Walls(other)
 
-    def __sub__(self, other: "Wall | int") -> "Wall":
+    def __sub__(self, other: "Walls | int") -> "Walls":
         """Subtacts from current wall state another state."""
-        return self ^ Wall(other)
+        return self ^ Walls(other)
 
-    def __rsub__(self, other: "Wall | int") -> "Wall":
+    def __rsub__(self, other: "Walls | int") -> "Walls":
         """Same as __sub__."""
-        return Wall(other) ^ self
+        return Walls(other) ^ self

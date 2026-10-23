@@ -1,27 +1,40 @@
-"""[TODO:description]
+"""[TODO:description].
 
 [TODO:description]
 """
 
 from dataclasses import dataclass
 
+from typing_extensions import Self
+
 from submodules.abstract import Cell, Grid, Vector
-from submodules.enums import Wall
+from submodules.enums import Move, Walls
 
 
 @dataclass
 class RoomData:
     visited: bool = False
-    walls: Wall = Wall.BLOCK
+    walls: Walls = Walls.BLOCK
     blocked: bool = False
 
 
 class Room(Cell[RoomData]):
+    @property
+    def neighbours(self) -> list[Self]:
+        """List of neighbouring rooms."""
+        MAIN_DIRECTIONS = list(Move)[:4]
+        neighbours: list[Self] = []
+        for direction in MAIN_DIRECTIONS:
+            neighbour = self + direction
+            if neighbour is None:
+                continue
+            neighbours.append(neighbour)
+        return neighbours
 
     @property
-    def surrounded(self) -> Wall:
-        surrounded = Wall.BLOCK
-        for wall in Wall.BLOCK:
+    def hugging_walls(self) -> Walls:
+        surrounded = Walls.BLOCK
+        for wall in Walls.BLOCK:
             neighbour = self + wall.direction
             if neighbour is None:
                 continue
@@ -31,11 +44,17 @@ class Room(Cell[RoomData]):
 
     @property
     def valid(self) -> bool:
-        if self.walls == sum(self.surrounded):
+        if self.walls == self.hugging_walls:
             return True
         return False
 
-    def break_wall(self, to_break: Wall) -> None:
+    # @property
+    # def breakable_walls(self) -> Walls:
+    #     breakable = Walls.BLOCK
+    #     for wall in breakable:
+    #         pass
+
+    def break_wall(self, to_break: Walls) -> None:
         if to_break in self.walls:
             self.walls -= to_break
             neighbour = self + to_break.direction
@@ -47,17 +66,20 @@ class Room(Cell[RoomData]):
 
 
 class Maze(Grid[RoomData, Room]):
-
     def __init__(
         self,
-        height: int,
         width: int,
+        height: int,
         entry: Vector[int] | None = None,
         exit: Vector[int] | None = None,
     ):
-        super().__init__(height, width, RoomData(), cell_class=Room)
+        super().__init__(width, height, RoomData(), cell_class=Room)
         self._set_entry(entry or Vector(0, 0))
         self._set_exit(exit or Vector(0, 0))
+
+    @property
+    def valid(self) -> bool:
+        return super().valid and self.entry != self.exit
 
     @property
     def room(self) -> Room:
@@ -69,7 +91,10 @@ class Maze(Grid[RoomData, Room]):
 
     def _set_entry(self, coord: Vector[int]) -> None:
         if self.cant_reach(*coord):
-            raise ValueError("Coordinates are not reachable")
+            raise ValueError(
+                f"Coordinates are not reachable. \
+                {coord=}, {self.width=}, {self.height=}"
+            )
         self._entry = coord
 
     @property
@@ -78,5 +103,8 @@ class Maze(Grid[RoomData, Room]):
 
     def _set_exit(self, coord: Vector[int]) -> None:
         if self.cant_reach(*coord):
-            raise ValueError("Coordinates are not reachable")
+            raise ValueError(
+                f"Coordinates are not reachable. \
+                {coord=}, {self.width=}, {self.height=}"
+            )
         self._exit = coord

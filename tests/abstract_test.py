@@ -15,9 +15,9 @@ def test_vector() -> None:
 def test_grid() -> None:
     with pytest.raises(ValueError):
         Grid(-3, -2, 9)
-    assert Grid(3, 3, False).cell.value == False
+    assert Grid(4, 4, False).cell.value == False
     assert Grid(1, 1, True).cell.value == True
-    a = Grid(1, 3, True)
+    a = Grid(4, 4, True)
     a[0, 0].value = True
     c = a[0, 1]
     assert c[0, 2] == c + Vector(0, 2)
@@ -31,7 +31,7 @@ def test_grid() -> None:
     grid_int = Grid(2, 2, 3, cell_class=Cell[int])
     assert len(list(grid_int)) == 4
     assert grid_int[0, 0].y == 0
-    assert grid_int[1, 0].y == 1
+    assert grid_int[1, 0].y == 0
     assert grid_int.cant_reach(10, 0) == True
 
 
@@ -68,15 +68,15 @@ def test_cell() -> None:
     grid = Grid(3, 3)
     cell = grid[0, 0]
     assert grid[1, 1] == cell[Move.RIGHT][Move.DOWN]
-    assert cell + Move.RIGHT == cell[0, 1]
-    assert cell.visit(*Move.RIGHT) == grid[0, 1]
+    assert cell + Move.RIGHT == cell[1, 0]
+    assert cell.visit(*Move.RIGHT) == grid[1, 0]
     assert cell.visit(0, 1) == grid[0, 1]
     assert cell[Move.DOWN][Move.RIGHT] == grid[1, 1]
     assert grid[Move.RIGHT]
     assert cell + Move.RIGHT * 6 == None
-    assert cell + Move.RIGHT * 2 == cell[0, 2]
+    assert cell + Move.RIGHT * 2 == cell[2, 0]
     assert cell.valid == True
-    assert cell[Move.LEFT + Move.RIGHT + Move.DOWN] == cell[1, 0]
+    assert cell[Move.LEFT + Move.RIGHT + Move.DOWN] == cell[0, 1]
     assert cell[Move.LEFT + Move.RIGHT] == cell[Move.NOWHERE]
     assert cell + Move.LEFT == None
 

@@ -18,16 +18,18 @@ import inquirer
 def generate() -> None:
     print("generating")
     print("///// [This is a representation of a possible Maze] /////\n")
-    print("+------------------------------+\n"
-          "|                              |\n"
-          "|                              |\n"
-          "|                              |\n"
-          "|                              |\n"
-          "|                              |\n"
-          "|                              |\n"
-          "|                              |\n"
-          "|                              |\n"
-          "+------------------------------+\n")
+    print(
+        "+------------------------------+\n"
+        "|                              |\n"
+        "|                              |\n"
+        "|                              |\n"
+        "|                              |\n"
+        "|                              |\n"
+        "|                              |\n"
+        "|                              |\n"
+        "|                              |\n"
+        "+------------------------------+\n"
+    )
 
 
 def toggle_path() -> None:
@@ -89,8 +91,9 @@ def choose_action() -> Action:
         )
     ]
 
-    choice: dict[str, Any] = inquirer.prompt(to_choose_action,
-                                             raise_keyboard_interrupt=True)
+    choice: dict[str, Any] = inquirer.prompt(
+        to_choose_action, raise_keyboard_interrupt=True
+    )
     answer = choice.get("action", Action.QUIT)
     if isinstance(answer, Action):
         return answer
@@ -101,8 +104,9 @@ def prompt_loop() -> None:
     """Runs a prompt loop to get next action from the user."""
     print("Welcome to Emma's amazing maze!")
     user = inquirer.text(message="First, please enter your name")
-    input(f"Nice to meet you, {user}! "
-          "Press enter to generate your first maze.\n")
+    input(
+        f"Nice to meet you, {user}! Press enter to generate your first maze.\n"
+    )
     choice = Action.GENERATE
     while choice:
         execute(choice)

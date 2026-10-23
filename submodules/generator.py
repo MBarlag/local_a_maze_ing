@@ -1,10 +1,12 @@
 from random import randint
+from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
 
 from submodules.abstract import Grid, Vector
-from submodules.data import Maze, Room, RoomData
+from submodules.data import Maze, Room
 from submodules.enums import Move
+from submodules.safe_types import Bool, FileName, IntVector, PositiveInt
 
 PATTERN_STRING = """
 1000111
@@ -28,25 +30,34 @@ class MazeGenerator(BaseModel):
         seed (int): Number that defines everything about the maze.
     """
 
-    width: int
-    height: int
-    entry: Vector[int]
-    exit: Vector[int]
-    perfect: bool
-    output_file: str
-    seed: int
+    width: PositiveInt
+    height: PositiveInt
+    entry: IntVector
+    exit: IntVector
+    perfect: Bool
+    output_file: FileName
+    seed: PositiveInt
+    _last_maze: Maze | None = PrivateAttr(None)
+    _draft_maze: Maze = PrivateAttr()
 
-    # last_maze: Maze[RoomData] - gonna store last generated maze,
-    # its up to user
-    # to call generate again if they have made any changes to the MazeGenerator # instance, and they can always access the result of last generation via
-    # this property
+    @property
+    def last_maze(self) -> Maze | None:
+        """Last generated maze.
 
-    # _draft_maze: Maze[RoomData] - maze that is in the making, doesnt need to be valid and should not be used by the user, is for internal working of the class
+        Returns:
+            Maze or None if no maze has been generated.
+        """
+        return self._last_maze
 
-    # TODO create constructor that doesnt interfere with the BaseModel underlying logic (lookup how to do it)
-    # TODO set self._last_maze to be None here
+    @last_maze.setter
+    def last_maze(self, value: Maze) -> None:
+        self._last_maze = value
+
+    def model_post_init(self, context: Any) -> None:
+        self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
 
     def _refresh_seed(self) -> None:
+        """Regenerate the seed."""
         MIN_INT = -(2**31)
         MAX_INT = 2**31 - 1
         self.seed = randint(MIN_INT, MAX_INT)
@@ -55,19 +66,22 @@ class MazeGenerator(BaseModel):
         """Generates maze.
 
         Args:
-            new_seed (bool, optional): Randomly pick new seed before generating maze. Defaults to False.
+            new_seed (bool, optional): Randomly pick new seed
+                  before generating maze. Defaults to False.
 
         Returns:
-            Maze[RoomData]: Maze data structure.
+            Maze: Maze data structure.
         """
-        if new_seed == True:
+        if new_seed is True:
             self._refresh_seed()
-        self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
+        self._draft_maze: Maze = Maze(
+            self.width, self.height, self.entry, self.exit
+        )
         self._add_pattern()
         self._build_maze()
-        if self._draft_maze.valid == False:
+        if self._draft_maze.valid is False:
             raise Exception("Error during generation of Maze")
-        self._last_maze = self._draft_maze
+        self._last_maze: Maze = self._draft_maze
         return self.last_maze
 
     def _build_maze(self) -> None:
@@ -84,7 +98,9 @@ class MazeGenerator(BaseModel):
     def _add_pattern(self) -> None:
         """Set the rooms that are part of the pattern to blocked true.
 
-        To be able to avoid destructing walls of the pattern when generating maze. Should be called only after the self._draft_maze has been initialized.
+        To be able to avoid destructing walls
+        of the pattern when generating maze.
+        Should be called only after the self._draft_maze has been called.
         """
         # width for 42 pattern: 7 cells
         # height for 42 pattern: 5 cells
@@ -101,17 +117,20 @@ class MazeGenerator(BaseModel):
 
         left_top_room = self._draft_maze[left_top]
         # setting rooms that are corresponding to the pattern to blocked = True
-        left_top_room[Move.LEFT *
-                      2][Move.RIGHT *
-                         2][Move.UP + Move.DOWN] == left_top_room[Move.NOWHERE]
+        left_top_room[Move.LEFT * 2][Move.RIGHT * 2][
+            Move.UP + Move.DOWN
+        ] == left_top_room[Move.NOWHERE]
         for cell in pattern:
             room = left_top_room + cell.as_vector
             if room:
                 room.blocked = cell.value
 
     def valid_neighbour(self, neighbour: Room) -> bool:
-        if (neighbour != None and neighbour.visited != True
-                and neighbour.blocked != True):
+        if (
+            neighbour is not None
+            and neighbour.visited is not True
+            and neighbour.blocked is not True
+        ):
             return False
         return True
 
@@ -123,13 +142,8 @@ class MazeGenerator(BaseModel):
             popped = queue.pop()
             popped.visited = True
             neighbours = [popped + direction for direction in list(Move)]
-            neighbours = [x for x in neighbours if x != None]
+            neighbours = [x for x in neighbours if x is not None]
             queue = list(neighbours)
-
-    @property
-    def last_maze(self) -> Maze[RoomData] | None:
-        """Property that stores the Maze from last generate() call."""
-        return self._last_maze
 
     def shortest_path(self) -> list[Move]:
         """Finds a path through the given maze.
@@ -138,7 +152,8 @@ class MazeGenerator(BaseModel):
             maze: The maze in which to find the path.
 
         Returns:
-            list[Move]: List of moves that can be performed to reach the exit from the entry.
+            list[Move]: List of moves that can be performed
+            to reach the exit from the entry.
         """
 
     def hex_output(self) -> list[list[int]]:

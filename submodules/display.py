@@ -18,9 +18,9 @@ class MazePrinter(BaseModel):
     exit: str
     output_file: str
 
-    # TODO redefine print
-    def _print(self, value):
-        print(value, file=self.file)
+    # # TODO redefine print
+    # def _print(self, value):
+    #     print(value, file=self.file)
 
     @staticmethod
     def _parse_coords(coord: str) -> tuple[int, int]:

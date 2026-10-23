@@ -13,12 +13,12 @@ from submodules import menu
 from submodules.config import Config
 from submodules.display import MazePrinter
 
-if __name__ == '__main__':
-
+if __name__ == "__main__":
     # if len(sys.argv) not 2:
-        # raise Exception
+    # raise Exception
 
-    config = Config("config.txt").parse_config() # Don't forget to use sys.argv[1] here instead of config.txt!
+    # Don't forget to use sys.argv[1] here instead of config.txt!
+    config = Config("config.txt").parse_config()
     # config looks like: {'height': '4', ...}
 
     # maze_gen = MazeGen(**config)

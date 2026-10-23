@@ -2,22 +2,20 @@ from os import remove
 
 import pytest
 
-from submodules.config import Config
+from submodules.config import Config, ConfigException
 
-VALID=[
-    ("", {}), 
-    ("\n", {}), 
-    ("\n\n", {}), 
-    ("OUTPUT=file#2.txt",
-        {"output": "file"}), 
-    ("#comment\nOUT=3.txt #comment 2", 
-        {"out": "3.txt"}),
-    ("######comment\nOUT=3com#m=ent=#### 2#\n#\n\n#", 
-            {"out": "3com"})
+VALID = [
+    ("", {}),
+    ("\n", {}),
+    ("\n\n", {}),
+    ("OUTPUT=file#2.txt", {"output": "file"}),
+    ("#comment\nOUT=3.txt #comment 2", {"out": "3.txt"}),
+    ("######comment\nOUT=3com#m=ent=#### 2#\n#\n\n#", {"out": "3com"}),
 ]
 
-INVALID=["OUTPUT#=file2.txt", "A=3, B=4", "C==3", "D=my=file.txt"]
-FILENAME="test_config.txt"
+INVALID = ["OUTPUT#=file2.txt", "A=3, B=4", "C==3", "D=my=file.txt"]
+FILENAME = "test_config.txt"
+
 
 @pytest.fixture(autouse=True)
 def file_handling():
@@ -28,15 +26,17 @@ def file_handling():
     # code after test
     remove(FILENAME)
 
+
 @pytest.mark.parametrize("input,expected", VALID)
 def test_valid(input: str, expected: dict[str, str]):
     with open(FILENAME, "w", encoding="utf-8") as f:
         f.write(input)
     assert Config(FILENAME).parse_config() == expected
 
+
 @pytest.mark.parametrize("input", INVALID)
 def test_invalid(input: str):
     with open(FILENAME, "w", encoding="utf-8") as f:
         f.write(input)
-    with pytest.raises(Exception):
+    with pytest.raises(ConfigException):
         Config(FILENAME).parse_config()
