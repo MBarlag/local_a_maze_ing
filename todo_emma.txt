@@ -10,12 +10,13 @@ emkulpa & mabarlag
 [ ] f) Creating a standalone module for the maze generator.
 [ ] c) Let user give input for the seed. (basically connect with menu.py)
 
-b) Toggle Path and Rotate Colors functions. -> Maud, on her workdays.
-e) Algorithm for finding shortest path. Maud -> This Friday and if needed Saturday.
-g) Writing docstrings for data.py. -> Maud, on her workdays.
-h) Writing a better test for display.
-i) Writing the license.
-g) Write README.md
+[x] b) Toggle Path
+[ ] j) Rotate Colors functions. -> Maud, on her workdays.
+[ ] e) Algorithm for finding shortest path. Maud -> This Friday and if needed Saturday.
+[x] g) Writing docstrings for data.py. -> Maud, on her workdays.
+[ ] h) Writing a better test for display.
+[ ] i) Writing the license.
+[ ] g) Write README.md
 
 When program is finished and works:
 - Checking if all docstrings are there and add missing docstrings. -> Maud

@@ -1,20 +1,12 @@
-from random import randint
+from random import randint, shuffle, random
 from typing import Any
 
 from pydantic import BaseModel, PrivateAttr
 
 from submodules.abstract import Grid
 from submodules.data import Maze, Room
-from submodules.enums import Walls
+from submodules.enums import Walls, Move
 from submodules.safe_types import Bool, FileName, IntVector, PositiveInt
-
-PATTERN_STRING = """
-f000fff
-f00000f
-fff0fff
-00f0f00
-00f0fff
-"""
 
 
 class MazeGenerator(BaseModel):
@@ -39,6 +31,7 @@ class MazeGenerator(BaseModel):
     seed: PositiveInt
     _last_maze: Maze | None = PrivateAttr(None)
     _draft_maze: Maze = PrivateAttr()
+    _path: list[Move] | None = PrivateAttr(None)
 
     @property
     def last_maze(self) -> Maze | None:
@@ -94,6 +87,7 @@ class MazeGenerator(BaseModel):
         # our options, to choose from -> aka list that we iterate over
 
         # feel like drawing, goingto excalidraw
+        self.dfs()
 
     def _add_pattern(self) -> None:
         """Set the rooms that are part of the pattern to blocked true.
@@ -119,18 +113,44 @@ class MazeGenerator(BaseModel):
             if room:
                 room.blocked = cell.value == Walls.BLOCK
 
-    def legal_moves(self, neightbour: Room) -> bool:
-        return not (neightbour.blocked is True or neightbour.visited is True)
+    def legal_neighbour(self, neighbour: Room) -> bool:
+        return not neighbour.blocked and not neighbour.visited
 
-    def bfs(self) -> None:
+    def dfs(self) -> None:
         maze = self._draft_maze
-        entry = maze[self.entry]
-        queue: list[Room] = [entry]
+        exit = maze[self.exit]
+    
+        # where we came from   # where we ended up
+    
+        # [(OriginalRoom, Room2), OriginalRoom, Room3, Room4]
+        queue: list[tuple[Room, Room]] = [(exit, exit)]
         while queue:
-            popped = queue.pop()
-            popped.visited = True
-            filtered = filter(self.legal_moves, popped.neighbours)
-            queue.extend(filtered)
+            root, room = queue.pop()
+            if root != room:
+                direction = room.connect_with(root)
+                room.to_exit = direction
+                # room.connections.append(root)
+            room.visited = True
+            neighbours = list(room.neighbours)
+            shuffle(neighbours)
+            legal = filter(self.legal_neighbour, neighbours)
+            queue.extend([(room, neighbour) for neighbour in legal])
+            print(queue)
+            # print(maze)
+        path = []
+        cell = maze[self.entry]
+        while cell.as_vector != self.exit:
+            cell += cell.to_exit
+            path.append(cell.to_exit)
+        self._path = path
+        self.last_maze = maze
+        
+    def output(self) -> None:
+        with open(self.output_file, "w", encoding = "utf-8") as f:
+            for y in range(self.last_maze.height):
+                line = "".join(f"{hex(x.value.walls.value)}"[2:] for x in self.last_maze.row(y)) + "\n"
+                f.write(line)
+                print(line)
 
     # def shortest_path(self) -> list[Move]:
     #     """Finds a path through the given maze.

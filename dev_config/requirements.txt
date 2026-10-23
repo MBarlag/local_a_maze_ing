@@ -5,4 +5,4 @@ pylint
 flake8
 mypy
 ruff
-typing_extentions
+typing-extensions

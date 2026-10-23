@@ -38,3 +38,13 @@ def test_invalid_config_pipeline(config) -> None:
     with pytest.raises((ValueError, TypeError)):
         print(config)
         MazeGenerator(**config)
+
+
+def test_output_file() -> None:
+    config = Config("tests/good_config.txt").parse_config()
+    maze_gen = MazeGenerator(**config)
+    maze_gen.generate()
+    maze_gen.output()
+
+if __name__ == '__main__':
+    test_output_file()
