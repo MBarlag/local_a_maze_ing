@@ -3,7 +3,17 @@ from dataclasses import dataclass
 import pytest
 
 from submodules.abstract import Cell, Grid, Vector
-from submodules.enums import Move
+from submodules.enums import Move, Walls
+
+
+def test_from_file() -> None:
+    grid = Grid(7, 5, from_file="42.txt", map_char=lambda c: Walls(int(c, 16)))
+    print(grid)
+    assert grid[0, 0].value == Walls.BLOCK
+    assert grid[2, 2].value == Walls.BLOCK
+    assert grid[5, 2].value == Walls.BLOCK
+    assert grid[4, 1].value == Walls.EMPTY
+    assert grid[5, 3].value == Walls.EMPTY
 
 
 def test_vector() -> None:
@@ -14,21 +24,21 @@ def test_vector() -> None:
 
 def test_grid() -> None:
     with pytest.raises(ValueError):
-        Grid(-3, -2, 9)
-    assert Grid(4, 4, False).cell.value == False
-    assert Grid(1, 1, True).cell.value == True
-    a = Grid(4, 4, True)
+        Grid(-3, -2, default=9)
+    assert Grid(4, 4, default=False).cell.value == False
+    assert Grid(1, 1, default=True).cell.value == True
+    a = Grid(4, 4, default=True)
     a[0, 0].value = True
     c = a[0, 1]
     assert c[0, 2] == c + Vector(0, 2)
     assert a.cell.value == True
-    assert Grid(3, 3, 3).cell.value == 3
+    assert Grid(3, 3, default=3).cell.value == 3
     grid2 = Grid(2, 2)
     for cell in grid2.row(0):
         assert cell.y == 0
     for cell in grid2.column(1):
         assert cell.x == 1
-    grid_int = Grid(2, 2, 3, cell_class=Cell[int])
+    grid_int = Grid(2, 2, default=3, cell_class=Cell[int])
     assert len(list(grid_int)) == 4
     assert grid_int[0, 0].y == 0
     assert grid_int[1, 0].y == 0
@@ -64,7 +74,7 @@ def test_cell_passthrough() -> None:
 
 def test_cell() -> None:
     with pytest.raises(ValueError):
-        Cell(-2, -3, Grid(3, 3), None)
+        Cell(-2, -3, Grid(3, 3), value=None)
     grid = Grid(3, 3)
     cell = grid[0, 0]
     assert grid[1, 1] == cell[Move.RIGHT][Move.DOWN]

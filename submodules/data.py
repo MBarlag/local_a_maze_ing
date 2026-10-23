@@ -73,7 +73,7 @@ class Maze(Grid[RoomData, Room]):
         entry: Vector[int] | None = None,
         exit: Vector[int] | None = None,
     ):
-        super().__init__(width, height, RoomData(), cell_class=Room)
+        super().__init__(width, height, default=RoomData(), cell_class=Room)
         self._set_entry(entry or Vector(0, 0))
         self._set_exit(exit or Vector(0, 0))
 

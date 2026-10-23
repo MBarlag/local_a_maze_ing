@@ -3,7 +3,7 @@
 [TODO:description]
 """
 
-from collections.abc import Generator, Iterable, Iterator
+from collections.abc import Callable, Generator, Iterable, Iterator
 from copy import copy
 from dataclasses import dataclass
 from typing import Any, Generic, TypeVar, overload
@@ -203,7 +203,18 @@ class Grid(Generic[_Data, _Cell]):
         self: "Grid[_Data, Cell[_Data]]",
         width: int,
         height: int,
+        *,
         default: _Data,
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self: "Grid[_Data, Cell[_Data]]",
+        width: int,
+        height: int,
+        *,
+        from_file: str,
+        map_char: Callable[[str], _Data],
     ) -> None: ...
 
     @overload
@@ -211,18 +222,32 @@ class Grid(Generic[_Data, _Cell]):
         self,
         width: int,
         height: int,
-        default: _Data,
         *,
+        default: _Data,
         cell_class: type[_Cell],
+    ) -> None: ...
+
+    @overload
+    def __init__(
+        self,
+        width: int,
+        height: int,
+        *,
+        default: _Data,
+        cell_class: type[_Cell],
+        from_file: str,
+        map_char: Callable[[str], _Data],
     ) -> None: ...
 
     def __init__(
         self,
         width: int,
         height: int,
-        default: Any = None,
         *,
+        default: Any = None,
         cell_class: Any = None,
+        from_file: str | None = None,
+        map_char: Callable[[str], _Data] | None = None,
     ) -> None:
         """Create a Grid of _Cells containing _Data.
 
@@ -231,6 +256,8 @@ class Grid(Generic[_Data, _Cell]):
             height: How many rows.
             default: Default data to store.
             cell_class: Class of Grid's elements. Is bound to Cell[_Data].
+            from_file: Filename to init the Grid from.
+            key: Function that maps each character of file to _Data.
 
         Raises:
             ValueError: If dimensions are invalid.
@@ -241,6 +268,7 @@ class Grid(Generic[_Data, _Cell]):
         self.default: _Data = default
         self.width: int = width
         self.height: int = height
+
         self._grid: list[list[_Cell]] = [
             [
                 self._cell_class(x, y, self, copy(self.default))
@@ -248,12 +276,51 @@ class Grid(Generic[_Data, _Cell]):
             ]
             for x in range(self.width)
         ]
+        self._map_char = map_char
+        self._from_file = from_file
+        if from_file and map_char:
+            self.load(from_file, map_char)
+
+    def load(
+        self,
+        filename: str | None = None,
+        map_char: Callable[[str], _Data] | None = None,
+    ) -> None:
+        """Loads grid from file, maps each character to element using map_char.
+
+        Args:
+            filename: Name of the file to load from.
+            map_char: Function that takes one str parameter and returns _Data.
+
+        Raises:
+            ValueError: If no filename or map_char could be found.
+        """
+        from_file = filename or self._from_file
+        map_character = map_char or self._map_char
+        if not from_file or not map_character:
+            raise ValueError("No filename or map_char could be found.")
+        with open(from_file, "r", encoding="utf-8") as f:
+            for y, line in enumerate(f.readlines()):
+                for x, character in enumerate(line):
+                    if line[-1] == "\n" and x == len(line) - 1:
+                        continue
+                    self[x, y].value = map_character(character)
 
     def __iter__(self) -> Generator[_Cell]:
         """Iterate over Cells within Grid."""
         for x in range(self.width):
             for y in range(self.height):
                 yield self[x, y]
+
+    def __str__(self) -> str:
+        """Returns str(self)."""
+        header = footer = "-" * self.width * len(str(self.default)) + "\n"
+        result = str(header)
+        for y in range(self.height):
+            line = "".join(f"| {cell.value}" for cell in self.row(y)) + " |\n"
+            result += line
+        result += footer
+        return result
 
     @property
     def cell(self) -> _Cell:

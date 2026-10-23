@@ -3,17 +3,17 @@ from typing import Any
 
 from pydantic import BaseModel, PrivateAttr
 
-from submodules.abstract import Grid, Vector
+from submodules.abstract import Grid
 from submodules.data import Maze, Room
-from submodules.enums import Move
+from submodules.enums import Walls
 from submodules.safe_types import Bool, FileName, IntVector, PositiveInt
 
 PATTERN_STRING = """
-1000111
-1000001
-1110111
-0010100
-0010111
+f000fff
+f00000f
+fff0fff
+00f0f00
+00f0fff
 """
 
 
@@ -62,7 +62,7 @@ class MazeGenerator(BaseModel):
         MAX_INT = 2**31 - 1
         self.seed = randint(MIN_INT, MAX_INT)
 
-    def generate(self, new_seed: bool = False) -> Maze:
+    def generate(self, new_seed: bool = False) -> Maze | None:
         """Generates maze.
 
         Args:
@@ -81,7 +81,7 @@ class MazeGenerator(BaseModel):
         self._build_maze()
         if self._draft_maze.valid is False:
             raise Exception("Error during generation of Maze")
-        self._last_maze: Maze = self._draft_maze
+        self.last_maze: Maze = self._draft_maze
         return self.last_maze
 
     def _build_maze(self) -> None:
@@ -102,63 +102,50 @@ class MazeGenerator(BaseModel):
         of the pattern when generating maze.
         Should be called only after the self._draft_maze has been called.
         """
+        maze = self._draft_maze
         # width for 42 pattern: 7 cells
         # height for 42 pattern: 5 cells
-        pattern = Grid(7, 5, False)
+        pattern = Grid(
+            7, 5, from_file="42.txt", map_char=lambda c: Walls(int(c, 16))
+        )
 
-        for y, line in enumerate(PATTERN_STRING.split("\n")):
-            for x, character in enumerate(line):
-                # 1 represents True, 0 represents False in the PATTERN_STRING
-                pattern[y, x].value = character == "1"
+        x = (self.width - pattern.width) // 2
+        y = (self.height - pattern.height) // 2
 
-        left_top = Vector(0, 0)
-        left_top.y = (self.height - pattern.height) // 2
-        left_top.x = (self.width - pattern.width) // 2
-
-        left_top_room = self._draft_maze[left_top]
+        left_top_room = maze[x, y]
         # setting rooms that are corresponding to the pattern to blocked = True
-        left_top_room[Move.LEFT * 2][Move.RIGHT * 2][
-            Move.UP + Move.DOWN
-        ] == left_top_room[Move.NOWHERE]
         for cell in pattern:
             room = left_top_room + cell.as_vector
             if room:
-                room.blocked = cell.value
+                room.blocked = cell.value == Walls.BLOCK
 
-    def valid_neighbour(self, neighbour: Room) -> bool:
-        if (
-            neighbour is not None
-            and neighbour.visited is not True
-            and neighbour.blocked is not True
-        ):
-            return False
-        return True
+    def legal_moves(self, neightbour: Room) -> bool:
+        return not (neightbour.blocked is True or neightbour.visited is True)
 
     def bfs(self) -> None:
-        queue: list[Room] = []
-        entry = self._draft_maze[self.entry]
-        queue.append(entry)
+        maze = self._draft_maze
+        entry = maze[self.entry]
+        queue: list[Room] = [entry]
         while queue:
             popped = queue.pop()
             popped.visited = True
-            neighbours = [popped + direction for direction in list(Move)]
-            neighbours = [x for x in neighbours if x is not None]
-            queue = list(neighbours)
+            filtered = filter(self.legal_moves, popped.neighbours)
+            queue.extend(filtered)
 
-    def shortest_path(self) -> list[Move]:
-        """Finds a path through the given maze.
-
-        Args:
-            maze: The maze in which to find the path.
-
-        Returns:
-            list[Move]: List of moves that can be performed
-            to reach the exit from the entry.
-        """
-
-    def hex_output(self) -> list[list[int]]:
-        """Create a file that stores the maze in hexadecimal.
-
-        Returns:
-            list[list[int]]: Holds maze, entry/exit and path.
-        """
+    # def shortest_path(self) -> list[Move]:
+    #     """Finds a path through the given maze.
+    #
+    #     Args:
+    #         maze: The maze in which to find the path.
+    #
+    #     Returns:
+    #         list[Move]: List of moves that can be performed
+    #         to reach the exit from the entry.
+    #     """
+    #
+    # def hex_output(self) -> list[list[int]]:
+    #     """Create a file that stores the maze in hexadecimal.
+    #
+    #     Returns:
+    #         list[list[int]]: Holds maze, entry/exit and path.
+    #     """
