@@ -1,6 +1,6 @@
 # Run from project root as a module: python3 -m tests.display_test
 from submodules.display import MazePrinter
-
+from submodules.config import Config
 
 def test_small_maze() -> None:
     config: dict[str, str] = {
@@ -27,6 +27,10 @@ def test_big_maze() -> None:
     printer = MazePrinter(**config)
     printer.display_maze()
 
+def test_gen_maze() -> None:
+    config = Config("tests/good_config.txt").parse_config()
+    printer = MazePrinter(**config)
+    printer.display_maze()
 
 if __name__ == "__main__":
     test_small_maze()

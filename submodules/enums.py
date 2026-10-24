@@ -77,6 +77,10 @@ class Walls(Flag):
             return Move.DOWN
         return Move.NOWHERE
 
+    def __str__(self) -> str:
+        """Returns name of the configuration."""
+
+        return self.name
     def __iter__(self) -> Generator["Walls"]:
         """Yields all the base wall states within the combined wall state."""
         for wall in [Walls.W, Walls.S, Walls.E, Walls.N]:
