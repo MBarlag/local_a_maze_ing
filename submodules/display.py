@@ -94,8 +94,8 @@ class MazePrinter(BaseModel):
         north = 1
         west = 8
         block = 15
-        entry = 16
-        exit = 32
+        ENTRY_FLAG
+        EXIT_FLAG
         PATH_FLAG
         for cell in hex_row:
             print("+", end="")
@@ -111,9 +111,9 @@ class MazePrinter(BaseModel):
             else:
                 print(" ", end="")
 
-            if cell & entry:
+            if cell & ENTRY_FLAG:
                 print(" A ", end="")
-            elif cell & exit:
+            elif cell & EXIT_FLAG:
                 print(" B ", end="")
             elif cell & PATH_FLAG:
                 print("\033[38;5;118m\033[48;5;82m • \033[0m", end="")
