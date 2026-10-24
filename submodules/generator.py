@@ -120,6 +120,77 @@ class MazeGenerator(BaseModel):
 
     def legal_neighbour(self, neighbour: Room) -> bool:
         return neighbour.blocked == False and neighbour.visited == False
+    
+    
+    
+    # def bfs(self) -> list[Move]:
+    #     maze = self._draft_maze
+    #     start = maze[self.exit]
+
+    #     # BFS first explores neighbours, before moving a level deeper.
+    #     # Maintain a queue of nodes we have to visit next.
+
+    #     queue: list[Room] = [start]
+    #     counter = 0
+    #     while counter < len(queue):
+    #         current = queue[counter]
+    #         counter += 1
+    #         connections: list[Move] = []
+
+    #         if not (current.Walls & Walls.N):
+    #             connections.append(Move.UP)
+    #         if not (current.Walls & Walls.E):
+    #             connections.append(Move.RIGHT)
+    #         if not (current.Walls & Walls.W):
+    #             connections.append(Move.LEFT)
+    #         if not (current.Walls & Walls.S):
+    #             connections.append(Move.DOWN)
+
+    #         for move in connections:
+
+    #             # Convert room to neighbours and 
+
+    def bfs(self) -> List[tuple[Room, Room]]:
+        maze = self._draft_maze
+        for room in maze:
+            room.visited = False
+            room.to_exit = Move.NOWHERE
+        # where we came from   # where we ended up
+
+        # [(OriginalRoom, Room2), OriginalRoom, Room3, Room4]
+        queue: list[tuple[Room, Room]] = [(exit, exit)]
+        while queue:
+            root, room = queue.pop(0)
+            if room.visited == True:
+                continue
+            if root.as_vector != room.as_vector:
+                direction = Move(root.as_vector - room.as_vector)
+                room.to_exit = direction
+            room.visited = True
+            if room.as_vector == self.exit:
+                break
+
+            neighbours = []
+            for wall in room.value.walls:
+                if wall == Walls.EMPTY:
+                    neighbour = room + wall.direction
+                    if neighbour:
+                        neighbours.append(neighbour)
+            shuffle(neighbours)
+            legal = filter(self.legal_neighbour, neighbours)
+            queue.extend([(room, neighbour) for neighbour in legal])
+            # print(queue)
+            # print(maze)
+        path: list[Walls] = []
+        cell = maze[self.entry]
+        while cell and cell.as_vector != self.exit:
+            if cell:
+                path.append(cell.choose_wall(cell.to_exit))                        
+            cell += cell.to_exit
+        self._path = path
+        self.last_maze = maze
+
+    
 
     def dfs(self) -> None:
         maze = self._draft_maze
