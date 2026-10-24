@@ -6,6 +6,8 @@ After excecuting, main will lead the user back to the menu until they
 choose to quit the program.
 """
 
+from submodules.display import MazePrinter
+from submodules.config import Config
 import sys
 from enum import Enum
 from typing import Any
@@ -16,6 +18,9 @@ import inquirer
 
 
 def generate() -> None:
+    # configurator = Config("config.txt")
+    # config = configurator.parse_config()
+
     print("generating")
     print("///// [This is a representation of a possible Maze] /////\n")
     print(
@@ -32,7 +37,10 @@ def generate() -> None:
     )
 
 
-def toggle_path() -> None:
+def toggle_path(printer: MazePrinter) -> None:
+    """Activates or deactivates path visibility and redraws maze."""
+    printer.path_visible = not printer.path_visible
+    printer.display_maze()
     print("toggle path")
 
 
