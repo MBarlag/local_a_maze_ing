@@ -3,9 +3,14 @@ from pydantic import BaseModel, Field
 from submodules.abstract import Vector
 from submodules.enums import Walls
 
-ENTRY_FLAG = 16
-EXIT_FLAG = 32
-PATH_FLAG = 64
+ENTRY_FLAG = 1 << 4
+EXIT_FLAG = 1 << 5
+PATH_OFFSET = 6
+PATH_N = 1 << PATH_OFFSET
+PATH_E = PATH_N << 1
+PATH_S = PATH_N << 2
+PATH_W = PATH_N << 3
+PATH = PATH_W + PATH_S + PATH_E + PATH_N
 
 
 class MazePrinter(BaseModel):
@@ -94,14 +99,11 @@ class MazePrinter(BaseModel):
         north = 1
         west = 8
         block = 15
-        ENTRY_FLAG
-        EXIT_FLAG
-        PATH_FLAG
         for cell in hex_row:
             print("+", end="")
             if cell & north:
                 print("---", end="")
-            elif cell & PATH_FLAG:
+            elif cell & PATH:
                 print("\033[38;5;118m\033[48;5;82m   \033[0m", end="")
             else:
                 print("   ", end="")
@@ -110,7 +112,7 @@ class MazePrinter(BaseModel):
         for cell in hex_row:
             if cell & west:
                 print("|", end="")
-            elif cell & PATH_FLAG:
+            elif cell & PATH:
                 print("\033[38;5;118m\033[48;5;82m \033[0m", end="")
             else:
                 print(" ", end="")
@@ -119,8 +121,15 @@ class MazePrinter(BaseModel):
                 print(" A ", end="")
             elif cell & EXIT_FLAG:
                 print(" B ", end="")
-            elif cell & PATH_FLAG:
-                print("\033[38;5;118m\033[48;5;82m • \033[0m", end="")
+            elif cell & PATH:
+                if cell & PATH_W:
+                   print("\033[38;5;118m\033[48;5;82m < \033[0m", end="")
+                elif cell & PATH_S:
+                    print("\033[38;5;118m\033[48;5;82m v \033[0m", end="")
+                elif cell & PATH_E:
+                    print("\033[38;5;118m\033[48;5;82m > \033[0m", end="")
+                elif cell & PATH_N:
+                    print("\033[38;5;118m\033[48;5;82m ^ \033[0m", end="")
             elif (cell & block) == block:
                 print("███", end="")
             else:
@@ -145,15 +154,19 @@ class MazePrinter(BaseModel):
         return lines[-1]
 
     def _mark_path(self, hex_maze: list[list[int]]) -> None:
-        """Reads path starting at entry and flags room on the path"""
-        position = Vector(*self._parse_coords(self.entry))
+        """Reads path starting at entry and flags room on the path."""
+        entry = Vector(*self._parse_coords(self.entry))
+        position = entry
         path_str = self._parse_path(hex_maze)
         for step in path_str:
             #     if step not in ("N", "E", "S", "W"):
             #         raise ValueError("Invalid path character in input file.")
-            position = position + Walls[step].direction
+            if position == entry:
+                position += Walls[step].direction
+                continue
             x, y = position
-            hex_maze[y][x] = hex_maze[y][x] + PATH_FLAG
+            hex_maze[y][x] += (Walls[step].value << PATH_OFFSET)
+            position += Walls[step].direction
 
     def display_maze(self) -> None:
         """Method to print the maze in the terminal.
