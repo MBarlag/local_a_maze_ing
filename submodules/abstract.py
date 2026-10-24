@@ -331,13 +331,21 @@ class Grid(Generic[_Data, _Cell]):
         """First Cell of Grid."""
         return self[0, 0]
 
+    def __add__(self, other: "Grid[Any, _Cell]") -> "Grid[Any, _Cell]":
+        """Adds two grids values together, cell by cell."""
+        result = Grid(
+            self.width, self.height, default=None, cell_class=other._cell_class
+        )
+        for result_cell, cell, other_cell in zip(result, self, other):
+            result_cell.value = cell.value + other_cell.value
+        return result
+
     @property
     def valid(self) -> bool:
         """Grid's validity."""
-        for x in range(self.width):
-            for y in range(self.height):
-                if not self[x, y].valid:
-                    return False
+        for cell in self:
+            if not cell.valid:
+                return False
         return True
 
     def cant_reach(self, x: int, y: int) -> bool:

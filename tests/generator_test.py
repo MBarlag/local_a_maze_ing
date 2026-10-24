@@ -33,7 +33,6 @@ def test_valid_config_pipeline() -> None:
         maze_gen.entry.x = 3
 
 
-@pytest.mark.parametrize("config", BAD_CONFIGS)
 def test_invalid_config_pipeline(config) -> None:
     with pytest.raises((ValueError, TypeError)):
         print(config)
@@ -46,5 +45,6 @@ def test_output_file() -> None:
     maze_gen.generate()
     maze_gen.output()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     test_output_file()

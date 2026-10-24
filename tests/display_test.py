@@ -1,6 +1,7 @@
 # Run from project root as a module: python3 -m tests.display_test
 from submodules.display import MazePrinter
 from submodules.config import Config
+import pytest
 
 def test_small_maze() -> None:
     config: dict[str, str] = {
@@ -32,6 +33,7 @@ def test_gen_maze() -> None:
     printer = MazePrinter(**config)
     printer.display_maze()
 
+@pytest.mark.maze
 def test_gen_maze() -> None:
     config: dict[str, str] = {
         "width": "25",

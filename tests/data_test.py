@@ -3,7 +3,6 @@
 [TODO:description]
 """
 
-import pytest
 
 from submodules.abstract import Vector
 from submodules.data import Maze, Room
@@ -32,6 +31,10 @@ def test_room() -> None:
     assert room.visited == False
     room.visited = True
     assert room.visited == True
+
+
+def test_maze() -> None:
+    pass
 
 
 if __name__ == "__main__":

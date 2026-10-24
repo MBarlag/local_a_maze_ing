@@ -16,6 +16,12 @@ def test_from_file() -> None:
     assert grid[5, 3].value == Walls.EMPTY
 
 
+def test_grid_add() -> None:
+    result = Grid(2, 2, default=1) + Grid(2, 2, default=10)
+    for cell in result:
+        assert cell.value == 11
+
+
 def test_vector() -> None:
     assert Vector(0, 3) * 3 == (0, 9)
     assert Vector(1, 2) == Vector(0, 2) + Vector(1, 0)
