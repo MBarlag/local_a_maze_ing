@@ -101,6 +101,8 @@ class MazePrinter(BaseModel):
             print("+", end="")
             if cell & north:
                 print("---", end="")
+            elif cell & PATH_FLAG:
+                print("\033[38;5;118m\033[48;5;82m   \033[0m", end="")
             else:
                 print("   ", end="")
         print("+")
@@ -108,6 +110,8 @@ class MazePrinter(BaseModel):
         for cell in hex_row:
             if cell & west:
                 print("|", end="")
+            elif cell & PATH_FLAG:
+                print("\033[38;5;118m\033[48;5;82m \033[0m", end="")
             else:
                 print(" ", end="")
 
