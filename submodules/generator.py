@@ -139,7 +139,7 @@ class MazeGenerator(BaseModel):
             queue.extend([(room, neighbour) for neighbour in legal])
             # print(queue)
             # print(maze)
-        path: list[Any] = []
+        path: list[Walls] = []
         cell = maze[self.entry]
         while cell and cell.as_vector != self.exit:
             if cell:
@@ -153,8 +153,8 @@ class MazeGenerator(BaseModel):
             for y in range(self.last_maze.height):
                 line = (
                     "".join(
-                        f"{hex(x.value.walls.value)}"[2:]
-                        for x in self.last_maze.row(y)
+                        hex(room.value.walls.value)[2:]
+                        for room in self.last_maze.row(y)
                     )
                     + "\n"
                 )

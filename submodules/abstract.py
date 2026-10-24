@@ -32,7 +32,7 @@ class Vector(Generic[N]):
 
     def __str__(self) -> str:
         """Returns string representation of self."""
-        return f"({self.x}, {self.y})"
+        return f"({self.x},{self.y})"
 
     def __iter__(self) -> Iterator[N]:
         """Iterate over y and x of the vector."""
