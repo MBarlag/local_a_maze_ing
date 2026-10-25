@@ -12,6 +12,11 @@ PATH_S = PATH_N << 2
 PATH_W = PATH_N << 3
 PATH = PATH_W + PATH_S + PATH_E + PATH_N
 
+PATH_CLR = "\033[38;5;118m\033[48;5;82m"
+COLOR_1 = "\033[37;47m"
+COLOR_2 = "\033[41;41m"
+RST = "\033[0m"
+
 
 class MazePrinter(BaseModel):
     """Parses and displays hexadecimal file as readable maze in terminal.
@@ -30,6 +35,7 @@ class MazePrinter(BaseModel):
     exit: str
     input_file: str = Field(alias="output_file")
     path_visible: bool = True
+    wall_color: str = COLOR_1
 
     # # TODO redefine print
     # def _print(self, value):
@@ -99,21 +105,22 @@ class MazePrinter(BaseModel):
         north = 1
         west = 8
         block = 15
+        WCLR = self.wall_color
         for cell in hex_row:
-            print("+", end="")
+            print(f"{WCLR}+{RST}", end="")
             if cell & north:
-                print("---", end="")
+                print(f"{WCLR}---{RST}", end="")
             elif cell & PATH:
-                print("\033[38;5;118m\033[48;5;82m   \033[0m", end="")
+                print(f"{PATH_CLR}   {RST}", end="")
             else:
                 print("   ", end="")
-        print("+")
+        print(f"{WCLR}+{RST}")
 
         for cell in hex_row:
             if cell & west:
-                print("|", end="")
+                print(f"{WCLR}|{RST}", end="")
             elif cell & PATH:
-                print("\033[38;5;118m\033[48;5;82m \033[0m", end="")
+                print(f"{PATH_CLR} {RST}", end="")
             else:
                 print(" ", end="")
 
@@ -123,24 +130,25 @@ class MazePrinter(BaseModel):
                 print(" B ", end="")
             elif cell & PATH:
                 if cell & PATH_W:
-                    print("\033[38;5;118m\033[48;5;82m < \033[0m", end="")
+                    print(f"{PATH_CLR} < {RST}", end="")
                 elif cell & PATH_S:
-                    print("\033[38;5;118m\033[48;5;82m v \033[0m", end="")
+                    print(f"{PATH_CLR} v {RST}", end="")
                 elif cell & PATH_E:
-                    print("\033[38;5;118m\033[48;5;82m > \033[0m", end="")
+                    print(f"{PATH_CLR} > {RST}", end="")
                 elif cell & PATH_N:
-                    print("\033[38;5;118m\033[48;5;82m ^ \033[0m", end="")
+                    print(f"{PATH_CLR} ^ {RST}", end="")
             elif (cell & block) == block:
                 print("███", end="")
             else:
                 print("   ", end="")
-        print("|")
+        print(f"{WCLR}|{RST}")
 
     def _display_bottom(self) -> None:
         """Prints the closing South walls of the maze."""
+        WCLR = self.wall_color
         for _ in range(self.width):
-            print("+---", end="")
-        print("+")
+            print(f"{WCLR}+---{RST}", end="")
+        print(f"{WCLR}+{RST}")
 
     def _parse_path(self, hex_maze: list[list[int]]) -> str:
         """Reads the path line with moves from the hex_maze file.
