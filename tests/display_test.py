@@ -4,6 +4,19 @@ from submodules.config import Config
 from submodules.display import MazePrinter
 
 
+def test_some_maze() -> None:
+    config: dict[str, str] = {
+        "width": "5",
+        "height": "5",
+        "entry": "0,0",
+        "exit": "4,4",
+        "output_file": "test.txt",
+    }
+
+    printer = MazePrinter(**config)
+    printer.display_maze()
+
+
 def test_small_maze() -> None:
     config: dict[str, str] = {
         "width": "3",
