@@ -1,3 +1,9 @@
+"""Terminal display of a maze read from its hexadecimal output file.
+ 
+Reads the output file written by the generator, marks the entry, exit
+and (optionally) the shortest path, and prints the maze with colours.
+"""
+
 from pydantic import BaseModel, Field
 
 from submodules.abstract import Vector
@@ -27,7 +33,10 @@ class MazePrinter(BaseModel):
         height (int): Number of rows.
         entry (str): Coordinates of entry point.
         exit (str): Coordinates of exit point.
-        input_file (str): Path to the hexadecimal file.
+        input_file: Path to the hexadecimal file. Read from the
+            OUTPUT_FILE key of the config.
+        path_visible: Whether the shortest path is shown.
+        wall_color: ANSI colour code used to print the walls.
     """
 
     width: int
@@ -152,7 +161,14 @@ class MazePrinter(BaseModel):
         return lines[-1]
 
     def _mark_path(self, hex_maze: list[list[int]]) -> None:
-        """Reads path starting at entry and flags room on the path."""
+        """Follow the path from the entry and flag each room on it.
+ 
+        The entry room itself is not flagged. Each other room on the path
+        gets a flag for the direction of the next step.
+        
+        Args:
+            hex_maze: Holds maze cells and entry/exit points.
+        """
         entry = Vector(*self._parse_coords(self.entry))
         position = entry
         path_str = self._parse_path()
