@@ -147,7 +147,7 @@ class MazeGenerator(BaseModel):
 
     #             # Convert room to neighbours and
 
-    def bfs(self) -> list[tuple[Room, Room]]:
+    def bfs(self) -> None:
         """Finds shortest path through in an imperfect maze.
 
         Raises:
@@ -168,7 +168,7 @@ class MazeGenerator(BaseModel):
             if room.visited:
                 continue
             if root.as_vector != room.as_vector:
-                direction = Move(root.as_vector - room.as_vector)
+                direction = Move.v(root.as_vector - room.as_vector)
                 room.to_exit = direction
             room.visited = True
             if room.as_vector == self.entry:
