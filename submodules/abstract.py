@@ -32,7 +32,7 @@ class Vector(Generic[N]):
         return f"({self.x},{self.y})"
 
     def __iter__(self) -> Iterator[N]:
-        """Iterate over y and x of the vector."""
+        """Iterate over x and y of the vector."""
         return iter([self.x, self.y])
 
     def __add__(self, other: "Vector[N] | tuple[N, N]") -> "Vector[N]":
@@ -157,7 +157,7 @@ class Cell(Generic[_Data]):
         """Unpack Cell coordinates.
 
         Returns:
-            Iterator over y and x.
+            Iterator over x and y.
         """
         return iter([self.x, self.y])
 
@@ -180,7 +180,7 @@ class Cell(Generic[_Data]):
         return getattr(self._value, name)
 
     def __setattr__(self, name: str, value: Any) -> None:
-        """Get Attribute from Data. Except _grid, x, y, _value from Cell."""
+        """Set an attribute on the stored data, or else on the cell."""
         if name == "_value" or name not in dir(self._value):
             return super().__setattr__(name, value)
         return setattr(self._value, name, value)
@@ -292,7 +292,7 @@ class Grid(Generic[_Data, _Cell]):
     ) -> None:
         """Loads grid from file, maps each character to element using map_char.
 
-        File should have same dimentions or bigger than the grid.
+        File should have same dimensions or bigger than the grid.
 
         Args:
             filename: Name of the file to load from.
@@ -300,7 +300,7 @@ class Grid(Generic[_Data, _Cell]):
 
         Raises:
             ValueError: If no filename or map_char could be found.
-            IndexError: If file doesnt have correct dimentions.
+            IndexError: If file doesnt have correct dimensions.
         """
         from_file = filename or self._from_file
         map_character = map_char or self._map_char
