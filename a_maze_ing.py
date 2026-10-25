@@ -10,6 +10,7 @@ without overwhelming each of the class with information that is not needed.
 """
 
 import sys
+from pydantic import ValidationError
 
 from submodules.config import Config
 from submodules.display import MazePrinter
@@ -18,10 +19,16 @@ from submodules.menu import Menu
 
 
 def handle_critical_error(e: Exception) -> None:
-    """Displayes an error and exits gracefully."""
-    exc_name = type(e).__name__
-    print(f"[A-Maze-ing][{exc_name}]:{e!s}")
-    sys.exit(1)
+    """Displays an error and exits gracefully."""
+    if isinstance(e, ValidationError):
+        for error in e.errors():  # Possible keys in e.errors: type, loc, msg, input, ctx and url
+            exc_name = error["type"].title().replace("_", "")
+            print(f"[A-Maze-ing][{exc_name}]: {error['msg']} "
+                  f"input: {error['input']}")
+    else:
+        exc_name = type(e).__name__
+        print(f"[A-Maze-ing][{exc_name}]:{e!s}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
@@ -46,6 +53,6 @@ if __name__ == "__main__":
         menu.prompt_loop()
     except (KeyboardInterrupt, Exception) as e:
         if isinstance(e, KeyboardInterrupt):
-            menu.quit_menu()
+            menu.quit_menu(Menu)
         else:
             handle_critical_error(e)

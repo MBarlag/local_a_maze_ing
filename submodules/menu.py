@@ -98,7 +98,7 @@ class Menu:
             case Action.INPUT_SEED:
                 self.seed()
             case Action.QUIT:
-                self.quit_menu()
+                self.quit_menu(self)
 
     @staticmethod
     def quit_menu(self) -> None:
