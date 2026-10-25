@@ -12,7 +12,7 @@ import sys
 from enum import Enum
 from typing import Any
 
-from submodules.display import MazePrinter
+from submodules.display import MazePrinter, COLOR_1, COLOR_2
 from submodules.generator import MazeGenerator
 
 
@@ -59,8 +59,12 @@ class Menu:
         self.maze_printer.display_maze()
 
     def change_colors(self) -> None:
-        """ """
-        print("change")
+        """Changes the colors of the walls in current maze."""
+        if self.maze_printer.wall_color == COLOR_1:
+            self.maze_printer.wall_color = COLOR_2
+        elif self.maze_printer.wall_color == COLOR_2:
+            self.maze_printer.wall_color = COLOR_1
+        self.maze_printer.display_maze()
 
     def seed(self) -> None:
         print("seed")

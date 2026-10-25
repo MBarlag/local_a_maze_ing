@@ -12,9 +12,10 @@ PATH_S = PATH_N << 2
 PATH_W = PATH_N << 3
 PATH = PATH_W + PATH_S + PATH_E + PATH_N
 
-PATH_CLR = "\033[38;5;118m\033[48;5;82m"
-COLOR_1 = "\033[37;47m"
-COLOR_2 = "\033[41;41m"
+CLR="63"
+PATH_CLR = "\033[38;5;82m\033[48;5;82m" # yellow 220
+COLOR_1 = f"\033[38;5;{CLR}m\033[48;5;{CLR}m"
+COLOR_2 = "\033[38;5;53m\033[48;5;53m"
 RST = "\033[0m"
 
 
@@ -34,8 +35,8 @@ class MazePrinter(BaseModel):
     entry: str
     exit: str
     input_file: str = Field(alias="output_file")
-    path_visible: bool = True
-    wall_color: str = COLOR_1
+    path_visible: bool = False
+    wall_color: str = COLOR_2
 
     # # TODO redefine print
     # def _print(self, value):
