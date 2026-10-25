@@ -6,50 +6,76 @@ After excecuting, main will lead the user back to the menu until they
 choose to quit the program.
 """
 
-import sys
+import inquirer
+
 from enum import Enum
 from typing import Any
 
-import inquirer
-
 from submodules.display import MazePrinter
+from submodules.generator import MazeGenerator
 
-# placeholder for actions
+class Menu:
+    """Interactive menu to dispatch actions."""
 
+    def __init__(self, maze_gen: MazeGenerator, maze_printer: MazePrinter) -> None:
+        self.maze_gen = maze_gen
+        self.maze_printer = maze_printer
 
-def generate() -> None:
-    # configurator = Config("config.txt")
-    # config = configurator.parse_config()
+    def prompt_loop() -> None:
+        """Runs a prompt loop to get next action from the user."""
+        print("Welcome to Emma's amazing maze!")
+        user = inquirer.text(message="First, please enter your name")
+        input(
+            f"Nice to meet you, {user}! Press enter to generate your first maze.\n"
+        )
+        choice = Action.GENERATE
+        while choice:
+            execute(choice)
+            choice = choose_action()
+    
+    def generate(self) -> None:
+        """Generates a maze and prints it in the terminal."""
+        self.maze_gen.output()
+        self.maze_printer.display_maze()
 
-    print("generating")
-    print("///// [This is a representation of a possible Maze] /////\n")
-    print(
-        "+------------------------------+\n"
-        "|                              |\n"
-        "|                              |\n"
-        "|                              |\n"
-        "|                              |\n"
-        "|                              |\n"
-        "|                              |\n"
-        "|                              |\n"
-        "|                              |\n"
-        "+------------------------------+\n"
-    )
+        # print("generating")
+        # print("///// [This is a representation of a possible Maze] /////\n")
+        # print(
+        #     "+------------------------------+\n"
+        #     "|                              |\n"
+        #     "|                              |\n"
+        #     "|                              |\n"
+        #     "|                              |\n"
+        #     "|                              |\n"
+        #     "|                              |\n"
+        #     "|                              |\n"
+        #     "|                              |\n"
+        #     "+------------------------------+\n"
+        # )
 
+    def toggle_path(self) -> None:
+        """Activates or deactivates path visibility and redraws maze."""
+        self.printer.path_visible = not self.printer.path_visible
+        self.printer.display_maze()
 
-def toggle_path(printer: MazePrinter) -> None:
-    """Activates or deactivates path visibility and redraws maze."""
-    printer.path_visible = not printer.path_visible
-    printer.display_maze()
-    print("toggle path")
+    def rotate_colors(self) -> None:
+        print("rotate")
 
+    def seed() -> None:
+        print("seed")
 
-def rotate_colors() -> None:
-    print("rotate")
-
-
-def seed() -> None:
-    print("seed")
+    def execute(n: Action) -> None:
+        match n:
+            case Action.GENERATE:
+                generate()
+            case Action.TOGGLE_PATH:
+                toggle_path()
+            case Action.ROTATE_COLORS:
+                rotate_colors()
+            case Action.INPUT_SEED:
+                seed()
+            case Action.QUIT:
+                quit_menu()
 
 
 def quit_menu() -> None:
@@ -63,20 +89,6 @@ class Action(Enum):
     ROTATE_COLORS = 3
     INPUT_SEED = 4
     QUIT = 5
-
-
-def execute(n: Action) -> None:
-    match n:
-        case Action.GENERATE:
-            generate()
-        case Action.TOGGLE_PATH:
-            toggle_path()
-        case Action.ROTATE_COLORS:
-            rotate_colors()
-        case Action.INPUT_SEED:
-            seed()
-        case Action.QUIT:
-            quit_menu()
 
 
 def choose_action() -> Action:
@@ -108,14 +120,4 @@ def choose_action() -> Action:
     return Action.QUIT
 
 
-def prompt_loop() -> None:
-    """Runs a prompt loop to get next action from the user."""
-    print("Welcome to Emma's amazing maze!")
-    user = inquirer.text(message="First, please enter your name")
-    input(
-        f"Nice to meet you, {user}! Press enter to generate your first maze.\n"
-    )
-    choice = Action.GENERATE
-    while choice:
-        execute(choice)
-        choice = choose_action()
+
