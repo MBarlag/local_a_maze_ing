@@ -90,15 +90,16 @@ class MazeGenerator(BaseModel):
         # our options, to choose from -> aka list that we iterate over
 
         # feel like drawing, goingto excalidraw
-        self._last_maze = None
         maze = self._draft_maze
         exit = maze[self.exit]
-        self._search(exit, self._connect_perfect, depth_first=True)
+        self._walk(exit, process_step=self._connect_perfect, depth_first=True)
         if not self.perfect:
-            self._reset_search_data()
-            self._remove_deadends()
-            self._reset_search_data()
-            self._search(exit, self._find_path, depth_first=False)
+            self._reset_walk_data()
+            self._walk(
+                exit, process_step=self._remove_deadends, depth_first=True
+            )
+            self._reset_walk_data()
+            self._walk(exit, process_step=self._find_path, depth_first=False)
             if not self._validate_packman():
                 raise MazeGenException("Generated Maze is not Packman ready.")
         if not self._draft_maze.valid:
@@ -134,10 +135,12 @@ class MazeGenerator(BaseModel):
             if room:
                 room.blocked = cell.value == Walls.BLOCK
 
-    def _remove_deadends(self) -> None:
+    def _remove_deadends(
+        self, previous: Room, current: Room
+    ) -> list[tuple[Room, Room]] | None:
         pass
 
-    def _reset_search_data(self) -> None:
+    def _reset_walk_data(self) -> None:
         maze = self._draft_maze
         for room in maze:
             room.visited = False
@@ -152,7 +155,8 @@ class MazeGenerator(BaseModel):
             ValueError: When there is no possible path between entry and exit.
 
         Returns:
-            list[tuple[Room, Room]]: _description_
+            list[tuple[Room, Room]] | None: Empty list if room
+            has been visited or is blocked.
         """
         if current.visited is True or current.blocked is True:
             return []
@@ -178,16 +182,18 @@ class MazeGenerator(BaseModel):
     ) -> list[tuple[Room, Room]] | None:
         """Connect rooms (perfect), return [(current, legal_neighbour), ..].
 
+        Skips rooms that do not fall under perfect maze
+        generation criteria: if room has been visited or
+        the subject criteria:
+        if room is part of the 42 pattern (blocked).
+
         Args:
             previous: Previous room from dfs search.
             current: Current room from dfs search.
 
         Returns:
             A list of tuples in a format of (from, to).
-            'to' is populated by current room neighbours,
-            that fall under criteria that define perfect maze
-            generation: has not been visited and the subject criteria:
-            is not part of the 42 pattern.
+            'to' is populated by current room neighbours.
         """
         if current.visited is True or current.blocked is True:
             return []
@@ -202,10 +208,10 @@ class MazeGenerator(BaseModel):
         # functions and not adding reproducability there.
         # TODO: add seed reproducability here.
         shuffle(neighbours)
-        legal = [(current, next_room) for next_room in neighbours]
-        return legal
+        next_steps = [(current, next_room) for next_room in neighbours]
+        return next_steps
 
-    def _search(
+    def _walk(
         self,
         start: Room,
         process_step: Callable[[Room, Room], list[tuple[Room, Room]] | None],
@@ -222,10 +228,12 @@ class MazeGenerator(BaseModel):
             process_step: [TODO:description]
             depth_first: [TODO:description]
         """
+        OLDEST = 0
+        NEWEST = -1
         queue: list[tuple[Room, Room]] = [(start, start)]
-        direction = -1 if depth_first else 0
+        index = NEWEST if depth_first else OLDEST
         while queue:
-            root, room = queue.pop(direction)
+            root, room = queue.pop(index)
             new_options = process_step(root, room)
             if new_options is None:
                 break

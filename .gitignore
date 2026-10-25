@@ -7,3 +7,5 @@ dist
 .ruff_cache
 __pycache__
 .pytest_cache
+T1.txt
+TESTING.txt
