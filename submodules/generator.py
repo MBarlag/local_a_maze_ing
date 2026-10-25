@@ -147,7 +147,7 @@ class MazeGenerator(BaseModel):
 
     #             # Convert room to neighbours and
 
-    def bfs(self) -> None:
+    def bfs_find_path(self) -> None:
         """Finds shortest path through in an imperfect maze.
 
         Raises:
