@@ -78,9 +78,14 @@ class MazeGenerator(BaseModel):
         Returns:
             Maze: Maze data structure.
         """
+        maze = self._draft_maze
+        entry = maze[self.entry]
+        exit = maze[self.exit]
         if new_seed is True:
             self._refresh_seed()
         self._add_pattern()
+        if entry.blocked is True or exit.blocked is True:
+            raise MazeGenException("Entry and exit cant be in pattern.")
         self._build_maze()
         result = self.last_maze
         return result

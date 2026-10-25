@@ -1,7 +1,7 @@
 target-version = "py310"
 line-length = 79
 [lint]
-ignore = ["SIM103"]
+ignore = ["SIM103", "BLE001"]
 extend-select = [
     # ...
     "D",   # pydocstyle - https://docs.astral.sh/ruff/rules/#pydocstyle-d

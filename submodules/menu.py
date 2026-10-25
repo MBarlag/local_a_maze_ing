@@ -76,12 +76,11 @@ class Menu:
             case Action.INPUT_SEED:
                 self.seed()
             case Action.QUIT:
-                quit_menu()
+                self.quit_menu()
 
-
-def quit_menu() -> None:
-    print("\nBye, hope to see you soon!")
-    sys.exit(0)
+    def quit_menu(self) -> None:
+        print("\nBye, hope to see you soon!")
+        sys.exit(0)
 
 
 def choose_action() -> Action:
