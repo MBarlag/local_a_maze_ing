@@ -7,13 +7,12 @@ choose to quit the program.
 """
 
 import sys
+import inquirer
 from enum import Enum
 from typing import Any
 
-import inquirer
-
-from submodules.display import MazePrinter
-from submodules.generator import MazeGenerator
+from submodules.display import MazePrinter, COLOR_1, COLOR_2
+from submodules.generator import MazeGenerator, MazeGenException
 
 
 class Action(Enum):
@@ -50,7 +49,11 @@ class Menu:
 
     def generate(self) -> None:
         """Generates a maze and prints it in the terminal."""
-        self.maze_gen.generate()
+        try:
+            self.maze_gen.generate()
+        except MazeGenException as error:
+            print(f"Could not generate a new maze: {error}.")
+            return
         self.maze_printer.display_maze()
 
     def toggle_path(self) -> None:
@@ -59,13 +62,32 @@ class Menu:
         self.maze_printer.display_maze()
 
     def change_colors(self) -> None:
-        """ """
-        print("change")
+        """Changes the colors of the walls in current maze."""
+        if self.maze_printer.wall_color == COLOR_1:
+            self.maze_printer.wall_color = COLOR_2
+        elif self.maze_printer.wall_color == COLOR_2:
+            self.maze_printer.wall_color = COLOR_1
+        self.maze_printer.display_maze()
 
     def seed(self) -> None:
-        print("seed")
+        """Ask user input to change the seed."""
+        print(f"Current seed is {self.maze_gen.seed}.")
+        while True:
+            print("Please type a positive int to change the seed:")
+            try:
+                user_seed = int(input())
+            except ValueError:
+                print("Input is not an int, please try again.")
+                continue    
+            if user_seed < 0:
+                print("Input is invalid, please try again.")
+                continue
+            break
+        self.maze_gen.seed = user_seed
+        print(f"Seed is now {self.maze_gen.seed}.\n")
 
     def execute(self, n: Action) -> None:
+        "Receive action parameter and dispatch to the correct method."
         match n:
             case Action.GENERATE:
                 self.generate()
@@ -97,7 +119,7 @@ def choose_action() -> Action:
                 ("Generate a new maze.", Action.GENERATE),
                 ("Show/Hide the shortest path.", Action.TOGGLE_PATH),
                 ("Change the wall colors.", Action.CHANGE_COLORS),
-                ("Input a seed.", Action.INPUT_SEED),
+                ("Get current seed and input a seed.", Action.INPUT_SEED),
                 ("Quit Emma's Maze.", Action.QUIT),
             ],
         )
