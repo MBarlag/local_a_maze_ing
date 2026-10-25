@@ -39,6 +39,17 @@ class MazeGenerator(BaseModel):
     _path: list[Walls] | None = PrivateAttr(None)
 
     @property
+    def path(self) -> list[Walls]:
+        """The path property."""
+        if self._path is None:
+            raise MazeGenException("No path has been collected.")
+        return self._path
+
+    @path.setter
+    def path(self, value: list[Walls]) -> None:
+        self._path = value
+
+    @property
     def last_maze(self) -> Maze:
         """Last generated maze."""
         if self._last_maze is None:
@@ -60,13 +71,14 @@ class MazeGenerator(BaseModel):
         if origin + self.entry is None and origin + self.exit is None:
             raise MazeGenException("Entry and/or exit are out of bounds.")
         if self.seed is None:
-            self._refresh_seed()
+            self.seed = self._refresh_seed()
 
-    def _refresh_seed(self) -> None:
+    def _refresh_seed(self) -> int:
         """Regenerate the seed."""
         MIN = 0
         MAX = 2**31 - 1
         self.seed = randint(MIN, MAX)
+        return self.seed
 
     def generate(self, new_seed: bool = False) -> Maze:
         """Generates maze.
@@ -82,7 +94,7 @@ class MazeGenerator(BaseModel):
         entry = maze[self.entry]
         exit = maze[self.exit]
         if new_seed is True:
-            self._refresh_seed()
+            self.seed = self._refresh_seed()
         self._add_pattern()
         if entry.blocked is True or exit.blocked is True:
             raise MazeGenException("Entry and exit cant be in pattern.")
@@ -247,12 +259,14 @@ class MazeGenerator(BaseModel):
     def _extract_path(self) -> list[Walls]:
         """Extract a path from maze. Convert directions Walls repr."""
         maze = self.last_maze
-        if not maze:
-            raise MazeGenException("Valid Maze has not been generated.")
         path: list[Walls] = []
         room = maze[self.entry]
         while room and room.as_vector != self.exit:
             if room:
+                if room.to_exit is Move.NOWHERE:
+                    raise MazeGenException(
+                        "Invalid path, encountered Move.NOWHERE."
+                    )
                 path.append(room.choose_wall(room.to_exit))
             new_room = room + room.to_exit
             if new_room:
@@ -261,8 +275,6 @@ class MazeGenerator(BaseModel):
 
     def _output(self) -> None:
         """Write generated maze to a file."""
-        if not self.last_maze:
-            raise MazeGenException("No valid maze to output to file.")
         if not self._path:
             raise MazeGenException(
                 "No path has been generated. Aborting output."

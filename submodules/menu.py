@@ -7,11 +7,12 @@ choose to quit the program.
 """
 
 import sys
-import inquirer
 from enum import Enum
 from typing import Any
 
-from submodules.display import MazePrinter, COLOR_1, COLOR_2
+import inquirer
+
+from submodules.display import COLOR_1, COLOR_2, MazePrinter
 from submodules.generator import MazeGenerator, MazeGenException
 
 
@@ -78,7 +79,7 @@ class Menu:
                 user_seed = int(input())
             except ValueError:
                 print("Input is not an int, please try again.")
-                continue    
+                continue
             if user_seed < 0:
                 print("Input is invalid, please try again.")
                 continue
@@ -87,7 +88,7 @@ class Menu:
         print(f"Seed is now {self.maze_gen.seed}.\n")
 
     def execute(self, n: Action) -> None:
-        "Receive action parameter and dispatch to the correct method."
+        """Receive action parameter and dispatch to the correct method."""
         match n:
             case Action.GENERATE:
                 self.generate()
@@ -98,10 +99,10 @@ class Menu:
             case Action.INPUT_SEED:
                 self.seed()
             case Action.QUIT:
-                self.quit_menu()
+                Menu.quit_menu()
 
     @staticmethod
-    def quit_menu(self) -> None:
+    def quit_menu() -> None:
         print("\nBye, hope to see you soon!")
         sys.exit(0)
 
