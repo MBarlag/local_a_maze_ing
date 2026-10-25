@@ -27,7 +27,6 @@ class RoomData:
     walls: Walls = Walls.BLOCK
     blocked: bool = False
     to_exit: Move = Move.NOWHERE
-    # connected: list['Room' | None] = field(default_factory=list)
 
 
 class Room(Cell[RoomData]):
@@ -93,14 +92,6 @@ class Room(Cell[RoomData]):
             return True
         return False
 
-    # @property
-    # def breakable_walls(self) -> Walls:
-    #     breakable = Walls.BLOCK
-    #     for wall in breakable:
-    #         pass
-
-    # room.connect_with(neighbour)
-    # -->
     def connect_with(self, neighbour: Self) -> Move:
         """Connect current Room with the neighbouring room.
 
@@ -118,14 +109,6 @@ class Room(Cell[RoomData]):
         if wall_to_break in self.walls:
             self.walls -= wall_to_break
             neighbour.walls -= wall_to_break.opposite
-
-        #     neighbour = self + to_break.direction
-        #     if neighbour is None:
-        #         raise ValueError("Can't break borders of the maze")
-        #     neighbour.walls -= to_break.opposite
-        # else:
-        #     raise ValueError("Walls requested don't exist")
-
         return direction
 
     def choose_wall(self, direction: Move) -> Walls:

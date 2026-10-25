@@ -12,8 +12,8 @@ PATH_S = PATH_N << 2
 PATH_W = PATH_N << 3
 PATH = PATH_W + PATH_S + PATH_E + PATH_N
 
-CLR="63"
-PATH_CLR = "\033[38;5;82m\033[48;5;82m" # yellow 220
+CLR = "63"
+PATH_CLR = "\033[38;5;82m\033[48;5;82m"  # yellow 220
 COLOR_1 = f"\033[38;5;{CLR}m\033[48;5;{CLR}m"
 COLOR_2 = "\033[38;5;53m\033[48;5;53m"
 RST = "\033[0m"

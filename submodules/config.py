@@ -47,7 +47,7 @@ class Config:
             return None
         split_result = line.split("=")
         if len(split_result) != 2:
-            message = "There can only be one = sign per onfig the line"
+            message = "There can only be one = sign per config line"
             raise ConfigException(message)
         return split_result[0], split_result[1]
 
@@ -64,5 +64,6 @@ class Config:
                 if not (extracted := Config._extract_pair(line)):
                     continue
                 key, value = extracted
-                result[key.lower()] = value
+                k = key.lower().strip()
+                result[k] = value.strip()
         return result

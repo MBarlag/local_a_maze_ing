@@ -43,8 +43,9 @@ def test_vector() -> None:
 
 
 def test_grid() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="negative") as e:
         Grid(-3, -2, default=9)
+    assert "Grid" in str(e.value)
     assert Grid(4, 4, default=False).cell.value == False
     assert Grid(1, 1, default=True).cell.value == True
     a = Grid(4, 4, default=True)

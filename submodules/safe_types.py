@@ -64,10 +64,9 @@ def limited_input(
     return BeforeValidator(_within_limits)
 
 
-def allowed_inputs(*args: str, **kwargs: str) -> BeforeValidator:
+def allowed_inputs(*args: str) -> BeforeValidator:
     """Checks input_str against allowed word list."""
     allowed = [*args]
-    allowed.extend(kwargs.values())
 
     def within_allowed_inputs(value: Any) -> Any:
         if isinstance(value, str) and value not in allowed:
@@ -79,10 +78,9 @@ def allowed_inputs(*args: str, **kwargs: str) -> BeforeValidator:
     return BeforeValidator(within_allowed_inputs)
 
 
-def blocked_inputs(*args: str, **kwargs: str) -> BeforeValidator:
+def blocked_inputs(*args: str) -> BeforeValidator:
     """Checks input_str against blocklist of words."""
     blocked = [*args]
-    blocked.extend(kwargs.values())
 
     def not_blocked(value: Any) -> Any:
         if isinstance(value, str) and value in blocked:
@@ -100,23 +98,23 @@ def _to_vector_int(value: Any) -> Vector[int]:
     if isinstance(value, (Vector, tuple)):
         if len(list(value)) != 2:
             raise ValueError("Vector should have strictly two members.")
-        y, x = value
-        if not (isinstance(y, int) and isinstance(x, int)):
+        x, y = value
+        if not (isinstance(x, int) and isinstance(y, int)):
             raise TypeError("Vector members should be of type int.")
-        return Vector[int](y, x)
+        return Vector[int](x, y)
     positive_ints_pattern = re.compile(r"^\s*([0-9]+)\s*,\s*([0-9]+)\s*$")
     if isinstance(value, str):
         if "\n" in value:
             raise ValueError("Vector argument accepts one-line strings only.")
         match: list[Any] = positive_ints_pattern.findall(value)
         if len(match) != 1:
-            raise ValueError("Expected exactly one positive int pair: 'y, x'.")
+            raise ValueError("Expected exactly one positive int pair: 'x, y'.")
         pair: list[str] = list(match[0])
         if len(pair) != 2:
-            raise ValueError("Vector str should be of format: 'y, x'.")
+            raise ValueError("Vector str should be of format: 'x, y'.")
         ints = [int(n) for n in pair]
-        y, x = ints
-        return Vector[int](y, x)
+        x, y = ints
+        return Vector[int](x, y)
 
 
 PositiveInt = Annotated[int, limited_input(pattern=r"^\d+$")]

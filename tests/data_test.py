@@ -1,3 +1,5 @@
+import pytest
+
 from submodules.abstract import Vector
 from submodules.config import Config
 from submodules.data import Maze, Room
@@ -7,6 +9,12 @@ from submodules.generator import MazeGenerator
 
 
 def test_maze() -> None:
+    with pytest.raises(ValueError, match="negative") as e:
+        Maze(-3, 3)
+    with pytest.raises(ValueError, match="zero") as e2:
+        Maze(0, 3)
+    assert "Maze" in str(e2.value)
+    assert "Maze" in str(e.value)
     config = Config("tests/good_config.txt").parse_config()
     config["output_file"] = "T1.txt"
     print(config)

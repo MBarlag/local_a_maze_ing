@@ -2,7 +2,7 @@ from collections.abc import Callable
 from random import randint, shuffle
 from typing import Any
 
-from pydantic import BaseModel, PrivateAttr
+from pydantic import BaseModel, Field, PrivateAttr
 
 from submodules.abstract import Grid
 from submodules.data import Maze, Room
@@ -33,18 +33,18 @@ class MazeGenerator(BaseModel):
     exit: IntVector
     perfect: Bool
     output_file: FileName
-    seed: PositiveInt
+    seed: PositiveInt | None = Field(None)
     _last_maze: Maze | None = PrivateAttr(None)
     _draft_maze: Maze = PrivateAttr()
     _path: list[Walls] | None = PrivateAttr(None)
 
     @property
-    def last_maze(self) -> Maze | None:
-        """Last generated maze.
-
-        Returns:
-            Maze or None if no maze has been generated.
-        """
+    def last_maze(self) -> Maze:
+        """Last generated maze."""
+        if self._last_maze is None:
+            raise MazeGenException(
+                "Error accessing last maze, no maze has been generated."
+            )
         return self._last_maze
 
     @last_maze.setter
@@ -53,15 +53,22 @@ class MazeGenerator(BaseModel):
 
     def model_post_init(self, context: Any) -> None:
         """Initialize MazeGnerator inner attributes after its been created."""
+        if self.exit == self.entry:
+            raise MazeGenException("Entry and exit cannot be the same.")
         self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
+        origin = self._draft_maze.room
+        if origin + self.entry is None and origin + self.exit is None:
+            raise MazeGenException("Entry and/or exit are out of bounds.")
+        if self.seed is None:
+            self._refresh_seed()
 
     def _refresh_seed(self) -> None:
         """Regenerate the seed."""
-        MIN_INT = -(2**31)
-        MAX_INT = 2**31 - 1
-        self.seed = randint(MIN_INT, MAX_INT)
+        MIN = 0
+        MAX = 2**31 - 1
+        self.seed = randint(MIN, MAX)
 
-    def generate(self, new_seed: bool = False) -> Maze | None:
+    def generate(self, new_seed: bool = False) -> Maze:
         """Generates maze.
 
         Args:
@@ -73,33 +80,23 @@ class MazeGenerator(BaseModel):
         """
         if new_seed is True:
             self._refresh_seed()
-        self._draft_maze: Maze = Maze(
-            self.width, self.height, self.entry, self.exit
-        )
         self._add_pattern()
         self._build_maze()
-        return self.last_maze
+        result = self.last_maze
+        return result
 
     def _build_maze(self) -> None:
         """Break walls of Maze keeping it valid to the constraints."""
-        # here we have to constantly check with maze.valid
-        # and if it became not valid, then we know we did something wrong
-        # and we revert the changes back and try something else
-
-        # trying something else means: we need to somehow know
-        # our options, to choose from -> aka list that we iterate over
-
-        # feel like drawing, goingto excalidraw
         maze = self._draft_maze
         exit = maze[self.exit]
-        self._walk(exit, process_step=self._connect_perfect, depth_first=True)
+        self._walk(exit, on_each_step=self._connect_perfect, depth_first=True)
         if not self.perfect:
             self._reset_walk_data()
             self._walk(
-                exit, process_step=self._remove_deadends, depth_first=True
+                exit, on_each_step=self._remove_deadends, depth_first=True
             )
             self._reset_walk_data()
-            self._walk(exit, process_step=self._find_path, depth_first=False)
+            self._walk(exit, on_each_step=self._find_path, depth_first=False)
             if not self._validate_packman():
                 raise MazeGenException("Generated Maze is not Packman ready.")
         if not self._draft_maze.valid:
@@ -213,33 +210,37 @@ class MazeGenerator(BaseModel):
 
     def _walk(
         self,
-        start: Room,
-        process_step: Callable[[Room, Room], list[tuple[Room, Room]] | None],
+        start_from: Room,
+        on_each_step: Callable[[Room, Room], list[tuple[Room, Room]] | None],
         depth_first: bool = True,
     ) -> None:
-        """Search a maze and apply processing function each step.
+        """Walk a maze and apply processing function each step.
 
-        Adds new options that processing function returned to the queue.
-        If process_step returned None => aborts the search.
-        Otherwise aborts when the queue is empty.
+        Adds new walking options that processing function
+        returned to the queue.
+        Processing function can return an emprt list, which means
+        no new options has been selected on the current steps.
+        If on_each_step function returned None => _walk completes.
+        Otherwise _walk completes when the queue is empty.
 
         Args:
-            start: [TODO:description]
-            process_step: [TODO:description]
+            start_from: [TODO:description]
+            on_each_step: [TODO:description]
             depth_first: [TODO:description]
         """
         OLDEST = 0
         NEWEST = -1
-        queue: list[tuple[Room, Room]] = [(start, start)]
+        queue: list[tuple[Room, Room]] = [(start_from, start_from)]
         index = NEWEST if depth_first else OLDEST
         while queue:
             root, room = queue.pop(index)
-            new_options = process_step(root, room)
+            new_options = on_each_step(root, room)
             if new_options is None:
                 break
             queue.extend(new_options)
 
     def _extract_path(self) -> list[Walls]:
+        """Extract a path from maze. Convert directions Walls repr."""
         maze = self.last_maze
         if not maze:
             raise MazeGenException("Valid Maze has not been generated.")
