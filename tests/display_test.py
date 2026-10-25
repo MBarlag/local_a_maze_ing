@@ -10,7 +10,7 @@ def test_some_maze() -> None:
         "height": "5",
         "entry": "0,0",
         "exit": "4,4",
-        "output_file": "test.txt",
+        "output_file": "new_test.txt",
     }
 
     printer = MazePrinter(**config)
