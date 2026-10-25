@@ -20,7 +20,7 @@ class Action(Enum):
     """Enum for actions."""
     GENERATE = 1
     TOGGLE_PATH = 2
-    ROTATE_COLORS = 3
+    CHANGE_COLORS = 3
     INPUT_SEED = 4
     QUIT = 5
 
@@ -53,28 +53,14 @@ class Menu:
         self.maze_gen.output()
         self.maze_printer.display_maze()
 
-        # print("generating")
-        # print("///// [This is a representation of a possible Maze] /////\n")
-        # print(
-        #     "+------------------------------+\n"
-        #     "|                              |\n"
-        #     "|                              |\n"
-        #     "|                              |\n"
-        #     "|                              |\n"
-        #     "|                              |\n"
-        #     "|                              |\n"
-        #     "|                              |\n"
-        #     "|                              |\n"
-        #     "+------------------------------+\n"
-        # )
-
     def toggle_path(self) -> None:
         """Activates or deactivates path visibility and redraws maze."""
         self.maze_printer.path_visible = not self.maze_printer.path_visible
         self.maze_printer.display_maze()
 
-    def rotate_colors(self) -> None:
-        print("rotate")
+    def change_colors(self) -> None:
+        """ """
+        print("change")
 
     def seed(self) -> None:
         print("seed")
@@ -85,8 +71,8 @@ class Menu:
                 self.generate()
             case Action.TOGGLE_PATH:
                 self.toggle_path()
-            case Action.ROTATE_COLORS:
-                self.rotate_colors()
+            case Action.CHANGE_COLORS:
+                self.change_colors()
             case Action.INPUT_SEED:
                 self.seed()
             case Action.QUIT:
@@ -111,7 +97,7 @@ def choose_action() -> Action:
             choices=[
                 ("Generate a new maze.", Action.GENERATE),
                 ("Show/Hide the shortest path.", Action.TOGGLE_PATH),
-                ("Rotate the wall colors.", Action.ROTATE_COLORS),
+                ("Change the wall colors.", Action.CHANGE_COLORS),
                 ("Input a seed.", Action.INPUT_SEED),
                 ("Quit Emma's Maze.", Action.QUIT),
             ],
