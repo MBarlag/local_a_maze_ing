@@ -5,7 +5,7 @@ from pydantic import BaseModel, PrivateAttr
 
 from submodules.abstract import Grid
 from submodules.data import Maze, Room
-from submodules.enums import Move, Walls
+from submodules.enums import Walls
 from submodules.safe_types import Bool, FileName, IntVector, PositiveInt
 
 
@@ -47,6 +47,7 @@ class MazeGenerator(BaseModel):
         self._last_maze = value
 
     def model_post_init(self, context: Any) -> None:
+        """Initialize MazeGnerator inner attributes after its been created."""
         self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
 
     def _refresh_seed(self) -> None:
@@ -102,11 +103,6 @@ class MazeGenerator(BaseModel):
         pattern = Grid(
             7, 5, from_file="42.txt", map_char=lambda c: Walls(int(c, 16))
         )
-        
-        another_pattern = Grid(7, 5, from_file="42.txt", map_char=lambda c: c == 'f')
-
-        path = "EWNSNENWNNNEWN"
-        transformed_path = [x for x in map(lambda c: 1, path)]
 
         x = (self.width - pattern.width) // 2
         y = (self.height - pattern.height) // 2
@@ -119,10 +115,11 @@ class MazeGenerator(BaseModel):
                 room.blocked = cell.value == Walls.BLOCK
 
     def legal_neighbour(self, neighbour: Room) -> bool:
-        return neighbour.blocked == False and neighbour.visited == False
-    
-    
-    
+        """Legal neighbour for dfs maze generation."""
+        if neighbour.blocked is False and neighbour.visited is False:
+            return True
+        return False
+
     # def bfs(self) -> list[Move]:
     #     maze = self._draft_maze
     #     start = maze[self.exit]
@@ -148,51 +145,50 @@ class MazeGenerator(BaseModel):
 
     #         for move in connections:
 
-    #             # Convert room to neighbours and 
+    #             # Convert room to neighbours and
 
-    def bfs(self) -> List[tuple[Room, Room]]:
-        maze = self._draft_maze
-        for room in maze:
-            room.visited = False
-            room.to_exit = Move.NOWHERE
-        # where we came from   # where we ended up
-
-        # [(OriginalRoom, Room2), OriginalRoom, Room3, Room4]
-        queue: list[tuple[Room, Room]] = [(exit, exit)]
-        while queue:
-            root, room = queue.pop(0)
-            if room.visited == True:
-                continue
-            if root.as_vector != room.as_vector:
-                direction = Move(root.as_vector - room.as_vector)
-                room.to_exit = direction
-            room.visited = True
-            if room.as_vector == self.exit:
-                break
-
-            neighbours = []
-            for wall in room.value.walls:
-                if wall == Walls.EMPTY:
-                    neighbour = room + wall.direction
-                    if neighbour:
-                        neighbours.append(neighbour)
-            shuffle(neighbours)
-            legal = filter(self.legal_neighbour, neighbours)
-            queue.extend([(room, neighbour) for neighbour in legal])
-            # print(queue)
-            # print(maze)
-        path: list[Walls] = []
-        cell = maze[self.entry]
-        while cell and cell.as_vector != self.exit:
-            if cell:
-                path.append(cell.choose_wall(cell.to_exit))                        
-            cell += cell.to_exit
-        self._path = path
-        self.last_maze = maze
-
-    
+    # def bfs(self) -> list[tuple[Room, Room]]:
+    #     maze = self._draft_maze
+    #     for room in maze:
+    #         room.visited = False
+    #         room.to_exit = Move.NOWHERE
+    #     # where we came from   # where we ended up
+    #
+    #     # [(OriginalRoom, Room2), OriginalRoom, Room3, Room4]
+    #     queue: list[tuple[Room, Room]] = [(exit, exit)]
+    #     while queue:
+    #         root, room = queue.pop(0)
+    #         if room.visited == True:
+    #             continue
+    #         if root.as_vector != room.as_vector:
+    #             direction = Move(root.as_vector - room.as_vector)
+    #             room.to_exit = direction
+    #         room.visited = True
+    #         if room.as_vector == self.exit:
+    #             break
+    #
+    #         neighbours = []
+    #         for wall in room.value.walls:
+    #             if wall == Walls.EMPTY:
+    #                 neighbour = room + wall.direction
+    #                 if neighbour:
+    #                     neighbours.append(neighbour)
+    #         shuffle(neighbours)
+    #         legal = filter(self.legal_neighbour, neighbours)
+    #         queue.extend([(room, neighbour) for neighbour in legal])
+    #         # print(queue)
+    #         # print(maze)
+    #     path: list[Walls] = []
+    #     cell = maze[self.entry]
+    #     while cell and cell.as_vector != self.exit:
+    #         if cell:
+    #             path.append(cell.choose_wall(cell.to_exit))
+    #         cell += cell.to_exit
+    #     self._path = path
+    #     self.last_maze = maze
 
     def dfs(self) -> None:
+        """Depth first search to create a perfect maze."""
         maze = self._draft_maze
         exit = maze[self.exit]
 
@@ -202,7 +198,7 @@ class MazeGenerator(BaseModel):
         queue: list[tuple[Room, Room]] = [(exit, exit)]
         while queue:
             root, room = queue.pop()
-            if room.visited == True:
+            if room.visited is True:
                 continue
             if root.as_vector != room.as_vector:
                 direction = room.connect_with(root)
@@ -216,31 +212,36 @@ class MazeGenerator(BaseModel):
             # print(queue)
             # print(maze)
         path: list[Walls] = []
-        cell = maze[self.entry]
-        while cell and cell.as_vector != self.exit:
-            if cell:
-                path.append(cell.choose_wall(cell.to_exit))                        
-            cell += cell.to_exit
+        room = maze[self.entry]
+        while room and room.as_vector != self.exit:
+            if room:
+                path.append(room.choose_wall(room.to_exit))
+            new_room = room + room.to_exit
+            if new_room:
+                room = new_room
         self._path = path
         self.last_maze = maze
 
     def output(self) -> None:
+        """Write generated maze to a file."""
+        if not self.last_maze:
+            raise Exception("No valid maze to output to file.")
+        if not self._path:
+            raise Exception("No path has been generated. Aborting output.")
+        maze = self.last_maze
         with open(self.output_file, "w", encoding="utf-8") as f:
-            for y in range(self.last_maze.height):
+            for y in range(maze.height):
                 line = (
                     "".join(
-                        hex(room.value.walls.value)[2:]
-                        for room in self.last_maze.row(y)
+                        hex(room.value.walls.value)[2:] for room in maze.row(y)
                     )
                     + "\n"
                 )
                 f.write(line)
-                print(line)
             entry = str(self.entry).strip("()")
             exit = str(self.exit).strip("()")
             f.write(f"\n{entry}\n{exit}\n")
             f.write("".join(str(x) for x in self._path) + "\n")
-            
 
     # def shortest_path(self) -> list[Move]:
     #     """Finds a path through the given maze.

@@ -1,7 +1,4 @@
-"""Abstract data classes that enable data manipulation with coordinates.
-
-[TODO:description]
-"""
+"""Abstract data classes that enable data manipulation with coordinates."""
 
 from collections.abc import Callable, Generator, Iterable, Iterator
 from copy import copy
@@ -292,23 +289,25 @@ class Grid(Generic[_Data, _Cell]):
     ) -> None:
         """Loads grid from file, maps each character to element using map_char.
 
+        File should have same dimentions or bigger than the grid.
+
         Args:
             filename: Name of the file to load from.
             map_char: Function that takes one str parameter and returns _Data.
 
         Raises:
             ValueError: If no filename or map_char could be found.
+            IndexError: If file doesnt have correct dimentions.
         """
         from_file = filename or self._from_file
         map_character = map_char or self._map_char
         if not from_file or not map_character:
             raise ValueError("No filename or map_char could be found.")
         with open(from_file, "r", encoding="utf-8") as f:
-            for y, line in enumerate(f.readlines()):
-                for x, character in enumerate(line):
-                    if line[-1] == "\n" and x == len(line) - 1:
-                        continue
-                    self[x, y].value = map_character(character)
+            for y in range(self.height):
+                line = f.readline()
+                for x in range(self.width):
+                    self[x, y].value = map_character(line[x])
 
     def __iter__(self) -> Generator[_Cell]:
         """Iterate over Cells within Grid."""
@@ -318,12 +317,14 @@ class Grid(Generic[_Data, _Cell]):
 
     def __str__(self) -> str:
         """Returns str(self)."""
-        header = footer = "-" * self.width * len(str(self.default)) + "\n"
-        result = str(header)
+        result = ""
         for y in range(self.height):
-            line = "".join(f"| {cell.value}" for cell in self.row(y)) + " |\n"
+            line = (
+                "[ "
+                + " | ".join(str(cell.value) for cell in self.row(y))
+                + " ]\n"
+            )
             result += line
-        result += footer
         return result
 
     @property

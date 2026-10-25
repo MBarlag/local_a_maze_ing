@@ -4,8 +4,9 @@ from typing import Any
 
 import pytest
 
-from submodules.abstract import Vector
+from submodules.abstract import Grid, Vector
 from submodules.config import Config
+from submodules.enums import Walls
 from submodules.generator import MazeGenerator
 
 
@@ -33,10 +34,26 @@ def test_valid_config_pipeline() -> None:
         maze_gen.entry.x = 3
 
 
+@pytest.mark.parametrize("config", BAD_CONFIGS)
 def test_invalid_config_pipeline(config) -> None:
     with pytest.raises((ValueError, TypeError)):
         print(config)
         MazeGenerator(**config)
+
+
+def test_generate() -> None:
+    config = Config("tests/good_config.txt").parse_config()
+    maze_gen = MazeGenerator(**config)
+    maze = maze_gen.generate()
+    if not maze:
+        raise Exception("Maze did not generate.")
+    grid = Grid(
+        maze.width,
+        maze.height,
+        from_file="TESTING.txt",
+        map_char=lambda x: Walls(int(x, 16)),
+    )
+    print(grid)
 
 
 def test_output_file() -> None:

@@ -5,7 +5,7 @@ wall-manipulation methods, and the Maze grid that holds entry and exit
 coordinates.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from typing_extensions import Self
 
@@ -22,11 +22,13 @@ class RoomData:
         walls: Combination of walls room currently has.
         blocked: If room is in the "42" pattern and may not be changed.
     """
+
     visited: bool = False
     walls: Walls = Walls.BLOCK
     blocked: bool = False
     to_exit: Move = Move.NOWHERE
     # connected: list['Room' | None] = field(default_factory=list)
+
 
 class Room(Cell[RoomData]):
     """Cell of the Maze that stores RoomData and manages its walls.
@@ -37,21 +39,23 @@ class Room(Cell[RoomData]):
 
     @property
     def to_exit(self) -> Move:
+        """A move needed to take, to get to the exit."""
         return self.value.to_exit
 
     @to_exit.setter
-    def to_exit(self, value: Move):
+    def to_exit(self, value: Move) -> None:
         self.value.to_exit = value
 
     @property
     def neighbours(self) -> list[Self]:
         """List of neighbouring rooms.
-        
+
         The four main directions (left, down, right, up) are checked.
         Positions out of bounds of the maze are skipped.
 
         Returns:
-            Rooms directly next to this room."""
+            Rooms directly next to this room.
+        """
         MAIN_DIRECTIONS = list(Move)[:4]
         neighbours: list[Self] = []
         for direction in MAIN_DIRECTIONS:
@@ -96,7 +100,7 @@ class Room(Cell[RoomData]):
     #         pass
 
     # room.connect_with(neighbour)
-    # --> 
+    # -->
     def connect_with(self, neighbour: Self) -> Move:
         """Connect current Room with the neighbouring room.
 
@@ -106,21 +110,22 @@ class Room(Cell[RoomData]):
         Raises:
             ValueError: If the wall is on the border of the maze,
             or if the room doesn't have the requested wall.
-        """     #                   (3, 1)   -     (2, 1) => (1, 0) => Move((1, 0)) => Move.RIGHT
-        direction = Move(neighbour.as_vector - self.as_vector)
+        """
+        vector = neighbour.as_vector - self.as_vector
+        direction = Move.v(vector)
         wall_to_break = self.choose_wall(direction)
-                
+
         if wall_to_break in self.walls:
             self.walls -= wall_to_break
             neighbour.walls -= wall_to_break.opposite
-    
+
         #     neighbour = self + to_break.direction
         #     if neighbour is None:
         #         raise ValueError("Can't break borders of the maze")
         #     neighbour.walls -= to_break.opposite
         # else:
         #     raise ValueError("Walls requested don't exist")
-        
+
         return direction
 
     def choose_wall(self, direction: Move) -> Walls:
@@ -133,7 +138,9 @@ class Room(Cell[RoomData]):
         elif direction == Move.DOWN:
             return Walls.S
         else:
-            raise ValueError("Argument isn't one of the primitive four directions")
+            raise ValueError(
+                "Argument isn't one of the primitive four directions"
+            )
 
 
 class Maze(Grid[RoomData, Room]):
@@ -141,6 +148,7 @@ class Maze(Grid[RoomData, Room]):
 
     Access rooms through maze[x, y].
     """
+
     def __init__(
         self,
         width: int,
