@@ -100,6 +100,7 @@ class Menu:
             case Action.QUIT:
                 self.quit_menu()
 
+    @staticmethod
     def quit_menu(self) -> None:
         print("\nBye, hope to see you soon!")
         sys.exit(0)
