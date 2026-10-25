@@ -52,7 +52,8 @@ class Menu:
         try:
             self.maze_gen.generate()
         except MazeGenException as error:
-    
+            print(f"Could not generate a new maze: {error}.")
+            return
         self.maze_printer.display_maze()
 
     def toggle_path(self) -> None:
@@ -73,14 +74,17 @@ class Menu:
         print(f"Current seed is {self.maze_gen.seed}.")
         while True:
             print("Please type a positive int to change the seed:")
-            user_seed = int(input())
+            try:
+                user_seed = int(input())
+            except ValueError:
+                print("Input is not an int, please try again.")
+                continue    
             if user_seed < 0:
                 print("Input is invalid, please try again.")
                 continue
             break
         self.maze_gen.seed = user_seed
         print(f"Seed is now {self.maze_gen.seed}.\n")
-
 
     def execute(self, n: Action) -> None:
         match n:

@@ -12,8 +12,8 @@ PATH_S = PATH_N << 2
 PATH_W = PATH_N << 3
 PATH = PATH_W + PATH_S + PATH_E + PATH_N
 
-CLR="63"
-PATH_CLR = "\033[38;5;82m\033[48;5;82m" # yellow 220
+CLR = "63"
+PATH_CLR = "\033[38;5;82m\033[48;5;82m"  # yellow 220
 COLOR_1 = f"\033[38;5;{CLR}m\033[48;5;{CLR}m"
 COLOR_2 = "\033[38;5;53m\033[48;5;53m"
 RST = "\033[0m"
@@ -69,7 +69,7 @@ class MazePrinter(BaseModel):
                 line = line.strip()
                 if not line:
                     break
-                hex_maze.append([int(char, ENTRY_FLAG) for char in line])
+                hex_maze.append([int(char, 16) for char in line])
 
         self._mark_point(ENTRY_FLAG, hex_maze)
         self._mark_point(EXIT_FLAG, hex_maze)
@@ -151,11 +151,11 @@ class MazePrinter(BaseModel):
             print(f"{WCLR}+---{RST}", end="")
         print(f"{WCLR}+{RST}")
 
-    def _parse_path(self, hex_maze: list[list[int]]) -> str:
+    def _parse_path(self) -> str:
         """Reads the path line with moves from the hex_maze file.
 
         Returns:
-            str: The moves of the path or an empty string.
+            str: The moves of the path.
         """
         with open(self.input_file, "r") as file_obj:
             lines = [line.strip() for line in file_obj]
@@ -166,7 +166,7 @@ class MazePrinter(BaseModel):
         """Reads path starting at entry and flags room on the path."""
         entry = Vector(*self._parse_coords(self.entry))
         position = entry
-        path_str = self._parse_path(hex_maze)
+        path_str = self._parse_path()
         for step in path_str:
             #     if step not in ("N", "E", "S", "W"):
             #         raise ValueError("Invalid path character in input file.")
