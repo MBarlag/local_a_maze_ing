@@ -87,6 +87,7 @@ class Menu:
         print(f"Seed is now {self.maze_gen.seed}.\n")
 
     def execute(self, n: Action) -> None:
+        "Receive action parameter and dispatch to the correct method."
         match n:
             case Action.GENERATE:
                 self.generate()
