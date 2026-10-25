@@ -329,7 +329,8 @@ class Grid(Generic[_Data, _Cell]):
         result = Grid(width, height)
         for result_cell in result:
             offset = result_cell.as_vector
-            result_cell.value = viewer(self[x0, y0][offset])
+            origin = self[x0, y0]
+            result_cell.value = viewer(origin[offset])
         return result
 
     def __iter__(self) -> Generator[_Cell]:
