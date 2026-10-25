@@ -22,6 +22,20 @@ def test_grid_add() -> None:
         assert cell.value == 11
 
 
+def test_grid_view() -> None:
+    grid = Grid(7, 5, from_file="42.txt", map_char=lambda x: Walls(int(x, 16)))
+    print(grid)
+    print()
+    view = grid.view(lambda x: x.value.value, x1=0, y1=2, x0=1, y0=0)
+    view2 = grid.view(lambda x: x.as_vector)
+    view3 = grid.view(lambda x: x.value, *(4, 3), *(2, 2))
+    view4 = grid.view(lambda x: x.as_vector, *(4, 3), *(2, 2))
+    print(view)
+    print(view2)
+    print(view3)
+    print(view4)
+
+
 def test_vector() -> None:
     assert Vector(0, 3) * 3 == (0, 9)
     assert Vector(1, 2) == Vector(0, 2) + Vector(1, 0)

@@ -106,7 +106,7 @@ class Cell(Generic[_Data]):
 
     def visit(self, dx: int, dy: int) -> Self | None:
         """Add up coordinates and return the cell at the location or None."""
-        new_position = Vector(*self) + (dx, dy)
+        new_position = self.as_vector + (dx, dy)
         if self._grid.cant_reach(*new_position):
             return None
         return self._grid[new_position]
@@ -148,7 +148,7 @@ class Cell(Generic[_Data]):
         Raises:
             IndexError: If out of bounds.
         """
-        new_position = Vector(*self) + offset
+        new_position = self.as_vector + offset
         if self._grid.cant_reach(*new_position):
             raise IndexError("Requested Cell is out of bounds")
         return self._grid[new_position]
@@ -308,6 +308,29 @@ class Grid(Generic[_Data, _Cell]):
                 line = f.readline()
                 for x in range(self.width):
                     self[x, y].value = map_character(line[x])
+
+    R = TypeVar("R")
+
+    def view(
+        self,
+        viewer: Callable[[_Cell], R],
+        x1: int = 0,
+        y1: int = 0,
+        x0: int = 0,
+        y0: int = 0,
+    ) -> "Grid[R, Cell[R]]":
+        """Apply a viewer function to each cell and save result to new Grid."""
+        if not x1:
+            x1 = self.width - 1
+        if not y1:
+            y1 = self.height - 1
+        width = x1 - x0 + 1
+        height = y1 - y0 + 1
+        result = Grid(width, height)
+        for result_cell in result:
+            offset = result_cell.as_vector
+            result_cell.value = viewer(self[x0, y0][offset])
+        return result
 
     def __iter__(self) -> Generator[_Cell]:
         """Iterate over Cells within Grid."""
