@@ -1,7 +1,4 @@
-"""Enums related to Maze.
-
-[TODO:description]
-"""
+"""Enums related to Maze."""
 
 from collections.abc import Generator
 from enum import Enum, Flag
@@ -25,6 +22,13 @@ class Move(Vector[int], Enum):
     RIGHT = 1, 0
     UP = 0, -1
     NOWHERE = 0, 0
+
+    @classmethod
+    def v(cls, vector: tuple[int, int] | Vector[int]) -> "Move":
+        for move in list(cls):
+            if move.value == vector:
+                return move
+        raise Exception("Not a primitive move.")
 
     # def __iter__(self) -> Iterator[int]:
     #    return iter(self.value)
@@ -79,10 +83,17 @@ class Walls(Flag):
 
     def __str__(self) -> str:
         """Returns name of the configuration."""
-        return self.name
+        return repr(self)[7:].split(":")[0]
+
     @classmethod
-    def __getitem__(cls, repr: str) -> 'Walls':
-        allowed_values = {"W": Walls.W, "S":Walls.S, "E":Walls.E, "N":Walls.N}
+    def __getitem__(cls, repr: str) -> "Walls":
+        """Get basic Walls members by their names. Walls["W"] => Walls.W."""
+        allowed_values = {
+            "W": Walls.W,
+            "S": Walls.S,
+            "E": Walls.E,
+            "N": Walls.N,
+        }
         if repr in allowed_values:
             return allowed_values[repr]
         else:

@@ -1,7 +1,4 @@
-"""Abstract data classes that enable data manipulation with coordinates.
-
-[TODO:description]
-"""
+"""Abstract data classes that enable data manipulation with coordinates."""
 
 from collections.abc import Callable, Generator, Iterable, Iterator
 from copy import copy
@@ -109,7 +106,7 @@ class Cell(Generic[_Data]):
 
     def visit(self, dx: int, dy: int) -> Self | None:
         """Add up coordinates and return the cell at the location or None."""
-        new_position = Vector(*self) + (dx, dy)
+        new_position = self.as_vector + (dx, dy)
         if self._grid.cant_reach(*new_position):
             return None
         return self._grid[new_position]
@@ -151,7 +148,7 @@ class Cell(Generic[_Data]):
         Raises:
             IndexError: If out of bounds.
         """
-        new_position = Vector(*self) + offset
+        new_position = self.as_vector + offset
         if self._grid.cant_reach(*new_position):
             raise IndexError("Requested Cell is out of bounds")
         return self._grid[new_position]
@@ -292,23 +289,49 @@ class Grid(Generic[_Data, _Cell]):
     ) -> None:
         """Loads grid from file, maps each character to element using map_char.
 
+        File should have same dimentions or bigger than the grid.
+
         Args:
             filename: Name of the file to load from.
             map_char: Function that takes one str parameter and returns _Data.
 
         Raises:
             ValueError: If no filename or map_char could be found.
+            IndexError: If file doesnt have correct dimentions.
         """
         from_file = filename or self._from_file
         map_character = map_char or self._map_char
         if not from_file or not map_character:
             raise ValueError("No filename or map_char could be found.")
         with open(from_file, "r", encoding="utf-8") as f:
-            for y, line in enumerate(f.readlines()):
-                for x, character in enumerate(line):
-                    if line[-1] == "\n" and x == len(line) - 1:
-                        continue
-                    self[x, y].value = map_character(character)
+            for y in range(self.height):
+                line = f.readline()
+                for x in range(self.width):
+                    self[x, y].value = map_character(line[x])
+
+    R = TypeVar("R")
+
+    def view(
+        self,
+        viewer: Callable[[_Cell], R],
+        x1: int = 0,
+        y1: int = 0,
+        x0: int = 0,
+        y0: int = 0,
+    ) -> "Grid[R, Cell[R]]":
+        """Apply a viewer function to each cell and save result to new Grid."""
+        if not x1:
+            x1 = self.width - 1
+        if not y1:
+            y1 = self.height - 1
+        width = x1 - x0 + 1
+        height = y1 - y0 + 1
+        result = Grid(width, height)
+        for result_cell in result:
+            offset = result_cell.as_vector
+            origin = self[x0, y0]
+            result_cell.value = viewer(origin[offset])
+        return result
 
     def __iter__(self) -> Generator[_Cell]:
         """Iterate over Cells within Grid."""
@@ -318,12 +341,14 @@ class Grid(Generic[_Data, _Cell]):
 
     def __str__(self) -> str:
         """Returns str(self)."""
-        header = footer = "-" * self.width * len(str(self.default)) + "\n"
-        result = str(header)
+        result = ""
         for y in range(self.height):
-            line = "".join(f"| {cell.value}" for cell in self.row(y)) + " |\n"
+            line = (
+                "[ "
+                + " | ".join(str(cell.value) for cell in self.row(y))
+                + " ]\n"
+            )
             result += line
-        result += footer
         return result
 
     @property

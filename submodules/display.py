@@ -123,7 +123,7 @@ class MazePrinter(BaseModel):
                 print(" B ", end="")
             elif cell & PATH:
                 if cell & PATH_W:
-                   print("\033[38;5;118m\033[48;5;82m < \033[0m", end="")
+                    print("\033[38;5;118m\033[48;5;82m < \033[0m", end="")
                 elif cell & PATH_S:
                     print("\033[38;5;118m\033[48;5;82m v \033[0m", end="")
                 elif cell & PATH_E:
@@ -165,7 +165,7 @@ class MazePrinter(BaseModel):
                 position += Walls[step].direction
                 continue
             x, y = position
-            hex_maze[y][x] += (Walls[step].value << PATH_OFFSET)
+            hex_maze[y][x] += Walls[step].value << PATH_OFFSET
             position += Walls[step].direction
 
     def display_maze(self) -> None:

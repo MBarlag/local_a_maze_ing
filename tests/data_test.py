@@ -1,12 +1,27 @@
-"""[TODO:description]
-
-[TODO:description]
-"""
-
-
 from submodules.abstract import Vector
+from submodules.config import Config
 from submodules.data import Maze, Room
-from submodules.enums import Walls
+from submodules.display import MazePrinter
+from submodules.enums import Move, Walls
+from submodules.generator import MazeGenerator
+
+
+def test_maze() -> None:
+    config = Config("tests/good_config.txt").parse_config()
+    config["output_file"] = "T1.txt"
+    print(config)
+    maze_gen = MazeGenerator(**config)
+    maze = maze_gen.generate()
+    if not maze:
+        raise Exception("Error generating.")
+    maze_gen.output()
+    print(
+        maze.view(
+            lambda x: "0" if x.to_exit is Move.NOWHERE else x.to_exit.name[0]
+        )
+    )
+    printer = MazePrinter(**config)
+    printer.display_maze()
 
 
 def test_room() -> None:
@@ -32,13 +47,6 @@ def test_room() -> None:
     room.visited = True
     assert room.visited == True
 
-
-def test_maze() -> None:
-    pass
-
-
-if __name__ == "__main__":
-    test_room()
 
 # with pytest.raises(Exception):
 # 	# input for test

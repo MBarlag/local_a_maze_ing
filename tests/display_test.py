@@ -1,7 +1,8 @@
 # Run from project root as a module: python3 -m tests.display_test
-from submodules.display import MazePrinter
+
 from submodules.config import Config
-import pytest
+from submodules.display import MazePrinter
+
 
 def test_small_maze() -> None:
     config: dict[str, str] = {
@@ -28,20 +29,9 @@ def test_big_maze() -> None:
     printer = MazePrinter(**config)
     printer.display_maze()
 
+
 def test_gen_maze() -> None:
     config = Config("tests/good_config.txt").parse_config()
-    printer = MazePrinter(**config)
-    printer.display_maze()
-
-@pytest.mark.maze
-def test_gen_maze() -> None:
-    config: dict[str, str] = {
-        "width": "25",
-        "height": "20",
-        "entry": "0,0",
-        "exit": "24,19",
-        "output_file":"TESTING.txt"
-    }
     printer = MazePrinter(**config)
     printer.display_maze()
 
@@ -50,4 +40,3 @@ if __name__ == "__main__":
     # test_small_maze()
     # test_big_maze()
     test_gen_maze()
-    

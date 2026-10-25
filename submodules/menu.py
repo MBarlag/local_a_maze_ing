@@ -6,13 +6,13 @@ After excecuting, main will lead the user back to the menu until they
 choose to quit the program.
 """
 
-from submodules.display import MazePrinter
-from submodules.config import Config
 import sys
 from enum import Enum
 from typing import Any
 
 import inquirer
+
+from submodules.display import MazePrinter
 
 # placeholder for actions
 
