@@ -78,7 +78,7 @@ class Menu:
                 user_seed = int(input())
             except ValueError:
                 print("Input is not an int, please try again.")
-                continue    
+                continue
             if user_seed < 0:
                 print("Input is invalid, please try again.")
                 continue
@@ -98,10 +98,10 @@ class Menu:
             case Action.INPUT_SEED:
                 self.seed()
             case Action.QUIT:
-                self.quit_menu(self)
+                self.quit_menu()
 
     @staticmethod
-    def quit_menu(self) -> None:
+    def quit_menu() -> None:
         print("\nBye, hope to see you soon!")
         sys.exit(0)
 

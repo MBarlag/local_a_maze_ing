@@ -36,11 +36,7 @@ class MazePrinter(BaseModel):
     exit: str
     input_file: str = Field(alias="output_file")
     path_visible: bool = False
-    wall_color: str = COLOR_2
-
-    # # TODO redefine print
-    # def _print(self, value):
-    #     print(value, file=self.file)
+    wall_color: str = COLOR_1
 
     @staticmethod
     def _parse_coords(coord: str) -> tuple[int, int]:
@@ -71,31 +67,24 @@ class MazePrinter(BaseModel):
                     break
                 hex_maze.append([int(char, 16) for char in line])
 
-        self._mark_point(ENTRY_FLAG, hex_maze)
-        self._mark_point(EXIT_FLAG, hex_maze)
+        self._mark_point(ENTRY_FLAG, self.entry, hex_maze)
+        self._mark_point(EXIT_FLAG, self.exit, hex_maze)
         if self.path_visible:
             self._mark_path(hex_maze)
         return hex_maze
 
-    def _mark_point(self, point_type: int, hex_maze: list[list[int]]) -> None:
+    def _mark_point(
+            self, flag: int, coord_str: str, hex_maze: list[list[int]]
+            ) -> None:
         """Adds entry or exit point to hex_maze file.
 
         Args:
-            point_type (int): Is 16 for entry or 32 for exit.
+            flag (int): Orchestrates whether to mark entry or exit.
+            coord_str (str): The coordinates for entry/exit.
             hex_maze (list[list[int]]): Holds maze cells and entry/exit points.
         """
-        coord: tuple[int, int]
-        if point_type == 16:
-            coord = self._parse_coords(self.entry)
-        elif point_type == 32:
-            coord = self._parse_coords(self.exit)
-        else:
-            raise ValueError
-        # This should never happen, so do we need this?
-        # And how to handle the error?
-
-        x, y = coord
-        hex_maze[y][x] += point_type
+        x, y = self._parse_coords(coord_str)
+        hex_maze[y][x] |= flag
 
     def _display_row(self, hex_row: list[int]) -> None:
         """Prints North and West walls of maze row and closes with + and |.

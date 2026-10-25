@@ -21,7 +21,7 @@ from submodules.menu import Menu
 def handle_critical_error(e: Exception) -> None:
     """Displays an error and exits gracefully."""
     if isinstance(e, ValidationError):
-        for error in e.errors():  # Possible keys in e.errors: type, loc, msg, input, ctx and url
+        for error in e.errors():
             exc_name = error["type"].title().replace("_", "")
             print(f"[A-Maze-ing][{exc_name}]: {error['msg']} "
                   f"input: {error['input']}")
@@ -53,6 +53,6 @@ if __name__ == "__main__":
         menu.prompt_loop()
     except (KeyboardInterrupt, Exception) as e:
         if isinstance(e, KeyboardInterrupt):
-            menu.quit_menu(Menu)
+            menu.quit_menu()
         else:
             handle_critical_error(e)
