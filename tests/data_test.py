@@ -14,7 +14,6 @@ def test_maze() -> None:
     maze = maze_gen.generate()
     if not maze:
         raise Exception("Error generating.")
-    maze_gen.output()
     print(
         maze.view(
             lambda x: "0" if x.to_exit is Move.NOWHERE else x.to_exit.name[0]

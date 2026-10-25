@@ -60,7 +60,6 @@ def test_output_file() -> None:
     config = Config("tests/good_config.txt").parse_config()
     maze_gen = MazeGenerator(**config)
     maze_gen.generate()
-    maze_gen.output()
 
 
 if __name__ == "__main__":
