@@ -6,11 +6,11 @@ After excecuting, main will lead the user back to the menu until they
 choose to quit the program.
 """
 
-import inquirer
 import sys
-
 from enum import Enum
 from typing import Any
+
+import inquirer
 
 from submodules.display import MazePrinter
 from submodules.generator import MazeGenerator
@@ -18,6 +18,7 @@ from submodules.generator import MazeGenerator
 
 class Action(Enum):
     """Enum for actions."""
+
     GENERATE = 1
     TOGGLE_PATH = 2
     CHANGE_COLORS = 3
@@ -28,9 +29,9 @@ class Action(Enum):
 class Menu:
     """Interactive menu to get input and dispatch actions."""
 
-    def __init__(self,
-                 maze_gen: MazeGenerator,
-                 maze_printer: MazePrinter) -> None:
+    def __init__(
+        self, maze_gen: MazeGenerator, maze_printer: MazePrinter
+    ) -> None:
         self.maze_gen = maze_gen
         self.maze_printer = maze_printer
 
@@ -50,7 +51,6 @@ class Menu:
     def generate(self) -> None:
         """Generates a maze and prints it in the terminal."""
         self.maze_gen.generate()
-        self.maze_gen.output()
         self.maze_printer.display_maze()
 
     def toggle_path(self) -> None:
