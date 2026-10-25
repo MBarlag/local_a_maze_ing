@@ -150,47 +150,52 @@ class MazeGenerator(BaseModel):
 
     #             # Convert room to neighbours and 
 
-    def bfs(self) -> List[tuple[Room, Room]]:
+    def bfs(self) -> list[tuple[Room, Room]]:
+        """Finds shortest path through in an imperfect maze.
+
+        Raises:
+            ValueError: When there is no possible path between entry and exit.
+
+        Returns:
+            list[tuple[Room, Room]]: _description_
+        """
         maze = self._draft_maze
         for room in maze:
             room.visited = False
             room.to_exit = Move.NOWHERE
-        # where we came from   # where we ended up
 
-        # [(OriginalRoom, Room2), OriginalRoom, Room3, Room4]
-        queue: list[tuple[Room, Room]] = [(exit, exit)]
+        start = maze[self.exit]
+        queue: list[tuple[Room, Room]] = [(start, start)]
         while queue:
             root, room = queue.pop(0)
-            if room.visited == True:
+            if room.visited:
                 continue
             if root.as_vector != room.as_vector:
                 direction = Move(root.as_vector - room.as_vector)
                 room.to_exit = direction
             room.visited = True
-            if room.as_vector == self.exit:
+            if room.as_vector == self.entry:
                 break
 
             neighbours = []
-            for wall in room.value.walls:
-                if wall == Walls.EMPTY:
+            for wall in (Walls.N, Walls.E, Walls.S, Walls.W):
+                if wall not in room.walls:
                     neighbour = room + wall.direction
                     if neighbour:
                         neighbours.append(neighbour)
             shuffle(neighbours)
             legal = filter(self.legal_neighbour, neighbours)
             queue.extend([(room, neighbour) for neighbour in legal])
-            # print(queue)
-            # print(maze)
+
         path: list[Walls] = []
-        cell = maze[self.entry]
+        cell: Room | None = maze[self.entry]
         while cell and cell.as_vector != self.exit:
-            if cell:
-                path.append(cell.choose_wall(cell.to_exit))                        
+            if cell.to_exit == Move.NOWHERE:
+                raise ValueError("Can't reach entry from exit")
+            path.append(cell.choose_wall(cell.to_exit))                        
             cell += cell.to_exit
         self._path = path
         self.last_maze = maze
-
-    
 
     def dfs(self) -> None:
         maze = self._draft_maze
