@@ -1,4 +1,4 @@
-"""Enums related to Maze."""
+"""Enums related to Maze: one-step moves and wall combinations."""
 
 from collections.abc import Generator
 from enum import Enum, Flag
@@ -25,6 +25,7 @@ class Move(Vector[int], Enum):
 
     @classmethod
     def v(cls, vector: tuple[int, int] | Vector[int]) -> "Move":
+        """Translation for mypy: get Move that matches a vector."""
         for move in list(cls):
             if move.value == vector:
                 return move
@@ -59,7 +60,7 @@ class Walls(Flag):
 
     @property
     def opposite(self) -> "Walls":
-        """Opposite wall."""
+        """Get the opposite Wall."""
         opposites: dict[Walls, Walls] = {
             Walls.W: Walls.E,
             Walls.E: Walls.W,
@@ -82,7 +83,7 @@ class Walls(Flag):
         return Move.NOWHERE
 
     def __str__(self) -> str:
-        """Returns name of the configuration."""
+        """Return name of the configuration for example "W|S"."""
         return repr(self)[7:].split(":")[0]
 
     @classmethod
@@ -100,7 +101,11 @@ class Walls(Flag):
             raise ValueError("Wrong representation.")
 
     def __iter__(self) -> Generator["Walls"]:
-        """Yields all the base wall states within the combined wall state."""
+        """Iterate over the four single walls in the order W, S, E, N.
+
+        Yields:
+            The single wall if it is part of this combination,
+            Walls.EMPTY otherwise. Always yields four values."""
         for wall in [Walls.W, Walls.S, Walls.E, Walls.N]:
             if wall in self:
                 yield wall
@@ -108,17 +113,17 @@ class Walls(Flag):
                 yield Walls.EMPTY
 
     def __add__(self, other: "Walls | int") -> "Walls":
-        """Adds to current wall state another wall state."""
+        """Adds to current wall state another wall state (bitwise)."""
         return self | Walls(other)
 
     def __radd__(self, other: "Walls | int") -> "Walls":
-        """Same as __add__."""
+        """Same as __add__, with walls on the right of +."""
         return self | Walls(other)
 
     def __sub__(self, other: "Walls | int") -> "Walls":
-        """Subtacts from current wall state another state."""
+        """Subtacts from current wall state another state (bitwise)."""
         return self ^ Walls(other)
 
     def __rsub__(self, other: "Walls | int") -> "Walls":
-        """Same as __sub__."""
+        """Same as __sub__, with walls on the right of -."""
         return Walls(other) ^ self
