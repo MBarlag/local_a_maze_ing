@@ -29,7 +29,7 @@ if __name__ == "__main__":
     #   raise Exception ("Usage: python3 a_maze_ing.py <file>")
 
     try:
-        config = Config("tests/bad_config.txt").parse_config()
+        config = Config("config.txt").parse_config()
         # Don't forget to use sys.argv[1] here instead of config.txt!
         maze_gen = MazeGenerator(**config)
         # under the hood it will call the MazeGen constructor method,
