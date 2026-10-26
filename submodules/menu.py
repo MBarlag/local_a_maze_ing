@@ -53,7 +53,7 @@ class Menu:
         """Generates a maze and prints it in the terminal."""
         try:
             self.maze_gen.generate(new_seed=not self.first_maze)
-            self.first_maze = False  #FIX7.5
+            self.first_maze = False  # FIX7.5
         except MazeGenException as error:
             print(f"Could not generate a new maze: {error}.")
             return

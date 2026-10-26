@@ -1,9 +1,10 @@
 from collections import deque
 from collections.abc import Callable, Iterable
 from random import choice, randint, shuffle
-from random import seed as set_random_seed  #FIX2 To really use seed.
+from random import seed as set_random_seed  # FIX2 To really use seed.
 from typing import Any
-from pydantic import BaseModel, Field, PrivateAttr, ConfigDict
+
+from pydantic import BaseModel, Field, PrivateAttr
 
 from submodules.abstract import Grid
 from submodules.data import Maze, Room
@@ -33,7 +34,8 @@ class MazeGenerator(BaseModel):
         perfect (bool): Enforce one unique path between any two points
         seed (int): Number that defines everything about the maze.
     """
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    # model_config = ConfigDict(arbitrary_types_allowed=True)
     width: PositiveInt
     height: PositiveInt
     entry: IntVector
@@ -77,9 +79,7 @@ class MazeGenerator(BaseModel):
         """
         if new_seed is True:
             self.seed = self._refresh_seed()
-        self._draft_maze = Maze(
-            self.width, self.height, self.entry, self.exit
-        )
+        self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
         #  FIX3 Connect seed so every generate, a new seed is used.
         maze = self._draft_maze
         entry = maze[self.entry]
@@ -200,7 +200,11 @@ class MazeGenerator(BaseModel):
         for room in maze:
             if room.blocked or room.walls.count != 3:
                 continue
-            neighbours = [c for c in room.neighbours if c.blocked is False and not c.reachable_from(room)]
+            neighbours = [
+                c
+                for c in room.neighbours
+                if c.blocked is False and not c.reachable_from(room)
+            ]
             # FIX4 Skip the reachable neighbours
             if not neighbours:
                 continue
