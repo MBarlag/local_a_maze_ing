@@ -105,7 +105,8 @@ class Walls(Flag):
 
         Yields:
             The single wall if it is part of this combination,
-            Walls.EMPTY otherwise. Always yields four values."""
+            Walls.EMPTY otherwise. Always yields four values.
+        """
         for wall in [Walls.W, Walls.S, Walls.E, Walls.N]:
             if wall in self:
                 yield wall

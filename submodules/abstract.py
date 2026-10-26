@@ -258,7 +258,7 @@ class Grid(Generic[_Data, _Cell]):
             default: Default data to store.
             cell_class: Class of Grid's elements. Is bound to Cell[_Data].
             from_file: Filename to init the Grid from.
-            key: Function that maps each character of file to _Data.
+            map_char: Function that maps each character of file to _Data.
 
         Raises:
             ValueError: If dimensions are invalid.
