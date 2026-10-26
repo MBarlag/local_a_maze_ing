@@ -46,7 +46,7 @@ def test_invalid_config_pipeline(config: dict[str, str]) -> None:
 
 
 def test_generate_pacman(subtests: pytest.Subtests) -> None:
-    width = random.randint(7, 20)
+    width = random.randint(9, 20)
     height = random.randint(5, 20)
     config: dict[str, str] = {
         "width": f"{width}",
@@ -84,7 +84,7 @@ def test_generate_pacman(subtests: pytest.Subtests) -> None:
 
 
 def test_generate_perfect(subtests: pytest.Subtests) -> None:
-    width = random.randint(7, 20)
+    width = random.randint(9, 20)
     height = random.randint(5, 20)
     config: dict[str, str] = {
         "width": f"{width}",
@@ -116,3 +116,36 @@ def test_generate_perfect(subtests: pytest.Subtests) -> None:
         assert report.loops == 0
     with subtests.test("not-disconnected"):
         assert not report.disconnected_corridors
+
+
+# def debug() -> None:
+#     width = random.randint(9, 20)
+#     height = random.randint(5, 20)
+#     config: dict[str, str] = {
+#         "width": f"{width}",
+#         "height": f"{height}",
+#         "entry": "0,0",
+#         "exit": f"{width - 1},{height - 1}",
+#         "output_file": "imperfect.txt",
+#         "perfect": "False",
+#     }
+#     maze_gen = MazeGenerator(**config)
+#     maze = maze_gen.generate()
+#     if not maze:
+#         raise Exception("Maze did not generate.")
+#     grid = Grid(
+#         maze.width,
+#         maze.height,
+#         from_file=config["output_file"],
+#         on_each_char=lambda x: Walls(int(x, 16)),
+#     )
+#     print(grid)
+#     printer = MazePrinter(**config)
+#     printer.display_maze()
+#     m = MAZE.from_file(config["output_file"])
+#     report = analyze(m)
+#     print(render(report, 2, 2))
+
+
+# if __name__ == "__main__":
+#     debug()

@@ -173,6 +173,10 @@ class Maze(Grid[RoomData, Room]):
             exit: Coordinates of the exit point. Defaults to (0, 0).
         """
         super().__init__(width, height, default=RoomData(), cell_class=Room)
+        center = self.room[width // 2, height // 2]
+        center.blocked = True
+        center.connect_with(center[Move.UP])
+        center.connect_with(center[Move.DOWN])
         self._set_entry(entry or Vector(0, 0))
         self._set_exit(exit or Vector(0, 0))
 

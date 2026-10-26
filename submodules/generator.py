@@ -1,6 +1,6 @@
 from collections import deque
 from collections.abc import Callable, Iterable
-from random import randint, shuffle
+from random import choice, randint, shuffle
 from typing import Any
 
 from pydantic import BaseModel, Field, PrivateAttr
@@ -116,10 +116,7 @@ class MazeGenerator(BaseModel):
         exit = maze[self.exit]
         self._walk(exit, on_each_step=self._connect, depth_first=True)
         if not self.perfect:
-            self._reset_walk_data()
-            self._walk(
-                exit, on_each_step=self._remove_deadends, depth_first=True
-            )
+            self._remove_deadends()
             self._reset_walk_data()
             self._walk(exit, on_each_step=self._find_path, depth_first=False)
             if not self._validate_packman():
@@ -209,32 +206,17 @@ class MazeGenerator(BaseModel):
         shuffle(neighbours)
         return neighbours
 
-    def _remove_deadends(
-        self, previous: Room, current: Room
-    ) -> list[Room] | None:
-        if current.blocked is True or current.visited is True:
-            return []
-        neighbours = current.neighbours
-        shuffle(neighbours)
-        if current.reachable_from(previous):
-            current.visited = True
-            direction = current.towards(previous)
-            current.path_back = direction
-            return neighbours
-        if previous.walls.count != 3 and current.walls.count != 3:
-            return []
-        middle = previous.walls.middle
-        if middle != current.walls.middle:
-            current.visited = True
-            direction = previous.connect_with(current)
-            current.path_back = direction.opposite
-            return neighbours
-        if current.walls.count == 2:
-            current.visited = True
-            direction = current.connect_with(previous)
-            current.path_back = direction
-            return neighbours
-        return []
+    def _remove_deadends(self) -> None:
+        maze = self._draft_maze
+        for room in maze:
+            if room.blocked or room.walls.count != 3:
+                continue
+            neighbours = [c for c in room.neighbours if c.blocked is False]
+            if not neighbours:
+                continue
+            deadends = [c for c in neighbours if c.walls.count == 3]
+            selected = choice(deadends or neighbours)
+            room.connect_with(selected)
 
     def _connect(self, previous: Room, current: Room) -> list[Room] | None:
         r"""Connect rooms and return \[legal_neighbour, ...].
