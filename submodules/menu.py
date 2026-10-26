@@ -7,11 +7,12 @@ choose to quit the program.
 """
 
 import sys
-import inquirer
 from enum import Enum
 from typing import Any
 
-from submodules.display import MazePrinter, COLOR_1, COLOR_2
+import inquirer
+
+from submodules.display import COLOR_1, COLOR_2, MazePrinter
 from submodules.generator import MazeGenerator, MazeGenException
 
 
@@ -87,7 +88,7 @@ class Menu:
         print(f"Seed is now {self.maze_gen.seed}.\n")
 
     def execute(self, n: Action) -> None:
-        "Receive action parameter and dispatch to the correct method."
+        """Receive action parameter and dispatch to the correct method."""
         match n:
             case Action.GENERATE:
                 self.generate()

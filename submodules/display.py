@@ -1,5 +1,5 @@
 """Terminal display of a maze read from its hexadecimal output file.
- 
+
 Reads the output file written by the generator, marks the entry, exit
 and (optionally) the shortest path, and prints the maze with colours.
 """
@@ -83,8 +83,8 @@ class MazePrinter(BaseModel):
         return hex_maze
 
     def _mark_point(
-            self, flag: int, coord_str: str, hex_maze: list[list[int]]
-            ) -> None:
+        self, flag: int, coord_str: str, hex_maze: list[list[int]]
+    ) -> None:
         """Adds entry or exit point to hex_maze file.
 
         Args:
@@ -162,10 +162,10 @@ class MazePrinter(BaseModel):
 
     def _mark_path(self, hex_maze: list[list[int]]) -> None:
         """Follow the path from the entry and flag each room on it.
- 
+
         The entry room itself is not flagged. Each other room on the path
         gets a flag for the direction of the next step.
-        
+
         Args:
             hex_maze: Holds maze cells and entry/exit points.
         """

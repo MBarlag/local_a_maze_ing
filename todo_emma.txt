@@ -8,16 +8,16 @@ emkulpa & mabarlag
 	match the internal program config.
 	[x] Write tests to brute force bad configs
 [x] d) Algorithm for generating maze by breaking walls.
-[ ] a) Specify exceptions and handle them in main.
+[x] a) Specify exceptions and handle them in main.
 [ ] f) Creating a standalone module for the maze generator.
-[ ] c) Let user give input for the seed. (basically connect with menu.py)
+[x] c) Let user give input for the seed. (basically connect with menu.py)
 
 [x] b) Toggle Path
-[ ] j) Rotate Colors functions. -> Maud, on her workdays.
-[ ] e) Algorithm for finding shortest path. Maud -> This Friday and if needed Saturday.
+[x] j) Rotate Colors functions. -> Maud, on her workdays.
+[x] e) Algorithm for finding shortest path. Maud -> This Friday and if needed Saturday.
 [x] g) Writing docstrings for data.py. -> Maud, on her workdays.
-[ ] h) Writing a better test for display.
-[ ] i) Writing the license.
+[-] h) Writing a better test for display.
+[x] i) Writing the license.
 [ ] g) Write README.md
 
 When program is finished and works:
