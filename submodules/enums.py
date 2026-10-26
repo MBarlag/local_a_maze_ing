@@ -30,6 +30,17 @@ class Move(Vector[int], Enum):
                 return move
         raise Exception("Not a primitive move.")
 
+    @property
+    def opposite(self) -> "Move":
+        """Opposite Move."""
+        opposites: dict[Move, Move] = {
+            Move.LEFT: Move.RIGHT,
+            Move.UP: Move.DOWN,
+            Move.RIGHT: Move.LEFT,
+            Move.DOWN: Move.UP,
+        }
+        return opposites.get(self, Move.NOWHERE)
+
     # def __iter__(self) -> Iterator[int]:
     #    return iter(self.value)
     # def __eq__(self, other: Vector[int] | type["Move"] | tuple[int, int]):
@@ -58,6 +69,23 @@ class Walls(Flag):
     BLOCK = 0b1111
 
     @property
+    def hex(self) -> str:
+        """Hex representation."""
+        return hex(self.value)[2:]
+
+    @property
+    def count(self) -> int:
+        """How many walls in the Walls configuration."""
+        return len(list(self))
+
+    @property
+    def middle(self) -> "Walls":
+        """Returns the middle wall if self is a deadend."""
+        inverted_walls = ~self
+        middle = inverted_walls.opposite
+        return middle
+
+    @property
     def opposite(self) -> "Walls":
         """Opposite wall."""
         opposites: dict[Walls, Walls] = {
@@ -81,31 +109,31 @@ class Walls(Flag):
             return Move.DOWN
         return Move.NOWHERE
 
+    @classmethod
+    def from_move(cls, direction: Move) -> "Walls":
+        """Selects a Wall coresponding to a primitive move."""
+        if direction == Move.LEFT:
+            return Walls.W
+        elif direction == Move.RIGHT:
+            return Walls.E
+        elif direction == Move.UP:
+            return Walls.N
+        elif direction == Move.DOWN:
+            return Walls.S
+        else:
+            raise ValueError(
+                "Argument isn't one of the primitive four directions"
+            )
+
     def __str__(self) -> str:
         """Returns name of the configuration."""
         return repr(self)[7:].split(":")[0]
-
-    @classmethod
-    def __getitem__(cls, repr: str) -> "Walls":
-        """Get basic Walls members by their names. Walls["W"] => Walls.W."""
-        allowed_values = {
-            "W": Walls.W,
-            "S": Walls.S,
-            "E": Walls.E,
-            "N": Walls.N,
-        }
-        if repr in allowed_values:
-            return allowed_values[repr]
-        else:
-            raise ValueError("Wrong representation.")
 
     def __iter__(self) -> Generator["Walls"]:
         """Yields all the base wall states within the combined wall state."""
         for wall in [Walls.W, Walls.S, Walls.E, Walls.N]:
             if wall in self:
                 yield wall
-            else:
-                yield Walls.EMPTY
 
     def __add__(self, other: "Walls | int") -> "Walls":
         """Adds to current wall state another wall state."""

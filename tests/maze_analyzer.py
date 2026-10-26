@@ -34,12 +34,12 @@ from __future__ import annotations
 import argparse
 import sys
 from collections import deque
+from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import IntFlag
 from functools import cached_property
-from typing import Dict, FrozenSet, Iterator, List, Optional, Tuple
 
-Cell = Tuple[int, int]                 # an immutable (row, col) position
+Cell = tuple[int, int]  # an immutable (row, col) position
 
 
 class Direction(IntFlag):
@@ -51,7 +51,7 @@ class Direction(IntFlag):
     WEST = 8
 
     @property
-    def opposite(self) -> "Direction":
+    def opposite(self) -> Direction:
         """The same wall seen from the neighbouring cell."""
         return _OPPOSITE[self]
 
@@ -61,13 +61,13 @@ class Direction(IntFlag):
         return _STEP[self]
 
 
-_OPPOSITE: Dict[Direction, Direction] = {
+_OPPOSITE: dict[Direction, Direction] = {
     Direction.NORTH: Direction.SOUTH,
     Direction.SOUTH: Direction.NORTH,
     Direction.EAST: Direction.WEST,
     Direction.WEST: Direction.EAST,
 }
-_STEP: Dict[Direction, Cell] = {
+_STEP: dict[Direction, Cell] = {
     Direction.NORTH: (-1, 0),
     Direction.EAST: (0, 1),
     Direction.SOUTH: (1, 0),
@@ -98,8 +98,12 @@ class Maze:
     whose edges are the open passages between adjacent cells.
     """
 
-    def __init__(self, grid: List[List[int]], entry: Optional[Cell],
-                 exit: Optional[Cell]) -> None:
+    def __init__(
+        self,
+        grid: list[list[int]],
+        entry: Cell | None,
+        exit: Cell | None,
+    ) -> None:
         self.grid = grid
         self.entry = entry
         self.exit = exit
@@ -108,10 +112,10 @@ class Maze:
 
     # -- construction ------------------------------------------------------- #
     @classmethod
-    def from_file(cls, path: str) -> "Maze":
+    def from_file(cls, path: str) -> Maze:
         """Parse *path*. Raise :class:`MazeError` on a malformed grid."""
-        grid: List[List[int]] = []
-        footer: List[str] = []
+        grid: list[list[int]] = []
+        footer: list[str] = []
         reading_grid = True
         with open(path, encoding="utf-8", errors="replace") as stream:
             for number, raw in enumerate(stream, start=1):
@@ -131,7 +135,7 @@ class Maze:
         return cls(grid, entry, exit_)
 
     @staticmethod
-    def _parse_row(text: str, number: int, grid: List[List[int]]) -> List[int]:
+    def _parse_row(text: str, number: int, grid: list[list[int]]) -> list[int]:
         row = []
         for column, char in enumerate(text, start=1):
             if char not in HEX_DIGITS:
@@ -148,7 +152,7 @@ class Maze:
         return row
 
     @staticmethod
-    def _parse_coordinate(text: str) -> Optional[Cell]:
+    def _parse_coordinate(text: str) -> Cell | None:
         try:
             x_text, y_text = text.split(",")
             return int(y_text), int(x_text)
@@ -181,8 +185,9 @@ class Maze:
         other = self.neighbour(cell, side)
         if other not in self:
             return False
-        return not (self.walls(cell) & side) \
-            and not (self.walls(other) & side.opposite)
+        return not (self.walls(cell) & side) and not (
+            self.walls(other) & side.opposite
+        )
 
     def passages(self, cell: Cell) -> Iterator[Cell]:
         """Yield the neighbours *cell* shares an open passage with."""
@@ -190,7 +195,7 @@ class Maze:
             if self.is_open(cell, side):
                 yield self.neighbour(cell, side)
 
-    def region_of(self, start: Cell) -> FrozenSet[Cell]:
+    def region_of(self, start: Cell) -> frozenset[Cell]:
         """Breadth-first set of cells reachable from *start*."""
         seen = {start}
         queue = deque([start])
@@ -201,10 +206,10 @@ class Maze:
                     queue.append(nxt)
         return frozenset(seen)
 
-    def largest_region(self) -> FrozenSet[Cell]:
+    def largest_region(self) -> frozenset[Cell]:
         """Largest connected component, found in a single linear sweep."""
         seen: set = set()
-        best: FrozenSet[Cell] = frozenset()
+        best: frozenset[Cell] = frozenset()
         for cell in self:
             if cell in seen:
                 continue
@@ -214,7 +219,7 @@ class Maze:
                 best = component
         return best
 
-    def incoherent_cells(self) -> Tuple[Cell, ...]:
+    def incoherent_cells(self) -> tuple[Cell, ...]:
         """Cells whose wall encoding disagrees with a neighbour."""
         return tuple(
             cell
@@ -240,10 +245,10 @@ class MazeReport:
     """
 
     maze: Maze
-    region: FrozenSet[Cell]
+    region: frozenset[Cell]
     entry: Cell
     entry_from_footer: bool
-    incoherent: Tuple[Cell, ...]
+    incoherent: tuple[Cell, ...]
 
     @cached_property
     def open_passages(self) -> int:
@@ -294,13 +299,13 @@ class MazeReport:
         )
 
     @property
-    def exit_reachable(self) -> Optional[bool]:
+    def exit_reachable(self) -> bool | None:
         if self.maze.exit is None:
             return None
         return self.maze.exit in self.region
 
     @cached_property
-    def dead_ends(self) -> Tuple[int, int]:
+    def dead_ends(self) -> tuple[int, int]:
         """``(real, "42"-enclosed)`` counts of single-opening cells.
 
         A dead-end is *real* when one closed wall could be opened toward a
@@ -326,11 +331,14 @@ class MazeReport:
         )
 
     @cached_property
-    def unreachable_key_cells(self) -> Tuple[Cell, ...]:
+    def unreachable_key_cells(self) -> tuple[Cell, ...]:
         """Pac-Man needs the four corners and the centre as corridors."""
         rows, cols = self.maze.rows, self.maze.cols
         key = {
-            (0, 0), (0, cols - 1), (rows - 1, 0), (rows - 1, cols - 1),
+            (0, 0),
+            (0, cols - 1),
+            (rows - 1, 0),
+            (rows - 1, cols - 1),
             (rows // 2, cols // 2),
         }
         return tuple(sorted(cell for cell in key if cell not in self.region))
@@ -406,8 +414,8 @@ def verdict(report: MazeReport, min_loops: int, max_dead_ends: int) -> str:
         )
     extra = (
         "no real dead-end -> bonus-grade (perfectly braided)"
-        if real_dead_ends == 0 else
-        f"{real_dead_ends} real dead-end(s) within tolerance "
+        if real_dead_ends == 0
+        else f"{real_dead_ends} real dead-end(s) within tolerance "
         f"(0 would be bonus-grade)"
     )
     return (
@@ -426,8 +434,10 @@ def render(report: MazeReport, min_loops: int, max_dead_ends: int) -> str:
         f"Entry            : {_xy(report.entry)}   Exit: {_exit(report)}",
     ]
     if not report.entry_from_footer:
-        lines.append("                   (no valid entry in footer; using the "
-                     "largest reachable region)")
+        lines.append(
+            "                   (no valid entry in footer; using the "
+            "largest reachable region)"
+        )
     lines += [
         f"Reachable region : {len(report.region)} cells "
         f"({report.disconnected_corridors} corridor(s) unreachable)",
@@ -457,13 +467,13 @@ def _exit(report: MazeReport) -> str:
     return f"{_xy(report.maze.exit)}{state}"
 
 
-def _key_cells(cells: Tuple[Cell, ...]) -> str:
+def _key_cells(cells: tuple[Cell, ...]) -> str:
     if not cells:
         return "all reachable"
     return "NOT reachable -> " + ", ".join(_xy(cell) for cell in cells)
 
 
-def _coherence(cells: Tuple[Cell, ...]) -> str:
+def _coherence(cells: tuple[Cell, ...]) -> str:
     if not cells:
         return "OK (all shared walls match)"
     shown = ", ".join(_xy(cell) for cell in cells[:5])
@@ -474,27 +484,32 @@ def _coherence(cells: Tuple[Cell, ...]) -> str:
 # --------------------------------------------------------------------------- #
 # Entry point
 # --------------------------------------------------------------------------- #
-def parse_args(argv: List[str]) -> argparse.Namespace:
+def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Analyze an a_maze_ing output file: wall coherence and "
-                    "whether the maze is perfect or a playable Pac-Man board.",
+        "whether the maze is perfect or a playable Pac-Man board.",
     )
     parser.add_argument("output_file", help="maze output file to analyze")
     parser.add_argument(
-        "--min-loops", type=int, default=DEFAULT_MIN_LOOPS, metavar="N",
+        "--min-loops",
+        type=int,
+        default=DEFAULT_MIN_LOOPS,
+        metavar="N",
         help="independent routes a playable (non-perfect) maze must keep "
-             "(default: %(default)s)",
+        "(default: %(default)s)",
     )
     parser.add_argument(
-        "--max-dead-ends", type=int, default=DEFAULT_MAX_DEAD_ENDS,
+        "--max-dead-ends",
+        type=int,
+        default=DEFAULT_MAX_DEAD_ENDS,
         metavar="N",
         help="real dead-ends tolerated; use 0 for the no-dead-end bonus "
-             "(default: %(default)s)",
+        "(default: %(default)s)",
     )
     return parser.parse_args(argv)
 
 
-def main(argv: List[str]) -> int:
+def main(argv: list[str]) -> int:
     """Read, analyze and report; return the process exit code."""
     args = parse_args(argv)
     try:
@@ -514,6 +529,6 @@ if __name__ == "__main__":
         sys.exit(main(sys.argv[1:]))
     except KeyboardInterrupt:
         sys.exit(130)
-    except Exception as error:        # stay safe on any unexpected input
+    except Exception as error:  # stay safe on any unexpected input
         print(f"Unexpected error while analyzing the maze: {error}")
         sys.exit(EXIT_MALFORMED)

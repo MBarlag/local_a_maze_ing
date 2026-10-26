@@ -7,7 +7,9 @@ from submodules.enums import Move, Walls
 
 
 def test_from_file() -> None:
-    grid = Grid(7, 5, from_file="42.txt", map_char=lambda c: Walls(int(c, 16)))
+    grid = Grid(
+        7, 5, from_file="42.txt", on_each_char=lambda c: Walls(int(c, 16))
+    )
     print(grid)
     assert grid[0, 0].value == Walls.BLOCK
     assert grid[2, 2].value == Walls.BLOCK
@@ -23,7 +25,9 @@ def test_grid_add() -> None:
 
 
 def test_grid_view() -> None:
-    grid = Grid(7, 5, from_file="42.txt", map_char=lambda x: Walls(int(x, 16)))
+    grid = Grid(
+        7, 5, from_file="42.txt", on_each_char=lambda x: Walls(int(x, 16))
+    )
     print(grid)
     print()
     view = grid.view(lambda x: x.value.value, x1=0, y1=2, x0=1, y0=0)

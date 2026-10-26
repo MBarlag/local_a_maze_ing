@@ -24,7 +24,9 @@ def test_maze() -> None:
         raise Exception("Error generating.")
     print(
         maze.view(
-            lambda x: "0" if x.to_exit is Move.NOWHERE else x.to_exit.name[0]
+            lambda x: (
+                "0" if x.path_back is Move.NOWHERE else x.path_back.name[0]
+            )
         )
     )
     printer = MazePrinter(**config)

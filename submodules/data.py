@@ -6,6 +6,7 @@ coordinates.
 """
 
 from dataclasses import dataclass
+from functools import cached_property
 
 from typing_extensions import Self
 
@@ -26,7 +27,7 @@ class RoomData:
     visited: bool = False
     walls: Walls = Walls.BLOCK
     blocked: bool = False
-    to_exit: Move = Move.NOWHERE
+    path_back: Move = Move.NOWHERE
 
 
 class Room(Cell[RoomData]):
@@ -37,16 +38,26 @@ class Room(Cell[RoomData]):
     """
 
     @property
-    def to_exit(self) -> Move:
-        """A move needed to take, to get to the exit."""
-        return self.value.to_exit
+    def walls(self) -> Walls:
+        """Walls of the room."""
+        return self.value.walls
 
-    @to_exit.setter
-    def to_exit(self, value: Move) -> None:
-        self.value.to_exit = value
+    @walls.setter
+    def walls(self, value: Walls) -> None:
+        """Sets walls."""
+        self.value.walls = value
 
     @property
-    def neighbours(self) -> list[Self]:
+    def path_back(self) -> Move:
+        """A move needed to take, to get to the exit."""
+        return self.value.path_back
+
+    @path_back.setter
+    def path_back(self, value: Move) -> None:
+        self.value.path_back = value
+
+    @cached_property
+    def neighbours(self) -> list["Room"]:
         """List of neighbouring rooms.
 
         The four main directions (left, down, right, up) are checked.
@@ -55,9 +66,9 @@ class Room(Cell[RoomData]):
         Returns:
             Rooms directly next to this room.
         """
-        MAIN_DIRECTIONS = list(Move)[:4]
-        neighbours: list[Self] = []
-        for direction in MAIN_DIRECTIONS:
+        PRIMITIVE_MOVES = list(Move)[:4]
+        neighbours: list[Room] = []
+        for direction in PRIMITIVE_MOVES:
             neighbour = self + direction
             if neighbour is None:
                 continue
@@ -69,16 +80,17 @@ class Room(Cell[RoomData]):
         """Walls this room should have to be coherent with its neighbours.
 
         Returns:
-            Combination of walls that agree with the surrounding rooms.
+                Combination of walls that agree.
+                Walls.toward if wall_to_break is None:
         """
-        surrounded = Walls.BLOCK
+        hugging_walls = Walls.BLOCK
         for wall in Walls.BLOCK:
             neighbour = self + wall.direction
             if neighbour is None:
                 continue
             if wall.opposite not in neighbour.walls:
-                surrounded -= wall
-        return surrounded
+                hugging_walls -= wall
+        return hugging_walls
 
     @property
     def valid(self) -> bool:
@@ -97,33 +109,46 @@ class Room(Cell[RoomData]):
 
         Args:
             neighbour (Self): # TODO add docsting.
-
-        Raises:
-            ValueError: If the wall is on the border of the maze,
-            or if the room doesn't have the requested wall.
         """
-        vector = neighbour.as_vector - self.as_vector
-        direction = Move.v(vector)
-        wall_to_break = self.choose_wall(direction)
+        direction = self.towards(neighbour)
+        wall_to_break = Walls.from_move(direction)
 
         if wall_to_break in self.walls:
             self.walls -= wall_to_break
             neighbour.walls -= wall_to_break.opposite
         return direction
 
-    def choose_wall(self, direction: Move) -> Walls:
-        if direction == Move.LEFT:
-            return Walls.W
-        elif direction == Move.RIGHT:
-            return Walls.E
-        elif direction == Move.UP:
-            return Walls.N
-        elif direction == Move.DOWN:
-            return Walls.S
-        else:
-            raise ValueError(
-                "Argument isn't one of the primitive four directions"
-            )
+    def towards(self, neighbour: Self) -> Move:
+        """Get direction towards a neighbour."""
+        if neighbour not in self.neighbours:
+            raise MazeError("Can't connect, if not a neighbour.")
+        vector = neighbour.as_vector - self.as_vector
+        direction = Move.v(vector)
+        return direction
+
+    def reachable_from(self, neighbour: Self) -> bool:
+        """Checks reachability from neighbour to self."""
+        direction = neighbour.towards(self)
+        blocking_wall = Walls.from_move(direction)
+        if blocking_wall in neighbour.walls:
+            return False
+        return True
+
+    # def can_break(self, wall: Walls) -> bool:
+    #     if wall not in self.walls:
+    #         return False
+    #     if self.walls.count <= 2:
+    #         return False
+    #     sharing_neighbour = self + wall.direction
+    #     if not sharing_neighbour:
+    #         return False
+    #     if sharing_neighbour.walls.count <= 2:
+    #         return False
+    #     return True
+
+
+class MazeError(Exception):
+    """An exception happening during basic construction of maze."""
 
 
 class Maze(Grid[RoomData, Room]):
@@ -154,6 +179,12 @@ class Maze(Grid[RoomData, Room]):
     @property
     def valid(self) -> bool:
         """Returns whether the maze is valid."""
+        entry = self.room + self.entry
+        exit = self.room + self.exit
+        if entry is None:
+            raise MazeError("Entry is out of bounds.")
+        if exit is None:
+            raise MazeError("Exit is out of bounds.")
         return super().valid and self.entry != self.exit
 
     @property

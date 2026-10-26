@@ -137,7 +137,7 @@ class Cell(Generic[_Data]):
         self.x, self.y = x, y
 
     def __getitem__(self, offset: tuple[int, int] | Vector[int]) -> Self:
-        """Get a cell by offset to self via self[dx, dy] or self[(dx, dy)].
+        r"""Get a cell by offset to self via self\[dx, dy] or self\[(dx, dy)].
 
         Args:
             offset: typle or Vector of dx, dy to shift current position by.
@@ -215,7 +215,7 @@ class Grid(Generic[_Data, _Cell]):
         height: int,
         *,
         from_file: str,
-        map_char: Callable[[str], _Data],
+        on_each_char: Callable[[str], _Data],
     ) -> None: ...
 
     @overload
@@ -237,7 +237,7 @@ class Grid(Generic[_Data, _Cell]):
         default: _Data,
         cell_class: type[_Cell],
         from_file: str,
-        map_char: Callable[[str], _Data],
+        on_each_char: Callable[[str], _Data],
     ) -> None: ...
 
     def __init__(
@@ -248,7 +248,7 @@ class Grid(Generic[_Data, _Cell]):
         default: Any = None,
         cell_class: Any = None,
         from_file: str | None = None,
-        map_char: Callable[[str], _Data] | None = None,
+        on_each_char: Callable[[str], _Data] | None = None,
     ) -> None:
         """Create a Grid of _Cells containing _Data.
 
@@ -258,7 +258,7 @@ class Grid(Generic[_Data, _Cell]):
             default: Default data to store.
             cell_class: Class of Grid's elements. Is bound to Cell[_Data].
             from_file: Filename to init the Grid from.
-            map_char: Function that maps each character of file to _Data.
+            on_each_char: Function that maps each character of file to _Data.
 
         Raises:
             ValueError: If dimensions are invalid.
@@ -280,10 +280,10 @@ class Grid(Generic[_Data, _Cell]):
             ]
             for x in range(self.width)
         ]
-        self._map_char = map_char
+        self._map_char = on_each_char
         self._from_file = from_file
-        if from_file and map_char:
-            self.load(from_file, map_char)
+        if from_file and on_each_char:
+            self.load(from_file, on_each_char)
 
     def load(
         self,
@@ -338,8 +338,8 @@ class Grid(Generic[_Data, _Cell]):
 
     def __iter__(self) -> Generator[_Cell]:
         """Iterate over Cells within Grid."""
-        for x in range(self.width):
-            for y in range(self.height):
+        for y in range(self.height):
+            for x in range(self.width):
                 yield self[x, y]
 
     def __str__(self) -> str:

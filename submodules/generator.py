@@ -1,4 +1,5 @@
-from collections.abc import Callable
+from collections import deque
+from collections.abc import Callable, Iterable
 from random import randint, shuffle
 from typing import Any
 
@@ -8,6 +9,12 @@ from submodules.abstract import Grid
 from submodules.data import Maze, Room
 from submodules.enums import Move, Walls
 from submodules.safe_types import Bool, FileName, IntVector, PositiveInt
+
+P42_WIDTH = 7
+P42_HEIGHT = 5
+
+MIN_WIDTH = 9
+MIN_HEIGHT = 7
 
 
 class MazeGenException(Exception):
@@ -38,6 +45,18 @@ class MazeGenerator(BaseModel):
     _draft_maze: Maze = PrivateAttr()
     _path: list[Walls] | None = PrivateAttr(None)
 
+    def model_post_init(self, context: Any) -> None:
+        """Initialize MazeGnerator inner attributes after its been created."""
+        if self.exit == self.entry:
+            raise MazeGenException("Entry and exit cannot be the same.")
+        self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
+        origin = self._draft_maze.room
+        if origin + self.entry is None or origin + self.exit is None:
+            raise MazeGenException("Entry and/or exit are out of bounds.")
+        if self.seed is None:
+            self.seed = self._refresh_seed()
+        # TODO: Connect the seed to random/shuffle.
+
     @property
     def path(self) -> list[Walls]:
         """The path property."""
@@ -61,17 +80,6 @@ class MazeGenerator(BaseModel):
     @last_maze.setter
     def last_maze(self, value: Maze) -> None:
         self._last_maze = value
-
-    def model_post_init(self, context: Any) -> None:
-        """Initialize MazeGnerator inner attributes after its been created."""
-        if self.exit == self.entry:
-            raise MazeGenException("Entry and exit cannot be the same.")
-        self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
-        origin = self._draft_maze.room
-        if origin + self.entry is None and origin + self.exit is None:
-            raise MazeGenException("Entry and/or exit are out of bounds.")
-        if self.seed is None:
-            self.seed = self._refresh_seed()
 
     def _refresh_seed(self) -> int:
         """Regenerate the seed."""
@@ -106,7 +114,7 @@ class MazeGenerator(BaseModel):
         """Break walls of Maze keeping it valid to the constraints."""
         maze = self._draft_maze
         exit = maze[self.exit]
-        self._walk(exit, on_each_step=self._connect_perfect, depth_first=True)
+        self._walk(exit, on_each_step=self._connect, depth_first=True)
         if not self.perfect:
             self._reset_walk_data()
             self._walk(
@@ -125,6 +133,7 @@ class MazeGenerator(BaseModel):
     def _validate_packman(self) -> bool:
         return True
 
+    # TODO:  Maybe move pattern to a string literal in the code.
     def _add_pattern(self) -> None:
         """Set the rooms that are part of the pattern to blocked true.
 
@@ -136,7 +145,10 @@ class MazeGenerator(BaseModel):
         # width for 42 pattern: 7 cells
         # height for 42 pattern: 5 cells
         pattern = Grid(
-            7, 5, from_file="42.txt", map_char=lambda c: Walls(int(c, 16))
+            P42_WIDTH,
+            P42_HEIGHT,
+            from_file="42.txt",
+            on_each_char=lambda c: Walls(int(c, 16)),
         )
 
         x = (self.width - pattern.width) // 2
@@ -149,55 +161,85 @@ class MazeGenerator(BaseModel):
             if room:
                 room.blocked = cell.value == Walls.BLOCK
 
-    def _remove_deadends(
-        self, previous: Room, current: Room
-    ) -> list[tuple[Room, Room]] | None:
-        pass
+    def _is_connected(self) -> bool:
+        maze = self._draft_maze
+        exit = maze[self.exit]
+        if exit.walls == Walls.BLOCK:
+            return False
+        for room in maze:
+            if room is exit:
+                continue
+            if room.path_back is Move.NOWHERE and room.blocked is False:
+                return False
+        return True
 
     def _reset_walk_data(self) -> None:
         maze = self._draft_maze
         for room in maze:
             room.visited = False
-            room.to_exit = Move.NOWHERE
+            room.path_back = Move.NOWHERE
 
     def _find_path(
-        self, previous: Room, current: Room
-    ) -> list[tuple[Room, Room]] | None:
-        """Finds shortest path through in an imperfect maze.
+        self, old_room: Room, current_room: Room
+    ) -> list[Room] | None:
+        """Finds shortest path in a maze.
 
         Raises:
+            # TODO: make this possible
             ValueError: When there is no possible path between entry and exit.
 
         Returns:
-            list[tuple[Room, Room]] | None: Empty list if room
-            has been visited or is blocked.
+            list[Room] | None: Empty list if room
+            has been visited or is blocked, otherwise a list with rooms
+            that can be visited.
         """
-        if current.visited is True or current.blocked is True:
+        if current_room.visited is True or current_room.blocked is True:
             return []
-        if previous.as_vector != current.as_vector:
-            direction = Move.v(previous.as_vector - current.as_vector)
-            current.to_exit = direction
-        current.visited = True
-        if current.as_vector == self.entry:
-            return None
-
-        neighbours = []
-        for wall in (Walls.N, Walls.E, Walls.S, Walls.W):
-            if wall not in current.walls:
-                neighbour = current + wall.direction
-                if neighbour:
-                    neighbours.append(neighbour)
+        direction = old_room.towards(current_room)
+        blocking_wall = Walls.from_move(direction)
+        if blocking_wall in old_room.walls:
+            return []
+        current_room.path_back = direction.opposite
+        current_room.visited = True
+        # could be aborted earlier, but we need
+        # to use the data for maze connectivity checks.
+        # if current.as_vector == self.entry:
+        #     return None
+        neighbours = current_room.neighbours
         shuffle(neighbours)
-        next_steps = [(current, neighbour) for neighbour in neighbours]
-        return next_steps
+        return neighbours
 
-    def _connect_perfect(
+    def _remove_deadends(
         self, previous: Room, current: Room
-    ) -> list[tuple[Room, Room]] | None:
-        """Connect rooms (perfect), return [(current, legal_neighbour), ..].
+    ) -> list[Room] | None:
+        if current.blocked is True or current.visited is True:
+            return []
+        neighbours = current.neighbours
+        shuffle(neighbours)
+        if current.reachable_from(previous):
+            current.visited = True
+            direction = current.towards(previous)
+            current.path_back = direction
+            return neighbours
+        if previous.walls.count != 3 and current.walls.count != 3:
+            return []
+        middle = previous.walls.middle
+        if middle != current.walls.middle:
+            current.visited = True
+            direction = previous.connect_with(current)
+            current.path_back = direction.opposite
+            return neighbours
+        if current.walls.count == 2:
+            current.visited = True
+            direction = current.connect_with(previous)
+            current.path_back = direction
+            return neighbours
+        return []
 
-        Skips rooms that do not fall under perfect maze
-        generation criteria: if room has been visited or
+    def _connect(self, previous: Room, current: Room) -> list[Room] | None:
+        r"""Connect rooms and return \[legal_neighbour, ...].
+
+        Skips room if room has been visited or
         the subject criteria:
         if room is part of the 42 pattern (blocked).
 
@@ -211,31 +253,28 @@ class MazeGenerator(BaseModel):
         """
         if current.visited is True or current.blocked is True:
             return []
-        if previous.as_vector != current.as_vector:
-            direction = current.connect_with(previous)
-            current.to_exit = direction
-            # room.connections.append(root)
+        direction = previous.connect_with(current)
+        current.path_back = direction.opposite
         current.visited = True
-        neighbours = list(current.neighbours)
+        neighbours = current.neighbours
         # TODO: create one access point for
         # lowering chance of missing one of the
         # functions and not adding reproducability there.
         # TODO: add seed reproducability here.
         shuffle(neighbours)
-        next_steps = [(current, next_room) for next_room in neighbours]
-        return next_steps
+        return neighbours
 
     def _walk(
         self,
         start_from: Room,
-        on_each_step: Callable[[Room, Room], list[tuple[Room, Room]] | None],
+        on_each_step: Callable[[Room, Room], Iterable[Room] | None],
         depth_first: bool = True,
     ) -> None:
         """Walk a maze and apply processing function each step.
 
         Adds new walking options that processing function
         returned to the queue.
-        Processing function can return an emprt list, which means
+        Processing function can return an empt list, which means
         no new options has been selected on the current steps.
         If on_each_step function returned None => _walk completes.
         Otherwise _walk completes when the queue is empty.
@@ -245,16 +284,21 @@ class MazeGenerator(BaseModel):
             on_each_step: [TODO:description]
             depth_first: [TODO:description]
         """
-        OLDEST = 0
-        NEWEST = -1
-        queue: list[tuple[Room, Room]] = [(start_from, start_from)]
-        index = NEWEST if depth_first else OLDEST
+        start_from.visited = True
+        queue: deque[tuple[Room, Room]] = deque(
+            [(start_from, neighbour) for neighbour in start_from.neighbours]
+        )
+        POP_NEWEST = queue.pop
+        POP_OLDEST = queue.popleft
+        peek_new_rooms = on_each_step
+        get_next_idea = POP_NEWEST if depth_first else POP_OLDEST
         while queue:
-            root, room = queue.pop(index)
-            new_options = on_each_step(root, room)
-            if new_options is None:
+            from_room, to_room = get_next_idea()
+            new_rooms = peek_new_rooms(from_room, to_room)
+            if new_rooms is None:
                 break
-            queue.extend(new_options)
+            new_ideas = [(to_room, next_room) for next_room in new_rooms]
+            queue.extend(new_ideas)
 
     def _extract_path(self) -> list[Walls]:
         """Extract a path from maze. Convert directions Walls repr."""
@@ -263,51 +307,24 @@ class MazeGenerator(BaseModel):
         room = maze[self.entry]
         while room and room.as_vector != self.exit:
             if room:
-                if room.to_exit is Move.NOWHERE:
+                if room.path_back is Move.NOWHERE:
                     raise MazeGenException(
                         "Invalid path, encountered Move.NOWHERE."
                     )
-                path.append(room.choose_wall(room.to_exit))
-            new_room = room + room.to_exit
+                path.append(Walls.from_move(room.path_back))
+            new_room = room + room.path_back
             if new_room:
                 room = new_room
         return path
 
     def _output(self) -> None:
         """Write generated maze to a file."""
-        if not self._path:
-            raise MazeGenException(
-                "No path has been generated. Aborting output."
-            )
         maze = self.last_maze
         with open(self.output_file, "w", encoding="utf-8") as f:
             for y in range(maze.height):
-                line = (
-                    "".join(
-                        hex(room.value.walls.value)[2:] for room in maze.row(y)
-                    )
-                    + "\n"
-                )
+                line = "".join(room.walls.hex for room in maze.row(y)) + "\n"
                 f.write(line)
             entry = str(self.entry).strip("()")
             exit = str(self.exit).strip("()")
             f.write(f"\n{entry}\n{exit}\n")
-            f.write("".join(str(x) for x in self._path) + "\n")
-
-    # def shortest_path(self) -> list[Move]:
-    #     """Finds a path through the given maze.
-    #
-    #     Args:
-    #         maze: The maze in which to find the path.
-    #
-    #     Returns:
-    #         list[Move]: List of moves that can be performed
-    #         to reach the exit from the entry.
-    #     """
-    #
-    # def hex_output(self) -> list[list[int]]:
-    #     """Create a file that stores the maze in hexadecimal.
-    #
-    #     Returns:
-    #         list[list[int]]: Holds maze, entry/exit and path.
-    #     """
+            f.write("".join(str(x) for x in self.path) + "\n")

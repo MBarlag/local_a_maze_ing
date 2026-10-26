@@ -35,7 +35,7 @@ class MazePrinter(BaseModel):
     entry: str
     exit: str
     input_file: str = Field(alias="output_file")
-    path_visible: bool = False
+    path_visible: bool = True  # TODO: flip to False once done
     wall_color: str = COLOR_2
 
     # # TODO redefine print

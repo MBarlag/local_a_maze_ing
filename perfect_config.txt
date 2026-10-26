@@ -1,0 +1,8 @@
+WIDTH=25
+HEIGHT=20
+ENTRY=0,0
+EXIT=24,19
+OUTPUT_FILE=TESTING.txt#2.txt #comment
+PERFECT=True
+SEED=42
+# Maybe set the seed with user input.
