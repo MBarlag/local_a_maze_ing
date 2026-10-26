@@ -2,6 +2,7 @@ from collections import deque
 from collections.abc import Callable, Iterable
 from random import choice, randint, shuffle
 from random import seed as set_random_seed  #FIX2 To really use seed.
+from typing import Any
 from pydantic import BaseModel, Field, PrivateAttr
 
 from submodules.abstract import Grid
