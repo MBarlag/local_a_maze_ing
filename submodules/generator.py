@@ -3,7 +3,7 @@ from collections.abc import Callable, Iterable
 from random import choice, randint, shuffle
 from random import seed as set_random_seed  #FIX2 To really use seed.
 from typing import Any
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import BaseModel, Field, PrivateAttr, ConfigDict
 
 from submodules.abstract import Grid
 from submodules.data import Maze, Room
@@ -33,7 +33,7 @@ class MazeGenerator(BaseModel):
         perfect (bool): Enforce one unique path between any two points
         seed (int): Number that defines everything about the maze.
     """
-
+    model_config = ConfigDict(arbitrary_types_allowed=True)
     width: PositiveInt
     height: PositiveInt
     entry: IntVector
@@ -136,8 +136,9 @@ class MazeGenerator(BaseModel):
         x = (self.width - pattern.width) // 2
         y = (self.height - pattern.height) // 2
         if self.width % 2 == 0:
-            x += -1
-        
+            x += 1
+        if self.height % 2 == 0:
+            y += 1
 
         left_top_room = maze[x, y]
         # setting rooms that are corresponding to the pattern to blocked = True

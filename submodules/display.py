@@ -17,6 +17,7 @@ CLR = "63"
 PATH_CLR = "\033[38;5;0m\033[48;5;220m"  # yellow 220
 COLOR_1 = f"\033[38;5;{CLR}m\033[48;5;{CLR}m"
 COLOR_2 = "\033[38;5;53m\033[48;5;53m"
+BLACK_PINK = "\033[38;5;1m"
 RST = "\033[0m"
 
 
@@ -74,7 +75,7 @@ class MazePrinter(BaseModel):
 
         self._mark_point(ENTRY_FLAG, hex_maze)
         self._mark_point(EXIT_FLAG, hex_maze)
-        
+        self._mark_point(CENTER_FLAG, hex_maze)
         if self.path_visible:
             self._mark_path(hex_maze)
         return hex_maze
@@ -87,10 +88,14 @@ class MazePrinter(BaseModel):
             hex_maze (list[list[int]]): Holds maze cells and entry/exit points.
         """
         coord: tuple[int, int]
-        if point_type == 16:
+        cx = self.width // 2
+        cy = self.height // 2
+        if point_type == ENTRY_FLAG:
             coord = self._parse_coords(self.entry)
-        elif point_type == 32:
+        elif point_type == EXIT_FLAG:
             coord = self._parse_coords(self.exit)
+        elif point_type == CENTER_FLAG:
+            coord = cx, cy
         else:
             raise ValueError
         # This should never happen, so do we need this?
@@ -131,6 +136,8 @@ class MazePrinter(BaseModel):
                 print(" A ", end="")
             elif cell & EXIT_FLAG:
                 print(" B ", end="")
+            elif cell & CENTER_FLAG:
+                print(f"{BLACK_PINK} C {RST}", end="")
             elif cell & PATH:
                 if cell & PATH_W:
                     print(f"{PATH_CLR} < {RST}", end="")
