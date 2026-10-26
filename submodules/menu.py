@@ -34,6 +34,7 @@ class Menu:
     ) -> None:
         self.maze_gen = maze_gen
         self.maze_printer = maze_printer
+        self.first_maze = True  # FIX7
 
     def prompt_loop(self) -> None:
         """Runs a prompt loop to get next action from the user."""
@@ -51,7 +52,8 @@ class Menu:
     def generate(self) -> None:
         """Generates a maze and prints it in the terminal."""
         try:
-            self.maze_gen.generate()
+            self.maze_gen.generate(new_seed=not self.first_maze)
+            self.first_maze = False  #FIX7.5
         except MazeGenException as error:
             print(f"Could not generate a new maze: {error}.")
             return

@@ -1,8 +1,7 @@
 from collections import deque
 from collections.abc import Callable, Iterable
 from random import choice, randint, shuffle
-from typing import Any
-
+from random import seed as set_random_seed  #FIX2 To really use seed.
 from pydantic import BaseModel, Field, PrivateAttr
 
 from submodules.abstract import Grid
@@ -98,11 +97,16 @@ class MazeGenerator(BaseModel):
         Returns:
             Maze: Maze data structure.
         """
+        if new_seed is True:
+            self.seed = self._refresh_seed()
+        set_random_seed(self.seed)
+        self._draft_maze = Maze(
+            self.width, self.height, self.entry, self.exit
+        )
+        #  FIX3 Connect seed so every generate, a new seed is used.
         maze = self._draft_maze
         entry = maze[self.entry]
         exit = maze[self.exit]
-        if new_seed is True:
-            self.seed = self._refresh_seed()
         self._add_pattern()
         if entry.blocked is True or exit.blocked is True:
             raise MazeGenException("Entry and exit cant be in pattern.")
@@ -119,16 +123,18 @@ class MazeGenerator(BaseModel):
             self._remove_deadends()
             self._reset_walk_data()
             self._walk(exit, on_each_step=self._find_path, depth_first=False)
-            if not self._validate_packman():
-                raise MazeGenException("Generated Maze is not Packman ready.")
+        if not self._is_connected():
+            raise MazeGenException("Generated Maze is not fully connected.")
+        # FIX5 Is connected is now the only check needed but was never called.
         if not self._draft_maze.valid:
             raise MazeGenException("Generated Maze is not valid.")
         self.last_maze = self._draft_maze
         self._path = self._extract_path()
         self._output()
 
-    def _validate_packman(self) -> bool:
-        return True
+    # def _validate_packman(self) -> bool:
+    #     return True
+    # FIX5.5 Delete validate_packman because not needed anymore.
 
     # TODO:  Maybe move pattern to a string literal in the code.
     def _add_pattern(self) -> None:
@@ -139,8 +145,11 @@ class MazeGenerator(BaseModel):
         Should be called only after the self._draft_maze has been called.
         """
         maze = self._draft_maze
-        # width for 42 pattern: 7 cells
-        # height for 42 pattern: 5 cells
+        if self.width < MIN_WIDTH or self.height < MIN_HEIGHT:
+            print("Pattern doesn't fit Mazes width or height, skipping it.")
+            return
+        # FIX6 Making sure too small mazes never get the pattern.
+
         pattern = Grid(
             P42_WIDTH,
             P42_HEIGHT,
@@ -211,7 +220,8 @@ class MazeGenerator(BaseModel):
         for room in maze:
             if room.blocked or room.walls.count != 3:
                 continue
-            neighbours = [c for c in room.neighbours if c.blocked is False]
+            neighbours = [c for c in room.neighbours if c.blocked is False and not c.reachable_from(room)]
+            # FIX4 Skip the reachable neighbours
             if not neighbours:
                 continue
             deadends = [c for c in neighbours if c.walls.count == 3]
