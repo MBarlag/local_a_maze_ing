@@ -57,38 +57,15 @@ class MazeGenerator(BaseModel):
             self.seed = self._refresh_seed()
         # TODO: Connect the seed to random/shuffle.
 
-    @property
-    def path(self) -> list[Walls]:
-        """The path property."""
-        if self._path is None:
-            raise MazeGenException("No path has been collected.")
-        return self._path
-
-    @path.setter
-    def path(self, value: list[Walls]) -> None:
-        self._path = value
-
-    @property
-    def last_maze(self) -> Maze:
-        """Last generated maze."""
-        if self._last_maze is None:
-            raise MazeGenException(
-                "Error accessing last maze, no maze has been generated."
-            )
-        return self._last_maze
-
-    @last_maze.setter
-    def last_maze(self, value: Maze) -> None:
-        self._last_maze = value
-
     def _refresh_seed(self) -> int:
         """Regenerate the seed."""
         MIN = 0
         MAX = 2**31 - 1
         self.seed = randint(MIN, MAX)
+        set_random_seed(self.seed)
         return self.seed
 
-    def generate(self, new_seed: bool = False) -> Maze:
+    def generate(self, new_seed: bool = True) -> Maze:
         """Generates maze.
 
         Args:
@@ -100,7 +77,6 @@ class MazeGenerator(BaseModel):
         """
         if new_seed is True:
             self.seed = self._refresh_seed()
-        set_random_seed(self.seed)
         self._draft_maze = Maze(
             self.width, self.height, self.entry, self.exit
         )
@@ -157,9 +133,11 @@ class MazeGenerator(BaseModel):
             from_file="42.txt",
             on_each_char=lambda c: Walls(int(c, 16)),
         )
-
         x = (self.width - pattern.width) // 2
         y = (self.height - pattern.height) // 2
+        if self.width % 2 == 0:
+            x += -1
+        
 
         left_top_room = maze[x, y]
         # setting rooms that are corresponding to the pattern to blocked = True
@@ -321,3 +299,27 @@ class MazeGenerator(BaseModel):
             exit = str(self.exit).strip("()")
             f.write(f"\n{entry}\n{exit}\n")
             f.write("".join(str(x) for x in self.path) + "\n")
+
+    @property
+    def path(self) -> list[Walls]:
+        """The path property."""
+        if self._path is None:
+            raise MazeGenException("No path has been collected.")
+        return self._path
+
+    @path.setter
+    def path(self, value: list[Walls]) -> None:
+        self._path = value
+
+    @property
+    def last_maze(self) -> Maze:
+        """Last generated maze."""
+        if self._last_maze is None:
+            raise MazeGenException(
+                "Error accessing last maze, no maze has been generated."
+            )
+        return self._last_maze
+
+    @last_maze.setter
+    def last_maze(self, value: Maze) -> None:
+        self._last_maze = value

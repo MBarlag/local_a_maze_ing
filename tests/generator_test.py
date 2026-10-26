@@ -32,6 +32,7 @@ BAD_CONFIGS = gen_configs()
 def test_valid_config_pipeline() -> None:
     config = Config("tests/good_config.txt").parse_config()
     maze_gen = MazeGenerator(**config)
+    # maze_gen.generate()
     assert type(maze_gen.entry) == Vector
     assert type(maze_gen.entry.x) == int
     with pytest.raises(FrozenInstanceError):
@@ -46,76 +47,85 @@ def test_invalid_config_pipeline(config: dict[str, str]) -> None:
 
 
 def test_generate_pacman(subtests: pytest.Subtests) -> None:
-    width = random.randint(9, 20)
-    height = random.randint(5, 20)
-    config: dict[str, str] = {
-        "width": f"{width}",
-        "height": f"{height}",
-        "entry": "0,0",
-        "exit": f"{width - 1},{height - 1}",
-        "output_file": "imperfect.txt",
-        "perfect": "False",
-    }
-    maze_gen = MazeGenerator(**config)
-    maze = maze_gen.generate()
-    if not maze:
-        raise Exception("Maze did not generate.")
-    grid = Grid(
-        maze.width,
-        maze.height,
-        from_file=config["output_file"],
-        on_each_char=lambda x: Walls(int(x, 16)),
-    )
-    print(grid)
-
-    m = MAZE.from_file(config["output_file"])
-    report = analyze(m)
-    print(render(report, 2, 2))
-    with subtests.test("coherent"):
-        assert report.incoherent != False
-    with subtests.test("loops-check"):
-        assert report.loops >= 2
-    with subtests.test("deadends"):
-        assert report.dead_ends[0] <= 2
-    with subtests.test("not-disconnected"):
-        assert report.disconnected_corridors != True
-    with subtests.test("unreachable-key-cells"):
-        assert report.unreachable_key_cells != True
+    for i in range(100):
+        width = random.randint(1, 100)
+        height = random.randint(1, 100)
+        seed = random.randint(0, 2**31)
+        config: dict[str, str] = {
+            "width": f"{width}",
+            "height": f"{height}",
+            "entry": "0,0",
+            "exit": f"{width - 1},{height - 1}",
+            "output_file": "imperfect.txt",
+            "perfect": "False",
+            # "seed": f"{seed}"
+        }
+        maze_gen = MazeGenerator(**config)
+        maze = maze_gen.generate()
+        if not maze:
+            raise Exception("Maze did not generate.")
+        grid = Grid(
+            maze.width,
+            maze.height,
+            from_file=config["output_file"],
+            on_each_char=lambda x: Walls(int(x, 16)),
+        )
+        print(grid)
+        printer = MazePrinter(**config)
+        printer.display_maze()
+        print(f"SEED: {maze_gen.seed=}")
+        m = MAZE.from_file(config["output_file"])
+        report = analyze(m)
+        print(render(report, 2, 2))
+        with subtests.test("coherent"):
+            assert report.incoherent != False
+        with subtests.test("loops-check"):
+            assert report.loops >= 2
+        with subtests.test("deadends"):
+            assert report.dead_ends[0] <= 2
+        with subtests.test("not-disconnected"):
+            assert report.disconnected_corridors != True
+        with subtests.test("unreachable-key-cells"):
+            assert report.unreachable_key_cells != True
 
 
 def test_generate_perfect(subtests: pytest.Subtests) -> None:
-    width = random.randint(9, 20)
-    height = random.randint(5, 20)
-    config: dict[str, str] = {
-        "width": f"{width}",
-        "height": f"{height}",
-        "entry": "0,0",
-        "exit": f"{width - 1},{height - 1}",
-        "output_file": "perfect.txt",
-        "perfect": "True",
-    }
-    maze_gen = MazeGenerator(**config)
-    maze = maze_gen.generate()
-    if not maze:
-        raise Exception("Maze did not generate.")
-    grid = Grid(
-        maze.width,
-        maze.height,
-        from_file=config["output_file"],
-        on_each_char=lambda x: Walls(int(x, 16)),
-    )
-    print(grid)
-    printer = MazePrinter(**config)
-    printer.display_maze()
-    m = MAZE.from_file(config["output_file"])
-    report = analyze(m)
-    print(render(report, 2, 2))
-    with subtests.test("coherent"):
-        assert not report.incoherent
-    with subtests.test("no-loops"):
-        assert report.loops == 0
-    with subtests.test("not-disconnected"):
-        assert not report.disconnected_corridors
+    for i in range(10):            
+        width = random.randint(1, 100)
+        height = random.randint(1, 100)
+        seed = random.randint(0, 2**31)
+        config: dict[str, str] = {
+            "width": f"{width}",
+            "height": f"{height}",
+            "entry": "0,0",
+            "exit": f"{width - 1},{height - 1}",
+            "output_file": "perfect.txt",
+            "perfect": "True",
+            # "seed": f"{seed}"
+        }
+        maze_gen = MazeGenerator(**config)
+        maze = maze_gen.generate()
+        if not maze:
+            raise Exception("Maze did not generate.")
+        grid = Grid(
+            maze.width,
+            maze.height,
+            from_file=config["output_file"],
+            on_each_char=lambda x: Walls(int(x, 16)),
+        )
+        print(grid)
+        printer = MazePrinter(**config)
+        printer.display_maze()
+        print(f"SEED: {maze_gen.seed=}")
+        m = MAZE.from_file(config["output_file"])
+        report = analyze(m)
+        print(render(report, 2, 2))
+        with subtests.test("coherent"):
+            assert not report.incoherent
+        with subtests.test("no-loops"):
+            assert report.loops == 0
+        with subtests.test("not-disconnected"):
+            assert not report.disconnected_corridors
 
 
 # def debug() -> None:

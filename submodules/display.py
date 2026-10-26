@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from submodules.abstract import Vector
 from submodules.enums import Walls
 
+CENTER_FLAG = 1 << 10
 ENTRY_FLAG = 1 << 4
 EXIT_FLAG = 1 << 5
 PATH_OFFSET = 6
@@ -13,7 +14,7 @@ PATH_W = PATH_N << 3
 PATH = PATH_W + PATH_S + PATH_E + PATH_N
 
 CLR = "63"
-PATH_CLR = "\033[38;5;82m\033[48;5;82m"  # yellow 220
+PATH_CLR = "\033[38;5;0m\033[48;5;220m"  # yellow 220
 COLOR_1 = f"\033[38;5;{CLR}m\033[48;5;{CLR}m"
 COLOR_2 = "\033[38;5;53m\033[48;5;53m"
 RST = "\033[0m"
@@ -73,6 +74,7 @@ class MazePrinter(BaseModel):
 
         self._mark_point(ENTRY_FLAG, hex_maze)
         self._mark_point(EXIT_FLAG, hex_maze)
+        
         if self.path_visible:
             self._mark_path(hex_maze)
         return hex_maze
