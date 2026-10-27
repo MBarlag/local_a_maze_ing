@@ -87,7 +87,6 @@ class MazeGenerator(BaseModel):
         if new_seed is not None:
             self.set_seed(new_seed)
         self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
-        #  FIX3 Connect seed so every generate, a new seed is used.
         maze = self._draft_maze
         entry = maze[self.entry]
         exit = maze[self.exit]
@@ -116,10 +115,6 @@ class MazeGenerator(BaseModel):
         self._path = self._extract_path()
         self._output()
 
-    # def _validate_packman(self) -> bool:
-    #     return True
-    # FIX5.5 Delete validate_packman because not needed anymore.
-
     # TODO:  Maybe move pattern to a string literal in the code.
     def _add_pattern(self) -> None:
         """Set the rooms that are part of the pattern to blocked true.
@@ -133,7 +128,7 @@ class MazeGenerator(BaseModel):
             print("Pattern doesn't fit Mazes width or height, skipping it.")
             return
         # FIX6 Making sure too small mazes never get the pattern.
-
+        #
         pattern = Grid(
             P42_WIDTH,
             P42_HEIGHT,

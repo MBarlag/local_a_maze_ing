@@ -40,7 +40,7 @@ def limited_input(
     Raises:
         ValueError if any of the limits has been triggered.
     """
-    _STR = TypeAdapter(
+    _STR: TypeAdapter = TypeAdapter(
         Annotated[
             str,
             StringConstraints(
@@ -93,14 +93,18 @@ def blocked_inputs(*args: str) -> BeforeValidator:
 
 
 def _to_vector_int(value: Any) -> Vector[int]:
+
     if not isinstance(value, (Vector, tuple, str)):
         raise TypeError("Unsupported type for Vector[int].")
+
     if isinstance(value, (Vector, tuple)):
         if len(list(value)) != 2:
             raise ValueError("Vector should have strictly two members.")
+
         x, y = value
         if not (isinstance(x, int) and isinstance(y, int)):
             raise TypeError("Vector members should be of type int.")
+
         return Vector[int](x, y)
     positive_ints_pattern = re.compile(r"^\s*([0-9]+)\s*,\s*([0-9]+)\s*$")
     if isinstance(value, str):
