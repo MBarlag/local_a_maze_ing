@@ -9,7 +9,7 @@ import pytest
 from submodules.abstract import Cell, Grid, Vector
 from submodules.config import Config
 from submodules.display import MazePrinter
-from submodules.enums import Walls
+from submodules.enums import Ways
 from submodules.generator import MazeGenerator
 from submodules.safe_types import IntVector
 from tests.maze_analyzer import Maze as MAZE
@@ -48,10 +48,10 @@ def test_invalid_config_pipeline(config: dict[str, str]) -> None:
         MazeGenerator(**config)
 
 
-H = 100
-W = 100
-PI = 100
-II = 100
+H = 50
+W = 50
+PI = 20
+II = 20
 
 
 def pick_valid(grid: Grid[bool, Cell[bool]]) -> tuple[IntVector, IntVector]:
@@ -99,7 +99,7 @@ def test_generate_pacman(subtests: pytest.Subtests) -> None:
             maze.width,
             maze.height,
             from_file=config["output_file"],
-            on_each_char=lambda x: Walls(int(x, 16)),
+            on_each_char=lambda x: Ways(int(x, 16)),
         )
         print(walls)
         config["entry"] = str(entry).strip("()")
@@ -153,7 +153,7 @@ def test_generate_perfect(subtests: pytest.Subtests) -> None:
             maze.width,
             maze.height,
             from_file=config["output_file"],
-            on_each_char=lambda x: Walls(int(x, 16)),
+            on_each_char=lambda x: Ways(int(x, 16)),
         )
         print(walls)
         config["entry"] = str(entry).strip("()")

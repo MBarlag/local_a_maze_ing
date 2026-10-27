@@ -5,18 +5,18 @@ from submodules.enums import *
 
 def test_move_add():
     assert (
-        reduce(Vector.__add__, [Move.LEFT, Move.RIGHT, Move.UP, Move.DOWN])
-        == Move.NOWHERE
+        reduce(Vector.__add__, [Step.LEFT, Step.RIGHT, Step.UP, Step.DOWN])
+        == Step.NOWHERE
     )
-    assert Move.LEFT + Move.RIGHT == Move.NOWHERE
+    assert Step.LEFT + Step.RIGHT == Step.NOWHERE
 
 
 def test_move_mul():
-    assert Move.RIGHT * 6 == Vector(6, 0)
+    assert Step.RIGHT * 6 == Vector(6, 0)
 
 
 def test_move_eq():
-    assert Move.RIGHT == (1, 0)
-    assert Move.RIGHT == Vector(1, 0)
-    assert Move.LEFT == Vector(-1, 0)
-    assert Move.LEFT == (-1, 0)
+    assert Step.RIGHT == (1, 0)
+    assert Step.RIGHT == Vector(1, 0)
+    assert Step.LEFT == Vector(-1, 0)
+    assert Step.LEFT == (-1, 0)

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 from submodules.abstract import Vector
-from submodules.enums import Walls
+from submodules.enums import Ways
 
 CENTER_FLAG = 1 << 10
 ENTRY_FLAG = 1 << 4
@@ -180,11 +180,11 @@ class MazePrinter(BaseModel):
             #     if step not in ("N", "E", "S", "W"):
             #         raise ValueError("Invalid path character in input file.")
             if position == entry:
-                position += Walls[step].direction
+                position += Ways[step].as_step
                 continue
             x, y = position
-            hex_maze[y][x] += Walls[step].value << PATH_OFFSET
-            position += Walls[step].direction
+            hex_maze[y][x] += Ways[step].value << PATH_OFFSET
+            position += Ways[step].as_step
 
     def display_maze(self) -> None:
         """Method to print the maze in the terminal.

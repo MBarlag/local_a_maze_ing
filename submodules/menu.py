@@ -6,6 +6,7 @@ After excecuting, main will lead the user back to the menu until they
 choose to quit the program.
 """
 
+import os
 import sys
 from enum import Enum
 from typing import Any
@@ -46,8 +47,10 @@ class Menu:
         )
         choice = Action.GENERATE
         while choice:
+            print()
             self.execute(choice)
             choice = choose_action()
+            os.system("cls || clear")
 
     def generate(self) -> None:
         """Generates a maze and prints it in the terminal."""
@@ -128,7 +131,6 @@ def choose_action() -> Action:
             ],
         )
     ]
-
     choice: dict[str, Any] = inquirer.prompt(
         to_choose_action, raise_keyboard_interrupt=True
     )

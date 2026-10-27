@@ -4,7 +4,7 @@ from submodules.abstract import Vector
 from submodules.config import Config
 from submodules.data import Maze, Room
 from submodules.display import MazePrinter
-from submodules.enums import Move, Walls
+from submodules.enums import Step, Ways
 from submodules.generator import MazeGenerator
 
 
@@ -25,7 +25,7 @@ def test_maze() -> None:
     print(
         maze.view(
             lambda x: (
-                "0" if x.path_back is Move.NOWHERE else x.path_back.name[0]
+                "0" if x.path_hint is Step.NOWHERE else x.path_hint.name[0]
             )
         )
     )
@@ -45,7 +45,7 @@ def test_room() -> None:
     assert room.valid == True
     assert maze.valid == True
 
-    room.walls -= Walls.W
+    room.walls -= Ways.W
     assert room.valid == False
     assert maze.valid == False
 

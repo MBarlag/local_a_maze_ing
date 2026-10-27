@@ -6,8 +6,8 @@ from enum import Enum, Flag
 from submodules.abstract import Vector
 
 
-class Move(Vector[int], Enum):
-    """Enum for possible one step moves on 2D plane with Y axis looking down.
+class Step(Vector[int], Enum):
+    """Steps are possible one step moves on 2D plane with Y axis looking down.
 
     Attributes:
         LEFT: Corresponds to Vector(-1, 0)
@@ -24,49 +24,43 @@ class Move(Vector[int], Enum):
     NOWHERE = 0, 0
 
     @classmethod
-    def v(cls, vector: tuple[int, int] | Vector[int]) -> "Move":
-        for move in list(cls):
-            if move.value == vector:
-                return move
-        raise Exception("Not a primitive move.")
+    def v(cls, vector: tuple[int, int] | Vector[int]) -> "Step":
+        """Cast vector to Step if primitive vector."""
+        for step in list(cls):
+            if step.value == vector:
+                return step
+        raise Exception("Not a primitive step.")
 
     @property
-    def opposite(self) -> "Move":
-        """Opposite Move."""
-        opposites: dict[Move, Move] = {
-            Move.LEFT: Move.RIGHT,
-            Move.UP: Move.DOWN,
-            Move.RIGHT: Move.LEFT,
-            Move.DOWN: Move.UP,
+    def opposite(self) -> "Step":
+        """Opposite Step."""
+        opposites: dict[Step, Step] = {
+            Step.LEFT: Step.RIGHT,
+            Step.UP: Step.DOWN,
+            Step.RIGHT: Step.LEFT,
+            Step.DOWN: Step.UP,
         }
-        return opposites.get(self, Move.NOWHERE)
-
-    # def __iter__(self) -> Iterator[int]:
-    #    return iter(self.value)
-    # def __eq__(self, other: Vector[int] | type["Move"] | tuple[int, int]):
-    #
-    #   y, x = other
-    #   return y == self.y and x == self.x
+        return opposites.get(self, Step.NOWHERE)
 
 
-class Walls(Flag):
-    """Enum representing combination of wall locations.
+class Ways(Flag):
+    """Direction config. Combines primitive W(est), S(outh), E(east), N(north).
 
     Attributes:
-        W: Represents west wall.
-        S: Represents south wall.
-        E: Represents east wall.
-        N: Represents north wall.
-        EMPTY: Represents no walls.
-        BLOCK: Represents all walls.
+        W: Represents west way.
+        S: Represents south way.
+        E: Represents east way.
+        N: Represents north way.
+        EMPTY: Represents no ways.
+        ALL: Represents all ways.
     """
 
     W = 0b1000
     S = 0b0100
     E = 0b0010
     N = 0b0001
-    EMPTY = 0b0000
-    BLOCK = 0b1111
+    NONE = 0b0000
+    ALL = 0b1111
 
     @property
     def hex(self) -> str:
@@ -75,78 +69,55 @@ class Walls(Flag):
 
     @property
     def count(self) -> int:
-        """How many walls in the Walls configuration."""
+        """How many ways in the Ways configuration."""
         return len(list(self))
 
     @property
-    def middle(self) -> "Walls":
-        """Returns the middle wall if self is a deadend."""
-        inverted_walls = ~self
-        middle = inverted_walls.opposite
-        return middle
-
-    @property
-    def opposite(self) -> "Walls":
-        """Opposite wall."""
-        opposites: dict[Walls, Walls] = {
-            Walls.W: Walls.E,
-            Walls.E: Walls.W,
-            Walls.N: Walls.S,
-            Walls.S: Walls.N,
+    def opposite(self) -> "Ways":
+        """Opposite way."""
+        opposites: dict[Ways, Ways] = {
+            Ways.W: Ways.E,
+            Ways.E: Ways.W,
+            Ways.N: Ways.S,
+            Ways.S: Ways.N,
         }
-        return opposites.get(self, Walls.EMPTY)
+        return opposites.get(self, Ways.NONE)
 
     @property
-    def direction(self) -> Move:
-        """Direction the Wall is located at."""
-        if self == Walls.W:
-            return Move.LEFT
-        elif self == Walls.E:
-            return Move.RIGHT
-        elif self == Walls.N:
-            return Move.UP
-        elif self == Walls.S:
-            return Move.DOWN
-        return Move.NOWHERE
-
-    @classmethod
-    def from_move(cls, direction: Move) -> "Walls":
-        """Selects a Wall coresponding to a primitive move."""
-        if direction == Move.LEFT:
-            return Walls.W
-        elif direction == Move.RIGHT:
-            return Walls.E
-        elif direction == Move.UP:
-            return Walls.N
-        elif direction == Move.DOWN:
-            return Walls.S
-        else:
-            raise ValueError(
-                "Argument isn't one of the primitive four directions"
-            )
+    def as_step(self) -> Step:
+        """Return Step corresponding to primitive Way."""
+        if self == Ways.W:
+            return Step.LEFT
+        elif self == Ways.E:
+            return Step.RIGHT
+        elif self == Ways.N:
+            return Step.UP
+        elif self == Ways.S:
+            return Step.DOWN
+        return Step.NOWHERE
 
     def __str__(self) -> str:
         """Returns name of the configuration."""
-        return repr(self)[7:].split(":")[0]
+        return repr(self)[6:].split(":")[0]
 
-    def __iter__(self) -> Generator["Walls"]:
-        """Yields all the base wall states within the combined wall state."""
-        for wall in [Walls.W, Walls.S, Walls.E, Walls.N]:
-            if wall in self:
-                yield wall
+    def __iter__(self) -> Generator["Ways"]:
+        """Yields all simple directions within the combined Way config."""
+        for way in [Ways.W, Ways.S, Ways.E, Ways.N]:
+            if way in self:
+                yield way
 
-    def __add__(self, other: "Walls | int") -> "Walls":
-        """Adds to current wall state another wall state."""
-        return self | Walls(other)
+    def __add__(self, other: "Ways | int") -> "Ways":
+        """Adds to current Way config another Way config."""
+        return self | Ways(other)
 
-    def __radd__(self, other: "Walls | int") -> "Walls":
+    def __radd__(self, other: "Ways | int") -> "Ways":
         """Same as __add__."""
-        return self | Walls(other)
+        return self | Ways(other)
 
-    def __sub__(self, other: "Walls | int") -> "Walls":
-        """Subtacts from current wall state another state."""
-        return self ^ Walls(other)
+    def __sub__(self, other: "Ways | int") -> "Ways":
+        """Binary subtacts from current Way config another config."""
+        return self ^ Ways(other)
 
-    def __rsub__(self, other: "Walls | int") -> "Walls":
+    def __rsub__(self, other: "Ways | int") -> "Ways":
         """Same as __sub__."""
-        return Walls(other) ^ self
+        return Ways(other) ^ self

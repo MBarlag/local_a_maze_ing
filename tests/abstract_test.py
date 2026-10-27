@@ -3,19 +3,19 @@ from dataclasses import dataclass
 import pytest
 
 from submodules.abstract import Cell, Grid, Vector
-from submodules.enums import Move, Walls
+from submodules.enums import Step, Ways
 
 
 def test_from_file() -> None:
     grid = Grid(
-        7, 5, from_file="42.txt", on_each_char=lambda c: Walls(int(c, 16))
+        7, 5, from_file="42.txt", on_each_char=lambda c: Ways(int(c, 16))
     )
     print(grid)
-    assert grid[0, 0].value == Walls.BLOCK
-    assert grid[2, 2].value == Walls.BLOCK
-    assert grid[5, 2].value == Walls.BLOCK
-    assert grid[4, 1].value == Walls.EMPTY
-    assert grid[5, 3].value == Walls.EMPTY
+    assert grid[0, 0].value == Ways.ALL
+    assert grid[2, 2].value == Ways.ALL
+    assert grid[5, 2].value == Ways.ALL
+    assert grid[4, 1].value == Ways.NONE
+    assert grid[5, 3].value == Ways.NONE
 
 
 def test_grid_add() -> None:
@@ -26,7 +26,7 @@ def test_grid_add() -> None:
 
 def test_grid_view() -> None:
     grid = Grid(
-        7, 5, from_file="42.txt", on_each_char=lambda x: Walls(int(x, 16))
+        7, 5, from_file="42.txt", on_each_char=lambda x: Ways(int(x, 16))
     )
     print(grid)
     print()
@@ -102,18 +102,18 @@ def test_cell() -> None:
         Cell(-2, -3, Grid(3, 3), value=None)
     grid = Grid(3, 3)
     cell = grid[0, 0]
-    assert grid[1, 1] == cell[Move.RIGHT][Move.DOWN]
-    assert cell + Move.RIGHT == cell[1, 0]
-    assert cell.visit(*Move.RIGHT) == grid[1, 0]
+    assert grid[1, 1] == cell[Step.RIGHT][Step.DOWN]
+    assert cell + Step.RIGHT == cell[1, 0]
+    assert cell.visit(*Step.RIGHT) == grid[1, 0]
     assert cell.visit(0, 1) == grid[0, 1]
-    assert cell[Move.DOWN][Move.RIGHT] == grid[1, 1]
-    assert grid[Move.RIGHT]
-    assert cell + Move.RIGHT * 6 == None
-    assert cell + Move.RIGHT * 2 == cell[2, 0]
+    assert cell[Step.DOWN][Step.RIGHT] == grid[1, 1]
+    assert grid[Step.RIGHT]
+    assert cell + Step.RIGHT * 6 == None
+    assert cell + Step.RIGHT * 2 == cell[2, 0]
     assert cell.valid == True
-    assert cell[Move.LEFT + Move.RIGHT + Move.DOWN] == cell[0, 1]
-    assert cell[Move.LEFT + Move.RIGHT] == cell[Move.NOWHERE]
-    assert cell + Move.LEFT == None
+    assert cell[Step.LEFT + Step.RIGHT + Step.DOWN] == cell[0, 1]
+    assert cell[Step.LEFT + Step.RIGHT] == cell[Step.NOWHERE]
+    assert cell + Step.LEFT == None
 
 
 if __name__ == "__main__":
