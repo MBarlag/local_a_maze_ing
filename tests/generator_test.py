@@ -6,12 +6,12 @@ from typing import Any
 
 import pytest
 
-from submodules.abstract import Cell, Grid, Vector
+from mazegen.abstract import Cell, Grid, Vector
 from submodules.config import Config
 from submodules.display import MazePrinter
-from submodules.enums import Ways
-from submodules.generator import MazeGenerator
-from submodules.safe_types import IntVector
+from mazegen.enums import Ways
+from mazegen.generator import MazeGenerator
+from mazegen.safe_types import IntVector
 from tests.maze_analyzer import Maze as MAZE
 from tests.maze_analyzer import analyze, render
 
@@ -48,8 +48,8 @@ def test_invalid_config_pipeline(config: dict[str, str]) -> None:
         MazeGenerator(**config)
 
 
-W = 2
-H = 3
+W = 7
+H = 5
 PI = 1
 II = 20
 

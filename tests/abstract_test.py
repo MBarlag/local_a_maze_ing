@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 import pytest
 
-from submodules.abstract import Cell, Grid, Vector
-from submodules.enums import Step, Ways
+from mazegen.abstract import Cell, Grid, Vector
+from mazegen.enums import Step, Ways
 
 
 def test_from_file() -> None:

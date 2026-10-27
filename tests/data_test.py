@@ -1,11 +1,11 @@
 import pytest
 
-from submodules.abstract import Vector
+from mazegen.abstract import Vector
 from submodules.config import Config
-from submodules.data import Maze, Room
+from mazegen.data import Maze, Room
 from submodules.display import MazePrinter
-from submodules.enums import Step, Ways
-from submodules.generator import MazeGenerator
+from mazegen.enums import Step, Ways
+from mazegen.generator import MazeGenerator
 
 
 def test_maze() -> None:

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools.build_meta]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mazegen"
+version = "0.0.1"
+authors = [{name="emkulpa"}, {name="mabarlag"}]
+description = "A mazegenerator to generate perfect and imperfect mazes in the terminal"
+requires-python = ">=3.10"
+license = "MIT"
+readme = "README.MD"
+
+[tool.setuptools.packages]
+find = {}
+
+# Run the following command to build the package:
+# python -m build --wheel

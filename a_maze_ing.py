@@ -13,7 +13,7 @@ import sys
 
 from submodules.config import Config
 from submodules.display import MazePrinter
-from submodules.generator import MazeGenerator
+from mazegen.generator import MazeGenerator
 from submodules.menu import Menu
 
 

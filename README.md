@@ -121,3 +121,5 @@ List of lists explanation: https://www.youtube.com/watch?v=JeNUZ0qSzvo
 Learning about licenses: https://www.pyopensci.org/python-package-guide/tutorials/add-license-coc.html
 
 Got the MIT licence from: https://choosealicense.com/licenses/mit/
+
+How to create a package in WHL format: https://products.aspose.com/zip/most-common-archives/what-is-whl/

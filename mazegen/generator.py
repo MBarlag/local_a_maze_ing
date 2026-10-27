@@ -6,10 +6,10 @@ from typing import Any
 
 from pydantic import BaseModel, Field, PrivateAttr
 
-from submodules.abstract import Grid
-from submodules.data import Maze, Room
-from submodules.enums import Ways
-from submodules.safe_types import Bool, FileName, IntVector, PositiveInt
+from mazegen.abstract import Grid
+from mazegen.data import Maze, Room
+from mazegen.enums import Ways
+from mazegen.safe_types import Bool, FileName, IntVector, PositiveInt
 
 P42_WIDTH = 7
 P42_HEIGHT = 5

@@ -2,7 +2,7 @@
 
 from submodules.config import Config
 from submodules.display import MazePrinter
-from submodules.generator import MazeGenerator
+from mazegen.generator import MazeGenerator
 
 
 def test_some_maze() -> None:

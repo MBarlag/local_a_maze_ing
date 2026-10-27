@@ -9,7 +9,7 @@ from pydantic import (
     TypeAdapter,
 )
 
-from submodules.abstract import Vector
+from mazegen.abstract import Vector
 
 
 def limited_input(

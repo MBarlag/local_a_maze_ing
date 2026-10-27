@@ -10,8 +10,8 @@ from functools import cached_property
 
 from typing_extensions import Self
 
-from submodules.abstract import Cell, Grid, Vector
-from submodules.enums import Step, Ways
+from mazegen.abstract import Cell, Grid, Vector
+from mazegen.enums import Step, Ways
 
 
 @dataclass

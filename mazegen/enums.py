@@ -3,7 +3,7 @@
 from collections.abc import Generator
 from enum import Enum, Flag
 
-from submodules.abstract import Vector
+from mazegen.abstract import Vector
 
 
 class Step(Vector[int], Enum):
