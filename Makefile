@@ -8,6 +8,7 @@ LINT_FLAGS:=--warn-return-any \
 --disallow-untyped-defs \
 --check-untyped-defs
 PY_VER:=$(shell cat $(PY_VERSION))
+CONFIG:=config.txt
 
 all: run
 lint:
@@ -55,6 +56,10 @@ run:
 	echo $(PY_VER)
 	uv run --python $(PY_VER) a_maze_ing.py
 
+debug:
+	$(MAKE) ready
+	uv run --python $(PY_VER) -m pdb a_maze_ing.py $(CONFIG)
+
 clean:
 	rm -rf __pycache__
 	rm -rf .mypy_cache
@@ -76,6 +81,4 @@ clean:
 # 	rm -rf *.egg-info
 # 	rm -f ready
 
-.PHONY:	all install run clean lint lint-strict # uninstall
-
-# DON'T FORGET DEBUG
+.PHONY:	all install run debug clean lint lint-strict # uninstall
