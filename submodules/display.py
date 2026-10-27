@@ -75,7 +75,7 @@ class MazePrinter(BaseModel):
 
         self._mark_point(ENTRY_FLAG, hex_maze)
         self._mark_point(EXIT_FLAG, hex_maze)
-        self._mark_point(CENTER_FLAG, hex_maze)
+        # self._mark_point(CENTER_FLAG, hex_maze)
         if self.path_visible:
             self._mark_path(hex_maze)
         return hex_maze

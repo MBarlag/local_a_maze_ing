@@ -9,12 +9,13 @@ choose to quit the program.
 import os
 import sys
 from enum import Enum
+from random import randint
 from typing import Any
 
 import inquirer
 
 from submodules.display import COLOR_1, COLOR_2, MazePrinter
-from submodules.generator import MazeGenerator, MazeGenException
+from submodules.generator import MazeGenerator
 
 
 class Action(Enum):
@@ -33,9 +34,13 @@ class Menu:
     def __init__(
         self, maze_gen: MazeGenerator, maze_printer: MazePrinter
     ) -> None:
+
         self.maze_gen = maze_gen
         self.maze_printer = maze_printer
-        self.first_maze = True  # FIX7
+        self.first_maze = True
+        authors = " [A-Maze-ing] by mbarlag & eepyemy ^_^ "
+        w = self.maze_gen.width
+        self.header = "\n" + "-" * w + authors + "-" * w + "\n\n"
 
     def prompt_loop(self) -> None:
         """Runs a prompt loop to get next action from the user."""
@@ -47,25 +52,30 @@ class Menu:
         )
         choice = Action.GENERATE
         while choice:
-            print()
+            print(self.header)
             self.execute(choice)
+            print(f"Seed: {self.maze_gen.seed}")
+            self.maze_printer.display_maze()
             choice = choose_action()
             os.system("cls || clear")
 
-    def generate(self) -> None:
+    def generate(self, new_seed: int | None = None) -> None:
         """Generates a maze and prints it in the terminal."""
         try:
-            self.maze_gen.generate(new_seed=not self.first_maze)
-            self.first_maze = False  # FIX7.5
-        except MazeGenException as error:
+            if self.first_maze:
+                self.maze_gen.generate()
+                self.first_maze = False
+                return
+            if new_seed is None:
+                new_seed = randint(0, 2**31)
+            self.maze_gen.generate(new_seed)
+        except Exception as error:
             print(f"Could not generate a new maze: {error}.")
             return
-        self.maze_printer.display_maze()
 
     def toggle_path(self) -> None:
         """Activates or deactivates path visibility and redraws maze."""
         self.maze_printer.path_visible = not self.maze_printer.path_visible
-        self.maze_printer.display_maze()
 
     def change_colors(self) -> None:
         """Changes the colors of the walls in current maze."""
@@ -73,11 +83,10 @@ class Menu:
             self.maze_printer.wall_color = COLOR_2
         elif self.maze_printer.wall_color == COLOR_2:
             self.maze_printer.wall_color = COLOR_1
-        self.maze_printer.display_maze()
 
     def seed(self) -> None:
         """Ask user input to change the seed."""
-        print(f"Current seed is {self.maze_gen.seed}.")
+        print(f"Seed: {self.maze_gen.seed}")
         while True:
             print("Please type a positive int to change the seed:")
             try:
@@ -89,8 +98,9 @@ class Menu:
                 print("Input is invalid, please try again.")
                 continue
             break
-        self.maze_gen.seed = user_seed
+        self.maze_gen.set_seed(user_seed)
         print(f"Seed is now {self.maze_gen.seed}.\n")
+        self.generate(user_seed)
 
     def execute(self, n: Action) -> None:
         """Receive action parameter and dispatch to the correct method."""

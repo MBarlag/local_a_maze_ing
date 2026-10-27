@@ -1,7 +1,7 @@
+import random
 from collections import deque
 from collections.abc import Callable, Iterable
 from random import choice, randint, shuffle
-from random import seed as set_random_seed
 from typing import Any
 
 from pydantic import BaseModel, Field, PrivateAttr
@@ -56,17 +56,25 @@ class MazeGenerator(BaseModel):
         if origin + self.entry is None or origin + self.exit is None:
             raise MazeGenException("Entry and/or exit are out of bounds.")
         if self.seed is None:
-            self.seed = self._refresh_seed()
+            self.seed = self.set_seed()
 
-    def _refresh_seed(self) -> int:
+    def set_seed(self, value: int | None = None) -> int:
         """Regenerate the seed."""
         MIN = 0
         MAX = 2**31 - 1
-        self.seed = randint(MIN, MAX)
-        set_random_seed(self.seed)
+
+        if value is not None:
+            random.seed(value)
+            self.seed = value
+            return value
+
+        random.seed(0)
+        new_seed = randint(MIN, MAX)
+        random.seed(new_seed)
+        self.seed = new_seed
         return self.seed
 
-    def generate(self, new_seed: bool = True) -> Maze:
+    def generate(self, new_seed: int | None = None) -> Maze:
         """Generates maze.
 
         Args:
@@ -76,8 +84,8 @@ class MazeGenerator(BaseModel):
         Returns:
             Maze: Maze data structure.
         """
-        if new_seed:
-            self.seed = self._refresh_seed()
+        if new_seed is not None:
+            self.set_seed(new_seed)
         self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
         #  FIX3 Connect seed so every generate, a new seed is used.
         maze = self._draft_maze
