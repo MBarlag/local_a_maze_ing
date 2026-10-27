@@ -2,6 +2,7 @@
 
 from submodules.config import Config
 from submodules.display import MazePrinter
+from submodules.generator import MazeGenerator
 
 
 def test_some_maze() -> None:
@@ -45,6 +46,8 @@ def test_big_maze() -> None:
 
 def test_gen_maze() -> None:
     config = Config("tests/good_config.txt").parse_config()
+    maze_gen = MazeGenerator(**config)
+    maze_gen.generate()
     printer = MazePrinter(**config)
     printer.display_maze()
 

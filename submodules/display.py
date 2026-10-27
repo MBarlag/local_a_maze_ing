@@ -14,9 +14,9 @@ PATH_W = PATH_N << 3
 PATH = PATH_W + PATH_S + PATH_E + PATH_N
 
 CLR = "63"
-PATH_CLR = "\033[38;5;0m\033[48;5;220m"  # yellow 220
+PATH_CLR = "\033[38;5;2m"#\033[48;5;220m"  # yellow 220
 COLOR_1 = f"\033[38;5;{CLR}m\033[48;5;{CLR}m"
-COLOR_2 = "\033[38;5;53m\033[48;5;53m"
+COLOR_2 = "\033[38;5;1m"#\033[48;5;53m"53
 BLACK_PINK = "\033[38;5;1m"
 RST = "\033[0m"
 
@@ -115,14 +115,14 @@ class MazePrinter(BaseModel):
         block = 15
         WCLR = self.wall_color
         for cell in hex_row:
-            print(f"{WCLR}+{RST}", end="")
+            print(f"{WCLR} {RST}", end="")
             if cell & north:
                 print(f"{WCLR}---{RST}", end="")
             elif cell & PATH:
                 print(f"{PATH_CLR}   {RST}", end="")
             else:
                 print("   ", end="")
-        print(f"{WCLR}+{RST}")
+        print(f"{WCLR} {RST}")
 
         for cell in hex_row:
             if cell & west:
@@ -157,8 +157,8 @@ class MazePrinter(BaseModel):
         """Prints the closing South walls of the maze."""
         WCLR = self.wall_color
         for _ in range(self.width):
-            print(f"{WCLR}+---{RST}", end="")
-        print(f"{WCLR}+{RST}")
+            print(f"{WCLR} ---{RST}", end="")
+        print(f"{WCLR} {RST}")
 
     def _parse_path(self) -> str:
         """Reads the path line with moves from the hex_maze file.

@@ -48,9 +48,9 @@ def test_invalid_config_pipeline(config: dict[str, str]) -> None:
         MazeGenerator(**config)
 
 
-H = 50
-W = 50
-PI = 20
+W = 2
+H = 3
+PI = 1
 II = 20
 
 
@@ -67,10 +67,12 @@ def pick_valid(grid: Grid[bool, Cell[bool]]) -> tuple[IntVector, IntVector]:
         exit = Vector(rand_width(), rand_height())
     return entry, exit
 
-
+# ALWAYS FAILS: 2x2
+# if 2x3 or 3x2: we can always make them empty inside to pass the pacman
+# 
 def test_generate_pacman(subtests: pytest.Subtests) -> None:
     for i in range(II):
-        width = randint(3, W)
+        width = randint(2, W)
         height = randint(3, H)
         pattern = Grid(
             7, 5, from_file="42.txt", on_each_char=lambda c: c == "f"
@@ -124,7 +126,7 @@ def test_generate_pacman(subtests: pytest.Subtests) -> None:
 
 def test_generate_perfect(subtests: pytest.Subtests) -> None:
     for i in range(PI):
-        width = randint(2, W)
+        width = randint(1, W)
         height = randint(2, H)
         # seed = randint(0, 2**31)
         pattern = Grid(

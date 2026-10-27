@@ -20,16 +20,18 @@ from submodules.menu import Menu
 def handle_critical_error(e: Exception) -> None:
     """Displayes an error and exits gracefully."""
     exc_name = type(e).__name__
-    print(f"[A-Maze-ing][{exc_name}]:{e!s}")
+    print(f"[A-Maze-ing][{exc_name}]: {e!s}")
     sys.exit(1)
 
+class AMazeIngError(Exception):
+    """Error related to the workings of AMazeIng."""
 
 if __name__ == "__main__":
-    # if len(sys.argv) not 2:
-    #   raise Exception ("Usage: python3 a_maze_ing.py <file>")
-
     try:
-        config = Config("config.txt").parse_config()
+        # if len(sys.argv) != 2:
+        #     raise AttributeError("Usage: python3 a_maze_ing.py <file>")
+        config_filename = "config.txt"
+        config = Config(config_filename).parse_config()
         # Don't forget to use sys.argv[1] here instead of config.txt!
         maze_gen = MazeGenerator(**config)
         # under the hood it will call the MazeGen constructor method,

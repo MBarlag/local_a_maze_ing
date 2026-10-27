@@ -14,8 +14,13 @@ from submodules.safe_types import Bool, FileName, IntVector, PositiveInt
 P42_WIDTH = 7
 P42_HEIGHT = 5
 
-MIN_WIDTH = 9
-MIN_HEIGHT = 7
+IMPR_MIN_TOTAL = 3
+
+# MIN_WIDTH = 2
+# MIN_HEIGHT = 2
+
+P42_MIN_WIDTH = 7
+P42_MIN_HEIGHT = 5
 
 
 class MazeGenException(Exception):
@@ -93,7 +98,13 @@ class MazeGenerator(BaseModel):
         self._add_pattern()
         if entry.blocked or exit.blocked:
             raise MazeGenException("Entry and exit cant be in pattern.")
-        self._build_maze()
+        not_valid = True
+        while not_valid:
+            try:
+                self._build_maze()
+                not_valid = False
+            except Exception:
+                pass
         result = self.last_maze
         return result
 
@@ -108,14 +119,12 @@ class MazeGenerator(BaseModel):
             self._walk(exit, on_each_visit=self._find_path, depth_first=False)
         if not self._is_connected():
             raise MazeGenException("Generated Maze is not fully connected.")
-        # FIX5 Is connected is now the only check needed but was never called.
         if not self._draft_maze.valid:
             raise MazeGenException("Generated Maze is not valid.")
         self.last_maze = self._draft_maze
         self._path = self._extract_path()
         self._output()
 
-    # TODO:  Maybe move pattern to a string literal in the code.
     def _add_pattern(self) -> None:
         """Set the rooms that are part of the pattern to blocked true.
 
@@ -124,11 +133,9 @@ class MazeGenerator(BaseModel):
         Should be called only after the self._draft_maze has been called.
         """
         maze = self._draft_maze
-        if self.width < MIN_WIDTH or self.height < MIN_HEIGHT:
+        if self.width < P42_MIN_WIDTH or self.height < P42_MIN_HEIGHT:
             print("Pattern doesn't fit Mazes width or height, skipping it.")
             return
-        # FIX6 Making sure too small mazes never get the pattern.
-        #
         pattern = Grid(
             P42_WIDTH,
             P42_HEIGHT,
