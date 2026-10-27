@@ -83,6 +83,19 @@ class Ways(Flag):
         }
         return opposites.get(self, Ways.NONE)
 
+    @classmethod
+    def from_step(cls, step: Step) -> "Ways":
+        """Converts a primitive step to a direction."""
+        if step == Step.LEFT:
+            return Ways.W
+        elif step == Step.RIGHT:
+            return Ways.E
+        elif step == Step.UP:
+            return Ways.N
+        elif step == Step.DOWN:
+            return Ways.S
+        return Ways.NONE
+
     @property
     def as_step(self) -> Step:
         """Return Step corresponding to primitive Way."""

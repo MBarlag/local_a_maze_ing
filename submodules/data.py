@@ -106,9 +106,9 @@ class Room(Cell[RoomData]):
 
     def way_towards(self, neighbour: Self) -> Ways:
         """Get direction towards the neighbour."""
-        for way in Ways.ALL:
-            if self + way.as_step is neighbour:
-                return way
+        vector = neighbour.as_vector - self.as_vector
+        step = Step.v(vector)
+        return Ways.from_step(step)
         raise MazeError("Argument is not a neighbour.")
 
     @property
