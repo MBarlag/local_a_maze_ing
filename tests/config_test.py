@@ -2,7 +2,7 @@ from os import remove
 
 import pytest
 
-from submodules.config import Config, ConfigException
+from mazegen.config import Config, ConfigException
 
 VALID = [
     ("", {}),

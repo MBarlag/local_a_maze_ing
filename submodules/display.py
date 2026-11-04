@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
-from submodules.abstract import Vector
-from submodules.enums import Ways
+from mazegen.abstract import Vector
+from mazegen.enums import Ways
 
 CENTER_FLAG = 1 << 10
 ENTRY_FLAG = 1 << 4

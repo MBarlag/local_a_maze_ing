@@ -15,7 +15,7 @@ from typing import Any
 import inquirer
 
 from submodules.display import COLOR_1, COLOR_2, MazePrinter
-from submodules.generator import MazeGenerator
+from mazegen.generator import MazeGenerator
 
 
 class Action(Enum):

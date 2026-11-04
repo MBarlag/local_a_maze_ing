@@ -1,8 +1,8 @@
 # Run from project root as a module: python3 -m tests.display_test
 
-from submodules.config import Config
+from mazegen.config import Config
 from submodules.display import MazePrinter
-from submodules.generator import MazeGenerator
+from mazegen.generator import MazeGenerator
 
 
 def test_some_maze() -> None:

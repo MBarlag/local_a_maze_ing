@@ -6,12 +6,12 @@ from typing import Any
 
 import pytest
 
-from submodules.abstract import Cell, Grid, Vector
-from submodules.config import Config
+from mazegen.abstract import Cell, Grid, Vector
+from mazegen.config import Config
 from submodules.display import MazePrinter
-from submodules.enums import Ways
-from submodules.generator import MazeGenerator
-from submodules.safe_types import IntVector
+from mazegen.enums import Ways
+from mazegen.generator import MazeGenerator
+from mazegen.safe_types import IntVector
 from tests.maze_analyzer import Maze as MAZE
 from tests.maze_analyzer import analyze, render
 

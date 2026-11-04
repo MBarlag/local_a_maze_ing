@@ -1,6 +1,6 @@
 from functools import reduce
 
-from submodules.enums import *
+from mazegen.enums import *
 
 
 def test_move_add():
