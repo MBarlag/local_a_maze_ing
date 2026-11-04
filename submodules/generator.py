@@ -11,12 +11,8 @@ from submodules.data import Maze, Room
 from submodules.enums import Ways
 from submodules.safe_types import Bool, FileName, IntVector, PositiveInt
 
-
-
 P42_WIDTH = 7
 P42_HEIGHT = 5
-
-IMPR_MIN_TOTAL = 3
 
 # MIN_WIDTH = 2
 # MIN_HEIGHT = 2
@@ -53,6 +49,8 @@ class MazeGenerator(BaseModel):
     _last_maze: Maze | None = PrivateAttr(None)
     _draft_maze: Maze = PrivateAttr()
     _path: list[Ways] | None = PrivateAttr(None)
+    _edges: int = PrivateAttr(0)
+    _rooms: int = PrivateAttr(0)
 
     def model_post_init(self, context: Any) -> None:
         """Initialize MazeGnerator inner attributes after its been created."""
@@ -101,19 +99,32 @@ class MazeGenerator(BaseModel):
         if entry.blocked or exit.blocked:
             raise MazeGenException("Entry and exit cant be in pattern.")
         not_valid = True
-        while not_valid:
+        iters_before_fail = 50
+        while not_valid and iters_before_fail:
+            iters_before_fail -= 1
             try:
                 self._build_maze()
+                if not self.perfect and self.is_pacman():
+                    break
                 not_valid = False
-            except Exception:
+            except MazeGenException:
                 pass
+        if not iters_before_fail:
+            print(
+                f"[ERROR] Could not create maze for the current configuration. {self._edges}"
+            )
         result = self.last_maze
         return result
 
+    def is_pacman(self) -> bool:
+        return (self._edges - (self._rooms) + 1) >= 2
+
     def _build_maze(self) -> None:
         """Break walls of Maze keeping it valid to the constraints."""
+        self._edges = 0
         maze = self._draft_maze
         exit = maze[self.exit]
+        self._reset_states()
         self._walk(exit, on_each_visit=self._connect, depth_first=True)
         if not self.perfect:
             self._remove_deadends()
@@ -137,7 +148,9 @@ class MazeGenerator(BaseModel):
         maze = self._draft_maze
         if self.width < P42_MIN_WIDTH or self.height < P42_MIN_HEIGHT:
             print("Pattern doesn't fit Mazes width or height, skipping it.")
+            self._rooms = self.height * self.width
             return
+        self._rooms = self.height * self.width - 18
         pattern = Grid(
             P42_WIDTH,
             P42_HEIGHT,
@@ -217,6 +230,18 @@ class MazeGenerator(BaseModel):
             deadends = [r for r in room.isolates if r.deadend]
             selected = choice(deadends or room.isolates)
             room.connect_with(selected)
+            self._edges += 1
+        for room in maze:
+            if self.is_pacman():
+                break
+            if room.blocked:
+                continue
+            if room.isolates == []:
+                continue
+            deadends = [r for r in room.isolates if r.deadend]
+            selected = choice(deadends or room.isolates)
+            room.connect_with(selected)
+            self._edges += 1
 
     def _connect(self, previous: Room, current: Room) -> list[Room] | None:
         r"""Connect rooms and return \[legal_neighbour, ...].
@@ -236,6 +261,7 @@ class MazeGenerator(BaseModel):
         if current.visited or current.blocked:
             return []
         direction = previous.connect_with(current)
+        self._edges += 1
         current.path_hint = direction.opposite
         current.visited = True
         neighbours = current.neighbours

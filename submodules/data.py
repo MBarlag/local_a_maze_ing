@@ -21,9 +21,6 @@ class Room(Cell[None]):
     Or via self[offset], including self[step] or self[dx, dy].
     Square brackets mean the access can raise IndexError if not careful.
     self + offset will return None if outside of bounds.
-
-    Attributes of RoomData (visited, walls, blocked) can be accessed
-    directly on the Room, example: room.walls instead of room.value.walls.
     """
 
     visited: bool = False
@@ -39,7 +36,7 @@ class Room(Cell[None]):
     @cached_property
     def neighbours(self) -> list[Self]:
         """List of neighbouring rooms."""
-        PRIMITIVE_MOVES = list(Step)[:4]
+        PRIMITIVE_MOVES = [Step.UP, Step.DOWN, Step.LEFT, Step.RIGHT]
         shuffle(PRIMITIVE_MOVES)
         neighbours: list[Self] = []
         for direction in PRIMITIVE_MOVES:
@@ -112,32 +109,32 @@ class Room(Cell[None]):
                 hugging_walls -= wall
         return hugging_walls
 
-    @property
-    def blocked(self) -> bool:
-        """Whether the walls of the room can be removed."""
-        return self.value.blocked
-
-    @blocked.setter
-    def blocked(self, value: bool) -> None:
-        self.value.blocked = value
-
-    @property
-    def walls(self) -> Ways:
-        """Walls of the room."""
-        return self.value.walls
-
-    @walls.setter
-    def walls(self, value: Ways) -> None:
-        self.value.walls = value
-
-    @property
-    def path_hint(self) -> Ways:
-        """Direction hint, to get to the exit."""
-        return self.value.path_hint
-
-    @path_hint.setter
-    def path_hint(self, value: Ways) -> None:
-        self.value.path_hint = value
+    # @property
+    # def blocked(self) -> bool:
+    #     """Whether the walls of the room can be removed."""
+    #     return self.value.blocked
+    #
+    # @blocked.setter
+    # def blocked(self, value: bool) -> None:
+    #     self.value.blocked = value
+    #
+    # @property
+    # def walls(self) -> Ways:
+    #     """Walls of the room."""
+    #     return self.value.walls
+    #
+    # @walls.setter
+    # def walls(self, value: Ways) -> None:
+    #     self.value.walls = value
+    #
+    # @property
+    # def path_hint(self) -> Ways:
+    #     """Direction hint, to get to the exit."""
+    #     return self.value.path_hint
+    #
+    # @path_hint.setter
+    # def path_hint(self, value: Ways) -> None:
+    #     self.value.path_hint = value
 
 
 class MazeError(Exception):
@@ -168,6 +165,7 @@ class Maze(Grid[None, Room]):
         super().__init__(width, height, default=None, cell_class=Room)
         self._set_entry(entry or Vector(0, 0))
         self._set_exit(exit or Vector(0, 0))
+        self.edges = 0
 
     @property
     def valid(self) -> bool:
