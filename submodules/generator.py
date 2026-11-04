@@ -1,7 +1,7 @@
 import random
 from collections import deque
 from collections.abc import Callable, Iterable
-from random import choice, randint, shuffle
+from random import choice, randint
 from typing import Any
 
 from pydantic import BaseModel, Field, PrivateAttr
@@ -11,6 +11,8 @@ from submodules.data import Maze, Room
 from submodules.enums import Ways
 from submodules.safe_types import Bool, FileName, IntVector, PositiveInt
 
+
+
 P42_WIDTH = 7
 P42_HEIGHT = 5
 
@@ -19,8 +21,8 @@ IMPR_MIN_TOTAL = 3
 # MIN_WIDTH = 2
 # MIN_HEIGHT = 2
 
-P42_MIN_WIDTH = 7
-P42_MIN_HEIGHT = 5
+P42_MIN_WIDTH = 9
+P42_MIN_HEIGHT = 7
 
 
 class MazeGenException(Exception):
@@ -203,7 +205,6 @@ class MazeGenerator(BaseModel):
         # if current.as_vector == self.entry:
         #     return None
         neighbours = current_room.neighbours
-        shuffle(neighbours)
         return neighbours
 
     def _remove_deadends(self) -> None:
@@ -238,7 +239,6 @@ class MazeGenerator(BaseModel):
         current.path_hint = direction.opposite
         current.visited = True
         neighbours = current.neighbours
-        shuffle(neighbours)
         return neighbours
 
     def _walk(

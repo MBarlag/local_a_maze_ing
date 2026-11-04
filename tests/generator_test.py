@@ -48,8 +48,8 @@ def test_invalid_config_pipeline(config: dict[str, str]) -> None:
         MazeGenerator(**config)
 
 
-W = 2
-H = 3
+W = 10
+H = 10
 PI = 1
 II = 20
 

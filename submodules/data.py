@@ -5,8 +5,8 @@ wall-manipulation methods, and the Maze grid that holds entry and exit
 coordinates.
 """
 
-from dataclasses import dataclass
 from functools import cached_property
+from random import shuffle
 
 from typing_extensions import Self
 
@@ -14,24 +14,7 @@ from submodules.abstract import Cell, Grid, Vector
 from submodules.enums import Step, Ways
 
 
-@dataclass
-class RoomData:
-    """Data stored inside each Room of the Maze.
-
-    Attributes:
-        visited: If room was visited during generation or finding path.
-        walls: Directions of walls the room currently has.
-        blocked: If room is in the "42" pattern and may not be changed.
-        path_hint: A direction one should take to end up at the exit.
-    """
-
-    visited: bool = False
-    blocked: bool = False
-    walls: Ways = Ways.ALL
-    path_hint: Ways = Ways.NONE
-
-
-class Room(Cell[RoomData]):
+class Room(Cell[None]):
     """Has Roomdata, manages connections with other rooms.
 
     Supports relative acces of other rooms via self + offset.
@@ -43,6 +26,11 @@ class Room(Cell[RoomData]):
     directly on the Room, example: room.walls instead of room.value.walls.
     """
 
+    visited: bool = False
+    blocked: bool = False
+    walls: Ways = Ways.ALL
+    path_hint: Ways = Ways.NONE
+
     @property
     def deadend(self) -> bool:
         """Whether this room has 3 walls."""
@@ -52,6 +40,7 @@ class Room(Cell[RoomData]):
     def neighbours(self) -> list[Self]:
         """List of neighbouring rooms."""
         PRIMITIVE_MOVES = list(Step)[:4]
+        shuffle(PRIMITIVE_MOVES)
         neighbours: list[Self] = []
         for direction in PRIMITIVE_MOVES:
             neighbour = self + direction
@@ -155,7 +144,7 @@ class MazeError(Exception):
     """An exception happening during basic construction of maze."""
 
 
-class Maze(Grid[RoomData, Room]):
+class Maze(Grid[None, Room]):
     """Grid of Rooms including an entry and exit point.
 
     Access rooms through maze[x, y]. Raises IndexError with wrong coords.
@@ -176,7 +165,7 @@ class Maze(Grid[RoomData, Room]):
             entry: Coordinates of the entry point. Defaults to (0, 0).
             exit: Coordinates of the exit point. Defaults to (0, 0).
         """
-        super().__init__(width, height, default=RoomData(), cell_class=Room)
+        super().__init__(width, height, default=None, cell_class=Room)
         self._set_entry(entry or Vector(0, 0))
         self._set_exit(exit or Vector(0, 0))
 
