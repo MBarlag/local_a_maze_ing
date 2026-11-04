@@ -8,8 +8,6 @@ coordinates.
 from functools import cached_property
 from random import shuffle
 
-from typing_extensions import Self
-
 from submodules.abstract import Cell, Grid, Vector
 from submodules.enums import Step, Ways
 
@@ -34,38 +32,48 @@ class Room(Cell[None]):
         return self.walls.count == 3
 
     @cached_property
-    def neighbours(self) -> list[Self]:
-        """List of neighbouring rooms."""
-        PRIMITIVE_MOVES = [Step.UP, Step.DOWN, Step.LEFT, Step.RIGHT]
+    def map(self) -> "dict[Room, Ways]":
+        """Map of neighbours directions."""
+        PRIMITIVE_MOVES = [
+            (Ways.N, Step.UP),
+            (Ways.S, Step.DOWN),
+            (Ways.W, Step.LEFT),
+            (Ways.E, Step.RIGHT),
+        ]
         shuffle(PRIMITIVE_MOVES)
-        neighbours: list[Self] = []
-        for direction in PRIMITIVE_MOVES:
-            neighbour = self + direction
+        neighbours = {}
+        for direction, step in PRIMITIVE_MOVES:
+            neighbour = self + step
             if neighbour is None:
                 continue
-            neighbours.append(neighbour)
+            neighbours[neighbour] = direction
         return neighbours
 
+    @cached_property
+    def neighbours(self) -> "list[Room]":
+        """List of neighbouring rooms."""
+        return [n for n in self.map]
+
     @property
-    def connections(self) -> list[Self]:
+    def connections(self) -> "list[Room]":
         """Connected neighbours."""
         result = []
         for neighbour in self.neighbours:
             if neighbour.blocked:
                 continue
-            wall_between = self.way_towards(neighbour)
+            wall_between = self.map[neighbour]
             if wall_between not in self.walls:
                 result.append(neighbour)
         return result
 
     @property
-    def isolates(self) -> list[Self]:
+    def isolates(self) -> "list[Room]":
         """Not connected neighbours."""
         result = []
         for neighbour in self.neighbours:
             if neighbour.blocked:
                 continue
-            wall_between = self.way_towards(neighbour)
+            wall_between = self.map[neighbour]
             if wall_between in self.walls:
                 result.append(neighbour)
         return result
@@ -77,64 +85,31 @@ class Room(Cell[None]):
             return True
         return False
 
-    def connect_with(self, neighbour: Self) -> Ways:
+    def connect_with(self, neighbour: "Room") -> Ways:
         """Break wall between current Room and not blocked neighbour."""
         if self.blocked or neighbour.blocked:
             raise MazeError(
                 "Trying to create a connection with a blocked room."
             )
-        obstacle = self.way_towards(neighbour)
+        obstacle = self.map[neighbour]
         if obstacle in self.walls:
             self.walls -= obstacle
         if obstacle.opposite in neighbour.walls:
             neighbour.walls -= obstacle.opposite
         return obstacle
 
-    def way_towards(self, neighbour: Self) -> Ways:
+    def way_towards(self, neighbour: "Room") -> Ways:
         """Get direction towards the neighbour."""
-        vector = neighbour.as_vector - self.as_vector
-        step = Step.v(vector)
-        return Ways.from_step(step)
-        raise MazeError("Argument is not a neighbour.")
+        return self.map[neighbour]
 
     @property
     def hugging_walls(self) -> Ways:
         """Walls this room should have to be coherent with its neighbours."""
         hugging_walls = Ways.ALL
-        for wall in Ways.ALL:
-            neighbour = self + wall.as_step
-            if neighbour is None:
-                continue
+        for neighbour, wall in self.map.items():
             if wall.opposite not in neighbour.walls:
                 hugging_walls -= wall
         return hugging_walls
-
-    # @property
-    # def blocked(self) -> bool:
-    #     """Whether the walls of the room can be removed."""
-    #     return self.value.blocked
-    #
-    # @blocked.setter
-    # def blocked(self, value: bool) -> None:
-    #     self.value.blocked = value
-    #
-    # @property
-    # def walls(self) -> Ways:
-    #     """Walls of the room."""
-    #     return self.value.walls
-    #
-    # @walls.setter
-    # def walls(self, value: Ways) -> None:
-    #     self.value.walls = value
-    #
-    # @property
-    # def path_hint(self) -> Ways:
-    #     """Direction hint, to get to the exit."""
-    #     return self.value.path_hint
-    #
-    # @path_hint.setter
-    # def path_hint(self, value: Ways) -> None:
-    #     self.value.path_hint = value
 
 
 class MazeError(Exception):

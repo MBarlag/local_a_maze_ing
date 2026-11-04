@@ -106,7 +106,7 @@ class Cell(Generic[_Data]):
     def value(self, value: _Data) -> None:
         self._value: _Data = value
 
-    def visit(self, dx: int, dy: int) -> Self | None:
+    def shift_by(self, dx: int, dy: int) -> Self | None:
         """Add up coordinates and return the cell at the location or None."""
         new_position = self.as_vector + (dx, dy)
         if self._grid.cant_reach(*new_position):
@@ -173,12 +173,11 @@ class Cell(Generic[_Data]):
         Returns:
             Cell if it exists at resulting coordinates, None otherwise.
         """
-        return self.visit(*other)
+        return self.shift_by(*other)
 
     def __getattr__(self, name: str) -> Any:
         """Get Attribute from Data. Except _grid, x, y, _value from Cell."""
-        # using type(self) to avoid recursion, and object.__getattribute__(self, name)
-        # to
+        # using type(self) to avoid recursion,
         if name in Cell._own or hasattr(type(self), name):
             return object.__getattribute__(self, name)
         elif hasattr(self._value, name):

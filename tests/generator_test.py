@@ -24,7 +24,7 @@ def gen_configs() -> Any:
         conf = copy(good_config)
         conf[k] = v
         BAD_CONFIGS.append(conf)
-    print(BAD_CONFIGS)
+    # print(BAD_CONFIGS)
     return BAD_CONFIGS
 
 
@@ -183,8 +183,8 @@ def test_generate_perfect(subtests: pytest.Subtests) -> None:
 
 
 def debug() -> None:
-    width = randint(9, 500)
-    height = randint(5, 500)
+    width = 500
+    height = 500
     config: dict[str, str] = {
         "width": f"{width}",
         "height": f"{height}",
@@ -197,18 +197,18 @@ def debug() -> None:
     maze = maze_gen.generate()
     if not maze:
         raise Exception("Maze did not generate.")
-    grid = Grid(
-        maze.width,
-        maze.height,
-        from_file=config["output_file"],
-        on_each_char=lambda x: Ways(int(x, 16)),
-    )
-    print(grid)
-    printer = MazePrinter(**config)
-    printer.display_maze()
-    m = MAZE.from_file(config["output_file"])
-    report = analyze(m)
-    print(render(report, 2, 2))
+    # grid = Grid(
+    #     maze.width,
+    #     maze.height,
+    #     from_file=config["output_file"],
+    #     on_each_char=lambda x: Ways(int(x, 16)),
+    # )
+    # print(grid)
+    # printer = MazePrinter(**config)
+    # printer.display_maze()
+    # m = MAZE.from_file(config["output_file"])
+    # report = analyze(m)
+    # print(render(report, 2, 2))
 
 
 if __name__ == "__main__":

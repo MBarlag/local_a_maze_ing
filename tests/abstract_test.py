@@ -104,8 +104,8 @@ def test_cell() -> None:
     cell = grid[0, 0]
     assert grid[1, 1] == cell[Step.RIGHT][Step.DOWN]
     assert cell + Step.RIGHT == cell[1, 0]
-    assert cell.visit(*Step.RIGHT) == grid[1, 0]
-    assert cell.visit(0, 1) == grid[0, 1]
+    assert cell.shift_by(*Step.RIGHT) == grid[1, 0]
+    assert cell.shift_by(0, 1) == grid[0, 1]
     assert cell[Step.DOWN][Step.RIGHT] == grid[1, 1]
     assert grid[Step.RIGHT]
     assert cell + Step.RIGHT * 6 == None

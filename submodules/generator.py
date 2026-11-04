@@ -111,12 +111,13 @@ class MazeGenerator(BaseModel):
                 pass
         if not iters_before_fail:
             print(
-                f"[ERROR] Could not create maze for the current configuration. {self._edges}"
+                "[ERROR] Could not create maze for the current configuration."
             )
         result = self.last_maze
         return result
 
     def is_pacman(self) -> bool:
+        """Checks if the maze has more than one loop."""
         return (self._edges - (self._rooms) + 1) >= 2
 
     def _build_maze(self) -> None:
