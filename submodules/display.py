@@ -14,11 +14,12 @@ PATH_W = PATH_N << 3
 PATH = PATH_W + PATH_S + PATH_E + PATH_N
 
 CLR = "63"
-PATH_CLR = "\033[38;5;2m"#\033[48;5;220m"  # yellow 220
+PATH_CLR = "\033[38;5;172m\033[48;5;233m"  # yellow 220
 COLOR_1 = f"\033[38;5;{CLR}m\033[48;5;{CLR}m"
-COLOR_2 = "\033[38;5;1m"#\033[48;5;53m"53
+COLOR_2 = "\033[38;5;197m\033[48;5;232m"
 BLACK_PINK = "\033[38;5;1m"
 RST = "\033[0m"
+FILL = "\033[38;5;172m\033[48;5;0m"  # yellow 220
 
 
 class MazePrinter(BaseModel):
@@ -148,7 +149,7 @@ class MazePrinter(BaseModel):
                 elif cell & PATH_N:
                     print(f"{PATH_CLR} ^ {RST}", end="")
             elif (cell & block) == block:
-                print("███", end="")
+                print(f"{FILL}🮙🮙🮙{RST}", end="")
             else:
                 print("   ", end="")
         print(f"{WCLR}|{RST}")

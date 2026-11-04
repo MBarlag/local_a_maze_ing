@@ -14,7 +14,6 @@ from typing import Any
 
 import inquirer
 
-
 from submodules.display import COLOR_1, COLOR_2, MazePrinter
 from submodules.generator import MazeGenerator
 
@@ -41,7 +40,7 @@ class Menu:
         self.first_maze = True
         authors = " [A-Maze-ing] by mbarlag & eepyemy ^_^ "
         w = self.maze_gen.width
-        self.header = "\n" + "-" * w + authors + "-" * w + "\n\n"
+        self.header = "\n" + "-" * w + authors + "-" * w + "\n"
 
     def prompt_loop(self) -> None:
         """Runs a prompt loop to get next action from the user."""

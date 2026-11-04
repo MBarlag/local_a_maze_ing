@@ -1,8 +1,8 @@
-WIDTH=35
+WIDTH=30
 HEIGHT=20
 ENTRY=0,0
-EXIT=34,19
-OUTPUT_FILE=/
-PERFECT=False
+EXIT=29,19
+OUTPUT_FILE=hex_big_maze.txt
+PERFECT=True
 SEED=42
 # Maybe set the seed with user input.
