@@ -6,6 +6,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, PrivateAttr
 
+from importlib.resources import files
 from mazegen.abstract import Grid
 from mazegen.data import Maze, Room
 from mazegen.enums import Ways
@@ -141,7 +142,7 @@ class MazeGenerator(BaseModel):
         pattern = Grid(
             P42_WIDTH,
             P42_HEIGHT,
-            from_file="42.txt",
+            from_file=str(files("mazegen") / "42.txt"),
             on_each_char=lambda c: Ways(int(c, 16)),
         )
         x = (self.width - pattern.width) // 2

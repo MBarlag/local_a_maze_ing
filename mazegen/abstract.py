@@ -84,11 +84,8 @@ _Cell = TypeVar("_Cell", bound="Cell[Any]")
 
 class Cell(Generic[_Data]):
     """Stores x, y coordinates and grid it belongs to."""
-<<<<<<< Updated upstream
-=======
 
     _own = frozenset({"_grid", "_value", "y", "x"})
->>>>>>> Stashed changes
 
     @property
     def valid(self) -> bool:
@@ -180,19 +177,9 @@ class Cell(Generic[_Data]):
 
     def __getattr__(self, name: str) -> Any:
         """Get Attribute from Data. Except _grid, x, y, _value from Cell."""
-<<<<<<< Updated upstream
         if name in dir(self):
             return self.__getattribute__(name)
         return getattr(self._value, name)
-=======
-        # using type(self) to avoid recursion, and object.__getattribute__(self, name)
-        # to
-        if name in Cell._own or hasattr(type(self), name):
-            return object.__getattribute__(self, name)
-        elif hasattr(self._value, name):
-            return getattr(self._value, name)
-        raise AttributeError
->>>>>>> Stashed changes
 
     def __setattr__(self, name: str, value: Any) -> None:
         """Get Attribute from Data. Except _grid, x, y, _value from Cell."""

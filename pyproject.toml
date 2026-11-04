@@ -9,10 +9,11 @@ authors = [{name="emkulpa"}, {name="mabarlag"}]
 description = "A reusable mazegenerator to generate perfect and imperfect mazes"
 requires-python = ">=3.10"
 license = "MIT"
-readme = "README.MD"
+readme = "README.md"
+dependencies = ["pydantic>=2", "typing_extensions"]
 
-[tool.setuptools.packages]
-find = {}
+[tool.setuptools]
+packages = ["mazegen"]
 
-# Run the following command to build the package:
-# python -m build --wheel
+[tool.setuptools.package-data]
+mazegen = ["42.txt"]
