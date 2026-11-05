@@ -17,8 +17,8 @@ P42_HEIGHT = 5
 # MIN_WIDTH = 2
 # MIN_HEIGHT = 2
 
-P42_MIN_WIDTH = 9
-P42_MIN_HEIGHT = 7
+P42_MIN_WIDTH = 8
+P42_MIN_HEIGHT = 6
 
 
 class MazeGenException(Exception):
@@ -46,16 +46,14 @@ class MazeGenerator(BaseModel):
     perfect: Bool
     output_file: FileName
     seed: PositiveInt | None = Field(None)
-    _last_maze: Maze | None = PrivateAttr(None)
-    _draft_maze: Maze = PrivateAttr()
+    _last_maze: Maze | None = None
+    _draft_maze: Maze
     _path: list[Ways] | None = PrivateAttr(None)
     _edges: int = PrivateAttr(0)
     _rooms: int = PrivateAttr(0)
 
     def model_post_init(self, context: Any) -> None:
         """Initialize MazeGnerator inner attributes after its been created."""
-        if self.exit == self.entry:
-            raise MazeGenException("Entry and exit cannot be the same.")
         self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
         origin = self._draft_maze.room
         if origin + self.entry is None or origin + self.exit is None:

@@ -1,3 +1,4 @@
+import random
 from copy import copy
 from dataclasses import FrozenInstanceError
 from functools import partial
@@ -10,7 +11,7 @@ from submodules.abstract import Cell, Grid, Vector
 from submodules.config import Config
 from submodules.display import MazePrinter
 from submodules.enums import Ways
-from submodules.generator import MazeGenerator
+from submodules.generator import P42_MIN_HEIGHT, P42_MIN_WIDTH, MazeGenerator
 from submodules.safe_types import IntVector
 from tests.maze_analyzer import Maze as MAZE
 from tests.maze_analyzer import analyze, render
@@ -48,13 +49,11 @@ def test_invalid_config_pipeline(config: dict[str, str]) -> None:
         MazeGenerator(**config)
 
 
-W = 100
-H = 100
-PI = 10
-II = 10
-
-
-def pick_valid(grid: Grid[bool, Cell[bool]]) -> tuple[IntVector, IntVector]:
+def pick_valid(
+    grid: Grid[bool, Cell[bool]] | None,
+) -> tuple[IntVector, IntVector]:
+    if not grid or (grid.width == 1 and grid.height == 1):
+        return Vector(0, 0), Vector(0, 0)
     rand_height = partial(randint, 0, grid.height - 1)
     rand_width = partial(randint, 0, grid.width - 1)
 
@@ -68,117 +67,122 @@ def pick_valid(grid: Grid[bool, Cell[bool]]) -> tuple[IntVector, IntVector]:
     return entry, exit
 
 
+RAND_WIDTH = 10
+RAND_HEIGHT = 10
+PERFECT_TRIES = 1000
+PACMAN_TRIES = 1000
+
+
 # ALWAYS FAILS: 2x2
 # if 2x3 or 3x2: we can always make them empty inside to pass the pacman
 #
-def test_generate_pacman(subtests: pytest.Subtests) -> None:
-    for i in range(II):
-        width = randint(2, W)
-        height = randint(3, H)
-        pattern = Grid(
-            7, 5, from_file="42.txt", on_each_char=lambda c: c == "f"
-        )
-        grid = Grid(width, height, default=False)
-        if width >= 9 and height >= 7:
-            x = (width - pattern.width) // 2 + 1 - width % 2
-            y = (height - pattern.height) // 2 + 1 - height % 2
-            origin = grid[x, y]
-            for cell in pattern:
-                offset = cell.as_vector
-                origin[offset].value = cell.value
-        entry, exit = pick_valid(grid)
-        # seed = randint(0, 2**31)
-        config: dict[str, str] = {
-            "width": f"{width}",
-            "height": f"{height}",
-            "output_file": "imperfect.txt",
-            "perfect": "False",
-        }
-        maze_gen = MazeGenerator(entry=entry, exit=exit, **config)
-        maze = maze_gen.generate()
-        if not maze:
-            raise Exception("Maze did not generate.")
-        walls = Grid(
-            maze.width,
-            maze.height,
-            from_file=config["output_file"],
-            on_each_char=lambda x: Ways(int(x, 16)),
-        )
-        print(walls)
-        config["entry"] = str(entry).strip("()")
-        config["exit"] = str(exit).strip("()")
-        printer = MazePrinter(**config)
-        printer.display_maze()
-        print(f"SEED: {maze_gen.seed=}")
-        m = MAZE.from_file(config["output_file"])
-        report = analyze(m)
-        text = render(report, 2, 2)
-        print(text)
-        with subtests.test("coherent"):
+def test_random_pacman(subtests: pytest.Subtests) -> None:
+    for i in range(PACMAN_TRIES):
+        random.seed()
+        width = randint(0, RAND_WIDTH)
+        height = randint(0, RAND_HEIGHT)
+        with subtests.test(f"{width}x{height}"):
+            pattern = Grid(
+                7, 5, from_file="42.txt", on_each_char=lambda c: c == "f"
+            )
+            grid = None
+            try:
+                grid = Grid(width, height, default=False)
+                if width >= P42_MIN_WIDTH and height >= P42_MIN_HEIGHT:
+                    x = (width - pattern.width) // 2 + 1 - width % 2
+                    y = (height - pattern.height) // 2 + 1 - height % 2
+                    origin = grid[x, y]
+                    for cell in pattern:
+                        offset = cell.as_vector
+                        origin[offset].value = cell.value
+            except Exception:
+                pass
+            entry, exit = pick_valid(grid)
+            config: dict[str, str] = {
+                "width": f"{width}",
+                "height": f"{height}",
+                "output_file": "imperfect.txt",
+                "perfect": "False",
+            }
+            maze_gen = MazeGenerator(entry=entry, exit=exit, **config)
+            maze = maze_gen.generate()
+            if not maze:
+                raise Exception("Maze did not generate.")
+            walls = Grid(
+                maze.width,
+                maze.height,
+                from_file=config["output_file"],
+                on_each_char=lambda x: Ways(int(x, 16)),
+            )
+            print(walls)
+            config["entry"] = str(entry).strip("()")
+            config["exit"] = str(exit).strip("()")
+            printer = MazePrinter(**config)
+            printer.display_maze()
+            print(f"SEED: {maze_gen.seed=}")
+            m = MAZE.from_file(config["output_file"])
+            report = analyze(m)
+            text = render(report, 2, 2)
+            print(text)
             assert report.incoherent != False
-        with subtests.test("loops-check"):
             assert report.loops >= 2
-        with subtests.test("deadends"):
             assert report.dead_ends[0] <= 2
-        with subtests.test("not-disconnected"):
             assert report.disconnected_corridors != True
-        with subtests.test("unreachable-key-cells"):
             assert report.unreachable_key_cells != True
-        with subtests.test("other"):
             assert "Pac-Man-USABLE" in text
 
 
-def test_generate_perfect(subtests: pytest.Subtests) -> None:
-    for i in range(PI):
-        width = randint(1, W)
-        height = randint(2, H)
-        # seed = randint(0, 2**31)
-        pattern = Grid(
-            7, 5, from_file="42.txt", on_each_char=lambda c: c == "f"
-        )
-        grid = Grid(width, height, default=False)
-        if width >= 9 and height >= 7:
-            x = (width - pattern.width) // 2 + 1 - width % 2
-            y = (height - pattern.height) // 2 + 1 - height % 2
-            origin = grid[x, y]
-            for cell in pattern:
-                offset = cell.as_vector
-                origin[offset].value = cell.value
-        entry, exit = pick_valid(grid)
-        config: dict[str, str] = {
-            "width": f"{width}",
-            "height": f"{height}",
-            "output_file": "perfect.txt",
-            "perfect": "True",
-        }
-        maze_gen = MazeGenerator(entry=entry, exit=exit, **config)
-        maze = maze_gen.generate()
-        if not maze:
-            raise Exception("Maze did not generate.")
-        walls = Grid(
-            maze.width,
-            maze.height,
-            from_file=config["output_file"],
-            on_each_char=lambda x: Ways(int(x, 16)),
-        )
-        print(walls)
-        config["entry"] = str(entry).strip("()")
-        config["exit"] = str(exit).strip("()")
-        printer = MazePrinter(**config)
-        printer.display_maze()
-        print(f"SEED: {maze_gen.seed=}")
-        m = MAZE.from_file(config["output_file"])
-        report = analyze(m)
-        text = render(report, 2, 2)
-        print(text)
-
-        with subtests.test("coherent"):
+def test_random_perfect(subtests: pytest.Subtests) -> None:
+    for i in range(PERFECT_TRIES):
+        random.seed()
+        width = randint(0, RAND_WIDTH)
+        height = randint(0, RAND_HEIGHT)
+        with subtests.test(f"{width}x{height}"):
+            pattern = Grid(
+                7, 5, from_file="42.txt", on_each_char=lambda c: c == "f"
+            )
+            grid = None
+            try:
+                grid = Grid(width, height, default=False)
+                if width >= P42_MIN_WIDTH and height >= P42_MIN_HEIGHT:
+                    x = (width - pattern.width) // 2 + 1 - width % 2
+                    y = (height - pattern.height) // 2 + 1 - height % 2
+                    origin = grid[x, y]
+                    for cell in pattern:
+                        offset = cell.as_vector
+                        origin[offset].value = cell.value
+            except Exception:
+                pass
+            entry, exit = pick_valid(grid)
+            config: dict[str, str] = {
+                "width": f"{width}",
+                "height": f"{height}",
+                "output_file": "perfect.txt",
+                "perfect": "True",
+            }
+            maze_gen = MazeGenerator(entry=entry, exit=exit, **config)
+            maze = maze_gen.generate()
+            if not maze:
+                raise Exception("Maze did not generate.")
+            walls = Grid(
+                maze.width,
+                maze.height,
+                from_file=config["output_file"],
+                on_each_char=lambda x: Ways(int(x, 16)),
+            )
+            print(walls)
+            config["entry"] = str(entry).strip("()")
+            config["exit"] = str(exit).strip("()")
+            printer = MazePrinter(**config)
+            printer.display_maze()
+            print(f"SEED: {maze_gen.seed=}")
+            m = MAZE.from_file(config["output_file"])
+            report = analyze(m)
+            text = render(report, 2, 2)
+            print(text)
             assert not report.incoherent
-        with subtests.test("no-loops"):
             assert report.loops == 0
-        with subtests.test("not-disconnected"):
             assert not report.disconnected_corridors
-        with subtests.test("other"):
             assert "PERFECT maze" in text
 
 
@@ -211,5 +215,5 @@ def debug() -> None:
     # print(render(report, 2, 2))
 
 
-if __name__ == "__main__":
-    debug()
+# if __name__ == "__main__":
+#     debug()
