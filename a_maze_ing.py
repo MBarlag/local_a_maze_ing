@@ -10,6 +10,9 @@ without overwhelming each of the class with information that is not needed.
 """
 
 import sys
+from collections.abc import Iterator
+from contextlib import contextmanager
+from typing import Any
 
 from pydantic import ValidationError
 
@@ -19,27 +22,48 @@ from submodules.generator import MazeGenerator
 from submodules.menu import Menu
 
 
+@contextmanager
+def graceful_errors(
+    skip_on_interrupt: bool = True,
+) -> Iterator[Any]:
+    """Handles errors gracefully, skips on KeyboardInterrupt by default."""
+    try:
+        yield
+    except (KeyboardInterrupt, Exception) as e:
+        if isinstance(e, KeyboardInterrupt):
+            if skip_on_interrupt:
+                return
+            else:
+                raise
+        handle_critical_error(e)
+
+
 def handle_critical_error(e: Exception) -> None:
     """Displays an error and exits gracefully."""
+    root = "[A-Maze-ing]"
     if isinstance(e, ValidationError):
-        for error in e.errors():
+        print(f"{root}[{e.title} x{e.error_count()}]:", file=sys.stderr)
+        for error in e.errors(include_url=False):
+            loc = "".join(
+                f".{x}" if isinstance(x, str) else f"[{x}]"
+                for x in error["loc"]
+            ).strip(".")
             exc_name = error["type"].title().replace("_", "")
             print(
-                f"[A-Maze-ing][{exc_name}]: {error['msg']} "
-                f"input: {error['input']}"
+                f"    {loc}={error['input']!r} <-- {error['msg']}",
+                file=sys.stderr,
             )
     else:
         exc_name = type(e).__name__
-        print(f"[A-Maze-ing][{exc_name}]:{e!s}")
+        print(f"{root}[{exc_name}]: {e!s}", file=sys.stderr)
     sys.exit(1)
 
 
 if __name__ == "__main__":
-    # if len(sys.argv) not 2:
-    #   raise Exception ("Usage: python3 a_maze_ing.py <file>")
-
-    try:
-        config = Config("config.txt").parse_config()
+    with graceful_errors():
+        if len(sys.argv) != 2:
+            raise Exception("Usage: python3 a_maze_ing.py <file>")
+        config = Config(sys.argv[1]).parse_config()
         # Don't forget to use sys.argv[1] here instead of config.txt!
         maze_gen = MazeGenerator(**config)
         # under the hood it will call the MazeGen constructor method,
@@ -49,13 +73,6 @@ if __name__ == "__main__":
         # and will just take what it actually needs
 
         maze_printer = MazePrinter(**config)
-    except Exception as e:
-        handle_critical_error(e)
-    menu = Menu(maze_gen, maze_printer)
-    try:
+        menu = Menu(maze_gen, maze_printer)
         menu.prompt_loop()
-    except (KeyboardInterrupt, Exception) as e:
-        if isinstance(e, KeyboardInterrupt):
-            menu.quit_menu()
-        else:
-            handle_critical_error(e)
+    menu.quit_menu()

@@ -10,3 +10,6 @@ __pycache__
 T1.txt
 TESTING.txt
 todo_*
+perfect.txt
+imperfect.txt
+*.txt
