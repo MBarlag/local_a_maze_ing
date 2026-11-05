@@ -54,7 +54,7 @@ install:
 run:
 	$(MAKE) ready
 	echo $(PY_VER)
-	uv run --python $(PY_VER) a_maze_ing.py
+	uv run --python $(PY_VER) a_maze_ing.py config.txt
 
 debug:
 	$(MAKE) ready

@@ -106,7 +106,7 @@ class MazePrinter(BaseModel):
         hex_maze[y][x] += point_type
 
     def _display_row(self, hex_row: list[int]) -> None:
-        """Prints North and West walls of maze row and closes with + and |.
+        """Prints North and West walls of maze row and closes with + and │.
 
         Args:
             hex_row (list[int]): One line of hexadecimal characters.
@@ -118,7 +118,7 @@ class MazePrinter(BaseModel):
         for cell in hex_row:
             print(f"{WCLR} {RST}", end="")
             if cell & north:
-                print(f"{WCLR}---{RST}", end="")
+                print(f"{WCLR}───{RST}", end="")
             elif cell & PATH:
                 print(f"{PATH_CLR}   {RST}", end="")
             else:
@@ -127,7 +127,7 @@ class MazePrinter(BaseModel):
 
         for cell in hex_row:
             if cell & west:
-                print(f"{WCLR}|{RST}", end="")
+                print(f"{WCLR}│{RST}", end="")
             elif cell & PATH:
                 print(f"{PATH_CLR} {RST}", end="")
             else:
@@ -152,13 +152,13 @@ class MazePrinter(BaseModel):
                 print(f"{FILL}🮙🮙🮙{RST}", end="")
             else:
                 print("   ", end="")
-        print(f"{WCLR}|{RST}")
+        print(f"{WCLR}│{RST}")
 
     def _display_bottom(self) -> None:
         """Prints the closing South walls of the maze."""
         WCLR = self.wall_color
         for _ in range(self.width):
-            print(f"{WCLR} ---{RST}", end="")
+            print(f"{WCLR} ───{RST}", end="")
         print(f"{WCLR} {RST}")
 
     def _parse_path(self) -> str:
