@@ -17,7 +17,7 @@ P42_HEIGHT = 5
 # MIN_WIDTH = 2
 # MIN_HEIGHT = 2
 
-P42_MIN_WIDTH = 8
+P42_MIN_WIDTH = 9
 P42_MIN_HEIGHT = 6
 
 
@@ -102,13 +102,15 @@ class MazeGenerator(BaseModel):
             iters_before_fail -= 1
             try:
                 self._build_maze()
-                if not self.perfect and self.is_pacman():
+                if self.perfect:
+                    break
+                if self.is_pacman():
                     break
                 not_valid = False
             except MazeGenException:
                 pass
         if not iters_before_fail:
-            print(
+            raise MazeGenException(
                 "[ERROR] Could not create maze for the current configuration."
             )
         result = self.last_maze

@@ -67,8 +67,8 @@ def pick_valid(
     return entry, exit
 
 
-RAND_WIDTH = 10
-RAND_HEIGHT = 10
+RAND_WIDTH = 15
+RAND_HEIGHT = 15
 PERFECT_TRIES = 1000
 PACMAN_TRIES = 1000
 
