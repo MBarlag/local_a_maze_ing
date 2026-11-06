@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+##!/usr/bin/env python3
 """a_maze_ing.py.
 
 Is responsible for being a dispatcher tower
