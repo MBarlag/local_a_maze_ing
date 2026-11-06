@@ -71,7 +71,7 @@ def allowed_inputs(*args: str) -> BeforeValidator:
     def within_allowed_inputs(value: Any) -> Any:
         if isinstance(value, str) and value not in allowed:
             raise ValueError(
-                f"Value cannot be anything but from allowed list: {allowed=}"
+                f"Value cannot be anything but from allowed list: {allowed}"
             )
         return value
 
@@ -85,7 +85,7 @@ def blocked_inputs(*args: str) -> BeforeValidator:
     def not_blocked(value: Any) -> Any:
         if isinstance(value, str) and value in blocked:
             raise ValueError(
-                f"Value cannot be part of the blocked list: {blocked=}"
+                f"Value cannot be part of the blocked list: {blocked}"
             )
         return value
 
@@ -128,7 +128,7 @@ FileName = Annotated[
     StringConstraints(
         min_length=1,
         max_length=255,
-        pattern=r'^[^/\\:*?"<>|\x00-\x1f]+$',
+        pattern=r'^[^:*?"<>|\x00-\x1f]+$',
         strict=True,
     ),
 ]

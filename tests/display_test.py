@@ -1,21 +1,8 @@
 # Run from project root as a module: python3 -m tests.display_test
 
-from submodules.config import Config
+from submodules.config import ConfigParser
 from submodules.display import MazePrinter
 from submodules.generator import MazeGenerator
-
-
-def test_some_maze() -> None:
-    config: dict[str, str] = {
-        "width": "5",
-        "height": "5",
-        "entry": "0,0",
-        "exit": "4,4",
-        "output_file": "new_test.txt",
-    }
-
-    printer = MazePrinter(**config)
-    printer.display_maze()
 
 
 def test_small_maze() -> None:
@@ -24,7 +11,7 @@ def test_small_maze() -> None:
         "height": "3",
         "entry": "0,0",
         "exit": "2,2",
-        "output_file": "tests/hex_small_maze.txt",
+        "output_file": "tests/output/hex_small_maze.txt",
     }
     printer = MazePrinter(**config)
     printer.display_maze()
@@ -38,14 +25,14 @@ def test_big_maze() -> None:
         "height": "20",
         "entry": "1,1",
         "exit": "19,14",
-        "output_file": "tests/hex_big_maze.txt",
+        "output_file": "tests/output/hex_big_maze.txt",
     }
     printer = MazePrinter(**config)
     printer.display_maze()
 
 
 def test_gen_maze() -> None:
-    config = Config("tests/good_config.txt").parse_config()
+    config = ConfigParser("tests/good_config.txt").parse()
     maze_gen = MazeGenerator(**config)
     maze_gen.generate()
     printer = MazePrinter(**config)

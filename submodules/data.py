@@ -140,6 +140,8 @@ class Maze(Grid[None, Room]):
         super().__init__(width, height, default=None, cell_class=Room)
         self._set_entry(entry or Vector(0, 0))
         self._set_exit(exit or Vector(0, 0))
+        if self.exit == self.entry:
+            raise MazeError("Cant have entry == exit.")
         self.edges = 0
 
     @property

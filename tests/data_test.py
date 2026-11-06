@@ -1,8 +1,8 @@
 import pytest
 
 from submodules.abstract import Vector
-from submodules.config import Config
-from submodules.data import Maze, Room
+from submodules.config import ConfigParser
+from submodules.data import Maze, MazeError, Room
 from submodules.display import MazePrinter
 from submodules.enums import Step, Ways
 from submodules.generator import MazeGenerator
@@ -15,8 +15,8 @@ def test_maze() -> None:
         Maze(0, 3)
     assert "Maze" in str(e2.value)
     assert "Maze" in str(e.value)
-    config = Config("tests/good_config.txt").parse_config()
-    config["output_file"] = "T1.txt"
+    config = ConfigParser("tests/good_config.txt").parse()
+    config["output_file"] = "tests/output/T1.txt"
     print(config)
     maze_gen = MazeGenerator(**config)
     maze = maze_gen.generate()
@@ -34,8 +34,8 @@ def test_maze() -> None:
 
 
 def test_room() -> None:
-    maze = Maze(3, 3, Vector(0, 0), Vector(0, 0))
-    assert maze.valid == False
+    with pytest.raises(MazeError):
+        maze = Maze(3, 3, Vector(0, 0), Vector(0, 0))
     maze = Maze(3, 3, Vector(0, 0), Vector(1, 2))
     assert maze.valid == True
 

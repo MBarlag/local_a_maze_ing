@@ -16,7 +16,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from submodules.config import Config
+from submodules.config import ConfigParser
 from submodules.display import MazePrinter
 from submodules.generator import MazeGenerator
 from submodules.menu import Menu
@@ -28,7 +28,8 @@ def graceful_errors(
 ) -> Generator[Any]:
     """Handles errors gracefully, skips on KeyboardInterrupt by default."""
     try:
-        # After yield is called, it's gonna basically resume execution from here
+        # After yield is called, it's gonna
+        # basically resume execution from here
         # of everything within the with graceful_errors() block
         # if it raises an Exception, it will be caught by the try except
         yield
@@ -42,25 +43,29 @@ def graceful_errors(
         handle_critical_error(e)
 
 
+def format_pydantic_error(e: ValidationError) -> str:
+    """Formats pydantic error."""
+    root = "[A-Maze-ing]"
+    result = root
+    result += f"[{e.title} x{e.error_count()} validation error(s)]:\n"
+    for error in e.errors(include_url=False):
+        # loc is a tuple of int | str
+        # int if it's an index of the value in question
+        # str if its an attribute
+        # "".join(...) means concatenate all of the items within
+        attr_name = "".join(
+            f".{x}" if isinstance(x, str) else f"[{x}]" for x in error["loc"]
+        ).strip(".")
+        # exc_name = error["type"].title().replace("_", "")
+        result += f"    {attr_name} ({error['input']!r}) <-- {error['msg']}\n"
+    return result[:-1]
+
+
 def handle_critical_error(e: Exception) -> None:
     """Displays an error and exits gracefully."""
     root = "[A-Maze-ing]"
     if isinstance(e, ValidationError):
-        print(f"{root}[{e.title} x{e.error_count()}]:", file=sys.stderr)
-        for error in e.errors(include_url=False):
-            # loc is a tuple of int | str
-            # int if it's an index of the value in question
-            # str if its an attribute
-            # "".join(...) means concatenate all of the items within
-            attr_name = "".join(
-                f".{x}" if isinstance(x, str) else f"[{x}]"
-                for x in error["loc"]
-            ).strip(".")
-            exc_name = error["type"].title().replace("_", "")
-            print(
-                f"    {attr_name}={error['input']!r} <-- {error['msg']}",
-                file=sys.stderr,
-            )
+        print(format_pydantic_error(e), file=sys.stderr)
     else:
         exc_name = type(e).__name__
         print(f"{root}[{exc_name}]: {e!s}", file=sys.stderr)
@@ -75,7 +80,7 @@ if __name__ == "__main__":
     with graceful_errors():
         if len(sys.argv) != 2:
             raise AMazeIngError("Usage: python3 a_maze_ing.py <file>")
-        config = Config(sys.argv[1]).parse_config()
+        config = ConfigParser(sys.argv[1]).parse()
         maze_gen = MazeGenerator(**config)
         # under the hood it will call the MazeGen constructor method,
         # it will look something like this:

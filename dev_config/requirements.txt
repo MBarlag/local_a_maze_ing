@@ -6,5 +6,5 @@ flake8
 mypy
 ruff
 typing-extensions
-line_profiler
-snakeviz
+# line_profiler
+# snakeviz

@@ -1,15 +1,13 @@
 import random
 from collections import deque
 from collections.abc import Callable, Iterable
+from dataclasses import KW_ONLY, dataclass, field
 from random import choice, randint
-from typing import Any
 
-from pydantic import BaseModel, Field, PrivateAttr
-
-from submodules.abstract import Grid
+from submodules.abstract import Grid, Vector
+from submodules.config import MazeConfig
 from submodules.data import Maze, Room
 from submodules.enums import Ways
-from submodules.safe_types import Bool, FileName, IntVector, PositiveInt
 
 P42_WIDTH = 7
 P42_HEIGHT = 5
@@ -21,11 +19,12 @@ P42_MIN_WIDTH = 9
 P42_MIN_HEIGHT = 6
 
 
-class MazeGenException(Exception):
+class MazeGenError(Exception):
     """An exception occuring during MazeGeneration."""
 
 
-class MazeGenerator(BaseModel):
+@dataclass
+class MazeGenerator:
     """Generates maze and stores all needed data for doing so.
 
     Attributes:
@@ -39,25 +38,45 @@ class MazeGenerator(BaseModel):
     """
 
     # model_config = ConfigDict(arbitrary_types_allowed=True)
-    width: PositiveInt
-    height: PositiveInt
-    entry: IntVector
-    exit: IntVector
-    perfect: Bool
-    output_file: FileName
-    seed: PositiveInt | None = Field(None)
-    _last_maze: Maze | None = None
-    _draft_maze: Maze
-    _path: list[Ways] | None = PrivateAttr(None)
-    _edges: int = PrivateAttr(0)
-    _rooms: int = PrivateAttr(0)
+    _: KW_ONLY
+    width: int
+    height: int
+    entry: Vector[int]
+    exit: Vector[int]
+    output_file: str
+    perfect: bool
+    seed: int | None = None
+    _last_maze: Maze | None = field(init=False, repr=False, default=None)
+    _path: list[Ways] | None = field(init=False, repr=False, default=None)
+    _edges: int = field(init=False, repr=False, default=0)
+    _rooms: int = field(init=False, repr=False, default=0)
 
-    def model_post_init(self, context: Any) -> None:
+    def __post_init__(
+        self,
+    ) -> None:
         """Initialize MazeGnerator inner attributes after its been created."""
+        # self.width = config.width
+        # self.height = config.height
+        # self.entry = config.entry
+        # self.exit = config.exit
+        # self.perfect = config.perfect
+        # self.output_file = config.output_file
+        # self.seed = config.seed
+        unchecked = vars(self)
+        maze_config = MazeConfig(**unchecked)
+        checked = vars(maze_config)
+        for name, value in checked.items():
+            setattr(self, name, value)
+        if not self.perfect and (self.width == 1 or self.height == 1):
+            raise MazeGenError(
+                "Pacman cannot have width or height equal to 1."
+            )
+        # if not self.perfect and (self.width == 2 and self.height == 2):
+        #     raise MazeGenError("bleh")
         self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
         origin = self._draft_maze.room
         if origin + self.entry is None or origin + self.exit is None:
-            raise MazeGenException("Entry and/or exit are out of bounds.")
+            raise MazeGenError("Entry and/or exit are out of bounds.")
         if self.seed is None:
             self.seed = self.set_seed()
 
@@ -95,23 +114,19 @@ class MazeGenerator(BaseModel):
         exit = maze[self.exit]
         self._add_pattern()
         if entry.blocked or exit.blocked:
-            raise MazeGenException("Entry and exit cant be in pattern.")
-        not_valid = True
-        iters_before_fail = 50
-        while not_valid and iters_before_fail:
-            iters_before_fail -= 1
+            raise MazeGenError("Entry and exit cant be in pattern.")
+        MAX_ATTEMPTS = 20
+        for _ in range(MAX_ATTEMPTS):
             try:
                 self._build_maze()
-                if self.perfect:
-                    break
-                if self.is_pacman():
-                    break
-                not_valid = False
-            except MazeGenException:
+                break
+            except Exception:
                 pass
-        if not iters_before_fail:
-            raise MazeGenException(
-                "[ERROR] Could not create maze for the current configuration."
+        # if the loop didnt have a break
+        else:
+            print(maze.view(lambda x: str(x.walls)))
+            raise MazeGenError(
+                "[ERROR] Failed not create maze for the current configuration."
             )
         result = self.last_maze
         return result
@@ -123,6 +138,7 @@ class MazeGenerator(BaseModel):
     def _build_maze(self) -> None:
         """Break walls of Maze keeping it valid to the constraints."""
         self._edges = 0
+        self._rest_walls()
         maze = self._draft_maze
         exit = maze[self.exit]
         self._reset_states()
@@ -131,10 +147,14 @@ class MazeGenerator(BaseModel):
             self._remove_deadends()
             self._reset_states()
             self._walk(exit, on_each_visit=self._find_path, depth_first=False)
+            if not self.is_pacman():
+                raise MazeGenError(
+                    "Not enough loops for pacman. Need at least 2."
+                )
         if not self._is_connected():
-            raise MazeGenException("Generated Maze is not fully connected.")
+            raise MazeGenError("Generated Maze is not fully connected.")
         if not self._draft_maze.valid:
-            raise MazeGenException("Generated Maze is not valid.")
+            raise MazeGenError("Generated Maze is not valid.")
         self.last_maze = self._draft_maze
         self._path = self._extract_path()
         self._output()
@@ -186,6 +206,11 @@ class MazeGenerator(BaseModel):
             if to_next is Ways.NONE and not room.blocked:
                 return False
         return True
+
+    def _rest_walls(self) -> None:
+        maze = self._draft_maze
+        for room in maze:
+            room.walls = Ways.ALL
 
     def _reset_states(self) -> None:
         maze = self._draft_maze
@@ -311,7 +336,7 @@ class MazeGenerator(BaseModel):
         path: list[Ways] = []
         while room and room.as_vector != self.exit:
             if room.path_hint is Ways.NONE:
-                raise MazeGenException("Invalid path, encountered Ways.NONE.")
+                raise MazeGenError("Invalid path, encountered Ways.NONE.")
             path.append(room.path_hint)
             room = room + room.path_hint.as_step
         return path
@@ -332,7 +357,7 @@ class MazeGenerator(BaseModel):
     def path(self) -> list[Ways]:
         """The path property."""
         if self._path is None:
-            raise MazeGenException("No path has been collected.")
+            raise MazeGenError("No path has been collected.")
         return self._path
 
     @path.setter
@@ -343,7 +368,7 @@ class MazeGenerator(BaseModel):
     def last_maze(self) -> Maze:
         """Last generated maze."""
         if self._last_maze is None:
-            raise MazeGenException(
+            raise MazeGenError(
                 "Error accessing last maze, no maze has been generated."
             )
         return self._last_maze

@@ -6,23 +6,53 @@ Keys hold specifications for creating the maze.
 
 import re
 from dataclasses import dataclass
+from typing import Any
+
+from pydantic import BaseModel, Field, NonNegativeInt
+
+from submodules.safe_types import Bool, FileName, IntVector
 
 
-class ConfigException(Exception):
+class ConfigParserError(Exception):
     """Exception for when the config file has an invalid line."""
 
 
+class MazeConfig(BaseModel):
+    """Type safe config that uses pydantic validation."""
+
+    width: NonNegativeInt
+    height: NonNegativeInt
+    entry: IntVector
+    exit: IntVector
+    perfect: Bool
+    output_file: FileName
+    seed: NonNegativeInt | None = Field(None)
+
+    @property
+    def as_dict(self) -> dict[str, str]:
+        r"""dict\[str, str] representation."""
+        result = {k: str(v) for k, v in vars(self).items()}
+        result["entry"] = result["entry"].strip("()")
+        result["exit"] = result["exit"].strip("()")
+        return result
+
+    @property
+    def as_kwargs(self) -> dict[str, Any]:
+        r"""\dict[str, Any] representation."""
+        return vars(self)
+
+
 @dataclass
-class Config:
-    """Parses lines of a config file into a dictionary.
+class ConfigParser:
+    """Parses lines of a config file.
 
     Specifications and values are stored as strings.
 
     Attributes:
-        _filename: Path to the config file.
+        filename: Path to the config file.
     """
 
-    _filename: str
+    filename: str
 
     @staticmethod
     def _strip_comments(line: str) -> str:
@@ -31,37 +61,23 @@ class Config:
 
     @staticmethod
     def _extract_pair(line: str) -> tuple[str, str] | None:
-        """Splits a line into a tuple of specification and value.
-
-        Args:
-            line (str): A stripped line from the file.
-
-        Returns:
-            tuple[str, str]: Extracted pair of key and value.
-            Returns None when line is empty.
-
-        Raises:
-            ConfigException: If the line doen't contain one '='.
-        """
+        """Splits a line into a tuple of name and value."""
         if not line:
             return None
         split_result = line.split("=")
         if len(split_result) != 2:
-            message = "There can only be one = sign per config line"
-            raise ConfigException(message)
-        return split_result[0], split_result[1]
+            message = "There can only be one = sign per config line."
+            raise ConfigParserError(message)
+        name, value = split_result
+        return name, value
 
-    def parse_config(self) -> dict[str, str]:
-        """Opens file and parses the lines using private methods.
-
-        Returns:
-            dict[str, str]: Holds specifications for creating the maze.
-        """
+    def parse(self) -> dict[str, Any]:
+        r"""Parse config to dict\[str, str]."""
         result: dict[str, str] = {}
-        with open(self._filename, "r", encoding="utf-8") as f:
+        with open(self.filename, "r", encoding="utf-8") as f:
             for line in f:
-                line = Config._strip_comments(line).strip()
-                if not (extracted := Config._extract_pair(line)):
+                line = self._strip_comments(line).strip()
+                if not (extracted := self._extract_pair(line)):
                     continue
                 key, value = extracted
                 k = key.lower().strip()

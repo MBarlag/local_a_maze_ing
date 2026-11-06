@@ -270,11 +270,9 @@ class Grid(Generic[_Data, _Cell]):
         Raises:
             ValueError: If dimensions are invalid.
         """
+        err = f"{type(self).__name__} can't have zero/negative width or height"
         if width < 1 or height < 1:
-            raise ValueError(
-                f"{type(self).__name__} can't have \
-                zero/negative width or height"
-            )
+            raise ValueError(err)
         self._cell_class: type[Any] = cell_class or Cell
         self.default: _Data = default
         self.width: int = width

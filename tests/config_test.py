@@ -2,7 +2,7 @@ from os import remove
 
 import pytest
 
-from submodules.config import Config, ConfigException
+from submodules.config import ConfigParser, ConfigParserError
 
 VALID = [
     ("", {}),
@@ -14,7 +14,7 @@ VALID = [
 ]
 
 INVALID = ["OUTPUT#=file2.txt", "A=3, B=4", "C==3", "D=my=file.txt"]
-FILENAME = "test_config.txt"
+FILENAME = "tests/test_config.txt"
 
 
 @pytest.fixture(autouse=True)
@@ -31,12 +31,12 @@ def file_handling():
 def test_valid(input: str, expected: dict[str, str]):
     with open(FILENAME, "w", encoding="utf-8") as f:
         f.write(input)
-    assert Config(FILENAME).parse_config() == expected
+    assert ConfigParser(FILENAME).parse() == expected
 
 
 @pytest.mark.parametrize("input", INVALID)
 def test_invalid(input: str):
     with open(FILENAME, "w", encoding="utf-8") as f:
         f.write(input)
-    with pytest.raises(ConfigException):
-        Config(FILENAME).parse_config()
+    with pytest.raises(ConfigParserError):
+        ConfigParser(FILENAME).parse()

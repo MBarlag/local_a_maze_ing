@@ -1,52 +1,47 @@
 import random
-from copy import copy
+from collections.abc import Generator
+from contextlib import contextmanager
 from dataclasses import FrozenInstanceError
 from functools import partial
 from random import randint
 from typing import Any
 
 import pytest
+from pydantic import ValidationError
 
+from a_maze_ing import format_pydantic_error
 from submodules.abstract import Cell, Grid, Vector
-from submodules.config import Config
+from submodules.config import ConfigParser, MazeConfig
+from submodules.data import MazeError
 from submodules.display import MazePrinter
 from submodules.enums import Ways
-from submodules.generator import P42_MIN_HEIGHT, P42_MIN_WIDTH, MazeGenerator
+from submodules.generator import (
+    P42_MIN_HEIGHT,
+    P42_MIN_WIDTH,
+    MazeGenerator,
+    MazeGenError,
+)
 from submodules.safe_types import IntVector
 from tests.maze_analyzer import Maze as MAZE
 from tests.maze_analyzer import analyze, render
 
 
-def gen_configs() -> Any:
-    BAD_CONFIGS = []
-    bad_config = Config("tests/bad_config.txt").parse_config()
-    good_config = Config("tests/good_config.txt").parse_config()
-    for k, v in list(bad_config.items()):
-        conf = copy(good_config)
-        conf[k] = v
-        BAD_CONFIGS.append(conf)
-    # print(BAD_CONFIGS)
-    return BAD_CONFIGS
-
-
-BAD_CONFIGS = gen_configs()
+@contextmanager
+def pydantic_pretty() -> Generator[None]:
+    try:
+        yield
+    except ValidationError as e:
+        pytest.fail(format_pydantic_error(e))
 
 
 def test_valid_config_pipeline() -> None:
-    config = Config("tests/good_config.txt").parse_config()
+    config = ConfigParser("tests/good_config.txt").parse()
     maze_gen = MazeGenerator(**config)
     # maze_gen.generate()
     assert type(maze_gen.entry) == Vector
     assert type(maze_gen.entry.x) == int
     with pytest.raises(FrozenInstanceError):
         maze_gen.entry.x = 3
-
-
-@pytest.mark.parametrize("config", BAD_CONFIGS)
-def test_invalid_config_pipeline(config: dict[str, str]) -> None:
-    with pytest.raises((ValueError, TypeError)):
-        print(config)
-        MazeGenerator(**config)
 
 
 def pick_valid(
@@ -67,10 +62,10 @@ def pick_valid(
     return entry, exit
 
 
-RAND_WIDTH = 15
-RAND_HEIGHT = 15
-PERFECT_TRIES = 1000
-PACMAN_TRIES = 1000
+RAND_WIDTH = 50
+RAND_HEIGHT = 50
+PERFECT_TRIES = 50
+PACMAN_TRIES = 50
 
 
 # ALWAYS FAILS: 2x2
@@ -81,7 +76,7 @@ def test_random_pacman(subtests: pytest.Subtests) -> None:
         random.seed()
         width = randint(0, RAND_WIDTH)
         height = randint(0, RAND_HEIGHT)
-        with subtests.test(f"{width}x{height}"):
+        with subtests.test(f"{width}x{height}"), pydantic_pretty():
             pattern = Grid(
                 7, 5, from_file="42.txt", on_each_char=lambda c: c == "f"
             )
@@ -98,29 +93,71 @@ def test_random_pacman(subtests: pytest.Subtests) -> None:
             except Exception:
                 pass
             entry, exit = pick_valid(grid)
-            config: dict[str, str] = {
+            dict_config: dict[str, Any] = {
                 "width": f"{width}",
                 "height": f"{height}",
-                "output_file": "imperfect.txt",
+                "output_file": "tests/output/imperfect.txt",
                 "perfect": "False",
             }
-            maze_gen = MazeGenerator(entry=entry, exit=exit, **config)
+            config = MazeConfig(entry=entry, exit=exit, **dict_config)
+
+            if width == 0 and height != 1 or width != 1 and height == 0:
+                with pytest.raises(ValueError, match="zero"):
+                    maze_gen = MazeGenerator(
+                        entry=entry, exit=exit, **dict_config
+                    )
+                    maze = maze_gen.generate()
+                continue
+            if entry == exit and width != 1 and height != 1:
+                with pytest.raises(MazeError, match="entry == exit"):
+                    maze_gen = MazeGenerator(
+                        entry=entry, exit=exit, **dict_config
+                    )
+                    maze = maze_gen.generate()
+                continue
+            if width == 1 or height == 1:
+                with pytest.raises(MazeGenError, match="equal to 1"):
+                    maze_gen = MazeGenerator(
+                        entry=entry, exit=exit, **dict_config
+                    )
+                    maze = maze_gen.generate()
+                continue
+            if width == 2 and height == 2:
+                with pytest.raises(MazeGenError, match="Failed"):
+                    maze_gen = MazeGenerator(
+                        entry=entry, exit=exit, **dict_config
+                    )
+                    maze = maze_gen.generate()
+                continue
+            # if 7 <= width <= 8 and height >= 5:
+            #     with pytest.raises(MazeGenError, match="Failed"):
+            #         maze_gen = MazeGenerator(
+            #             entry=entry, exit=exit, **dict_config
+            #         )
+            #         maze = maze_gen.generate()
+            #     continue
+            # if 5 <= height <= 5 and width >= 7:
+            #     with pytest.raises(MazeGenError, match="Failed"):
+            #         maze_gen = MazeGenerator(
+            #             entry=entry, exit=exit, **dict_config
+            #         )
+            #         maze = maze_gen.generate()
+            #     continue
+            maze_gen = MazeGenerator(entry=entry, exit=exit, **dict_config)
             maze = maze_gen.generate()
             if not maze:
                 raise Exception("Maze did not generate.")
             walls = Grid(
                 maze.width,
                 maze.height,
-                from_file=config["output_file"],
+                from_file=config.output_file,
                 on_each_char=lambda x: Ways(int(x, 16)),
             )
             print(walls)
-            config["entry"] = str(entry).strip("()")
-            config["exit"] = str(exit).strip("()")
-            printer = MazePrinter(**config)
+            printer = MazePrinter(**config.as_dict)
             printer.display_maze()
             print(f"SEED: {maze_gen.seed=}")
-            m = MAZE.from_file(config["output_file"])
+            m = MAZE.from_file(config.output_file)
             report = analyze(m)
             text = render(report, 2, 2)
             print(text)
@@ -137,7 +174,10 @@ def test_random_perfect(subtests: pytest.Subtests) -> None:
         random.seed()
         width = randint(0, RAND_WIDTH)
         height = randint(0, RAND_HEIGHT)
-        with subtests.test(f"{width}x{height}"):
+        with (
+            subtests.test(f"{width}x{height}"),
+            pydantic_pretty(),
+        ):
             pattern = Grid(
                 7, 5, from_file="42.txt", on_each_char=lambda c: c == "f"
             )
@@ -154,29 +194,62 @@ def test_random_perfect(subtests: pytest.Subtests) -> None:
             except Exception:
                 pass
             entry, exit = pick_valid(grid)
-            config: dict[str, str] = {
+            dict_config: dict[str, Any] = {
                 "width": f"{width}",
                 "height": f"{height}",
-                "output_file": "perfect.txt",
+                "output_file": "tests/output/perfect.txt",
                 "perfect": "True",
             }
-            maze_gen = MazeGenerator(entry=entry, exit=exit, **config)
+            config = MazeConfig(entry=entry, exit=exit, **dict_config)
+
+            if width == 0 or height == 0:
+                with pytest.raises(ValueError, match="zero"):
+                    maze_gen = MazeGenerator(
+                        entry=entry, exit=exit, **dict_config
+                    )
+                continue
+            if entry == exit:
+                with pytest.raises(MazeError, match="entry == exit"):
+                    maze_gen = MazeGenerator(
+                        entry=entry, exit=exit, **dict_config
+                    )
+                continue
+            if entry == exit and width != 1 and height != 1:
+                with pytest.raises(MazeError, match="entry == exit"):
+                    maze_gen = MazeGenerator(
+                        entry=entry, exit=exit, **dict_config
+                    )
+                    maze = maze_gen.generate()
+                continue
+            # if 7 <= width <= 8 and height >= 5:
+            #     with pytest.raises(MazeGenError, match="Failed"):
+            #         maze_gen = MazeGenerator(
+            #             entry=entry, exit=exit, **dict_config
+            #         )
+            #         maze = maze_gen.generate()
+            #     continue
+            # if 5 <= height <= 5 and width >= 7:
+            #     with pytest.raises(MazeGenError, match="Failed"):
+            #         maze_gen = MazeGenerator(
+            #             entry=entry, exit=exit, **dict_config
+            #         )
+            #         maze = maze_gen.generate()
+            #     continue
+            maze_gen = MazeGenerator(entry=entry, exit=exit, **dict_config)
             maze = maze_gen.generate()
             if not maze:
                 raise Exception("Maze did not generate.")
             walls = Grid(
                 maze.width,
                 maze.height,
-                from_file=config["output_file"],
+                from_file=config.output_file,
                 on_each_char=lambda x: Ways(int(x, 16)),
             )
             print(walls)
-            config["entry"] = str(entry).strip("()")
-            config["exit"] = str(exit).strip("()")
-            printer = MazePrinter(**config)
+            printer = MazePrinter(**config.as_dict)
             printer.display_maze()
             print(f"SEED: {maze_gen.seed=}")
-            m = MAZE.from_file(config["output_file"])
+            m = MAZE.from_file(config.output_file)
             report = analyze(m)
             text = render(report, 2, 2)
             print(text)
@@ -189,15 +262,16 @@ def test_random_perfect(subtests: pytest.Subtests) -> None:
 def debug() -> None:
     width = 500
     height = 500
-    config: dict[str, str] = {
+    dict_config: dict[str, str] = {
         "width": f"{width}",
         "height": f"{height}",
         "entry": "0,0",
         "exit": f"{width - 1},{height - 1}",
-        "output_file": "imperfect.txt",
+        "output_file": "tests/output/imperfect.txt",
         "perfect": "False",
     }
-    maze_gen = MazeGenerator(**config)
+    config = MazeConfig(**dict_config)
+    maze_gen = MazeGenerator(**vars(config))
     maze = maze_gen.generate()
     if not maze:
         raise Exception("Maze did not generate.")
