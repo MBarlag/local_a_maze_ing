@@ -13,12 +13,18 @@ from submodules.enums import Step, Ways
 
 
 class Room(Cell[None]):
-    """Has Roomdata, manages connections with other rooms.
+    """Room of maze, stores info related for maze.
 
-    Supports relative acces of other rooms via self + offset.
+    Supports relative access of other rooms via self + offset.
     Or via self[offset], including self[step] or self[dx, dy].
     Square brackets mean the access can raise IndexError if not careful.
     self + offset will return None if outside of bounds.
+
+    Attributes:
+        visited: If room was visited or not.
+        blocked: If the room walls cant be modified.
+        walls: Configuration of existing walls directions.
+        path_hint: A direction to take, to end up at maze exit.
     """
 
     visited: bool = False
@@ -139,7 +145,7 @@ class Maze(Grid[None, Room]):
         """
         super().__init__(width, height, default=None, cell_class=Room)
         self._set_entry(entry or Vector(0, 0))
-        self._set_exit(exit or Vector(0, 0))
+        self._set_exit(exit or Vector(1, 0))
         if self.exit == self.entry:
             raise MazeError("Cant have entry == exit.")
         self.edges = 0

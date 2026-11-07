@@ -2,7 +2,7 @@
 
 Enums are used to give each menu option a name. The user sees a list
 of possible actions and uses the arrow and enter keys to choose an action.
-After excecuting, main will lead the user back to the menu until they
+After excecuting, it will lead the user back to the menu until they
 choose to quit the program.
 """
 
@@ -67,7 +67,7 @@ class Menu:
             os.system("cls || clear")
 
     def generate(self, new_seed: int | None = None) -> None:
-        """Generates a maze and prints it in the terminal."""
+        """Generates a maze."""
         try:
             if self.first_maze:
                 self.maze_gen.generate()
@@ -81,7 +81,7 @@ class Menu:
             return
 
     def toggle_path(self) -> None:
-        """Activates or deactivates path visibility and redraws maze."""
+        """Activates or deactivates path visibility."""
         self.maze_printer.path_visible = not self.maze_printer.path_visible
 
     def change_colors(self) -> None:
@@ -92,7 +92,7 @@ class Menu:
             self.maze_printer.wall_color = COLOR_1
 
     def seed(self) -> None:
-        """Ask user input to change the seed."""
+        """Ask user input to change the seed, generates new maze with it."""
         print(f"Seed: {self.maze_gen.seed}")
         while True:
             print("Please type a positive int to change the seed:")

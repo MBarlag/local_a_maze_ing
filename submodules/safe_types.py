@@ -44,7 +44,7 @@ def limited_input(
         Returns BeforeValidator. Can be used with Annotated[].
 
     Raises:
-        ValueError if any of the limits has been triggered.
+        ValueError: if any of the limits has been triggered.
     """
     _STR: TypeAdapter[Any] = TypeAdapter(
         Annotated[

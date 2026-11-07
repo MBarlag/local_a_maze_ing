@@ -65,7 +65,7 @@ class MazeGenerator:
     def __post_init__(
         self,
     ) -> None:
-        """Initialize MazeGnerator inner attributes after its been created."""
+        """Initialize MazeGenerator inner attributes after its been created."""
         # self.width = config.width
         # self.height = config.height
         # self.entry = config.entry
@@ -94,7 +94,7 @@ class MazeGenerator:
             raise MazeGenError("Entry and/or exit are out of bounds.")
 
     def set_seed(self, value: int | None = None) -> int:
-        """Regenerate the seed."""
+        """Regenerate the seed or set to specific seed."""
         MIN = 0
         MAX = 2**31 - 1
 
@@ -177,7 +177,7 @@ class MazeGenerator:
 
         To be able to avoid destructing walls
         of the pattern when generating maze.
-        Should be called only after the self._draft_maze has been called.
+        Should be called only after the self._draft_maze has been created.
         """
         maze = self._draft_maze
         if self.width < P42_MIN_WIDTH or self.height < P42_MIN_HEIGHT:
@@ -342,7 +342,7 @@ class MazeGenerator:
             queue.extend(new_ideas)
 
     def _extract_path(self) -> list[Ways]:
-        """Extract a path from maze. Convert directions Walls repr."""
+        """Extract a path from maze."""
         maze = self.last_maze
         room: Room | None = maze[self.entry]
         path: list[Ways] = []

@@ -44,14 +44,14 @@ class Step(Vector[int], Enum):
 
 
 class Ways(Flag):
-    """Direction config. Combines primitive W(est), S(outh), E(east), N(north).
+    """Direction config. Combines primitive W(est), S(outh), E(ast), N(north).
 
     Attributes:
         W: Represents west way.
         S: Represents south way.
         E: Represents east way.
         N: Represents north way.
-        EMPTY: Represents no ways.
+        NONE: Represents no ways.
         ALL: Represents all ways.
     """
 
@@ -128,7 +128,7 @@ class Ways(Flag):
         return self | Ways(other)
 
     def __sub__(self, other: "Ways | int") -> "Ways":
-        """Binary subtacts from current Way config another config."""
+        """Binary subtracts from current Way config another config."""
         return self ^ Ways(other)
 
     def __rsub__(self, other: "Ways | int") -> "Ways":

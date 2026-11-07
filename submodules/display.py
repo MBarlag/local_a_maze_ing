@@ -37,6 +37,8 @@ class MazePrinter(BaseModel):
         entry (str): Coordinates of entry point.
         exit (str): Coordinates of exit point.
         input_file (str): Path to the hexadecimal file.
+        path_visible (bool): If path should be displayed.
+        wall_color (str): What wall color to use when displaying.
     """
 
     width: int
@@ -84,10 +86,10 @@ class MazePrinter(BaseModel):
         return hex_maze
 
     def _mark_point(self, point_type: int, hex_maze: list[list[int]]) -> None:
-        """Adds entry or exit point to hex_maze file.
+        """Adds entry or exit point to hex_maze.
 
         Args:
-            point_type (int): Is 16 for entry or 32 for exit.
+            point_type (int): 16 -> entry, 32 -> exit, 2^10 for center.
             hex_maze (list[list[int]]): Holds maze cells and entry/exit points.
         """
         coord: tuple[int, int]
@@ -108,7 +110,7 @@ class MazePrinter(BaseModel):
         hex_maze[y][x] += point_type
 
     def _display_row(self, hex_row: list[int]) -> None:
-        """Prints North and West walls of maze row and closes with + and │.
+        """Prints North and West walls of maze row and closes with ' ' and │.
 
         Args:
             hex_row (list[int]): One line of hexadecimal characters.
