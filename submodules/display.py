@@ -1,3 +1,9 @@
+"""Terminal display of a maze read from its hexadecimal output file.
+
+Reads the output file written by the generator, marks the entry, exit
+and (optionally) the shortest path, and prints the maze with colours.
+"""
+
 from pydantic import BaseModel, Field
 
 from submodules.abstract import Vector
