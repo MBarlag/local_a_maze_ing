@@ -235,7 +235,7 @@ class MazeGenerator:
         self, old_room: Room, current_room: Room
     ) -> list[Room] | None:
         """Finds shortest path in a maze.
-        
+
         Args:
             old_room: room we came from
             current_room: current room
