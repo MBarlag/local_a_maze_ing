@@ -13,8 +13,8 @@ CONFIG:=config.txt
 all: run
 lint:
 	$(MAKE) ready
-	mypy $(LINT_FLAGS) --exclude tests . || true
-	uvx flake8 a_maze_ing.py submodules || true
+	mypy $(LINT_FLAGS) . || true
+	flake8 . || true
 
 lint-strict:
 	$(MAKE) ready

@@ -40,7 +40,7 @@ def limited_input(
     Raises:
         ValueError if any of the limits has been triggered.
     """
-    _STR: TypeAdapter = TypeAdapter(
+    _STR: TypeAdapter[Any] = TypeAdapter(
         Annotated[
             str,
             StringConstraints(

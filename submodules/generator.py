@@ -1,8 +1,9 @@
 import random
-from collections import deque, Counter
+from collections import Counter, deque
 from collections.abc import Callable, Iterable
 from dataclasses import KW_ONLY, dataclass, field
 from random import choice, randint
+from typing import Any
 
 from submodules.abstract import Grid, Vector
 from submodules.config import MazeConfig
@@ -116,7 +117,7 @@ class MazeGenerator:
         if entry.blocked or exit.blocked:
             raise MazeGenError("Entry and exit cant be in pattern.")
         MAX_ATTEMPTS = 20
-        reasons: Counter = Counter()
+        reasons: Counter[Any] = Counter()
         for _ in range(MAX_ATTEMPTS):
             try:
                 self._build_maze()
