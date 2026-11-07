@@ -1,5 +1,5 @@
 import random
-from collections import deque
+from collections import deque, Counter
 from collections.abc import Callable, Iterable
 from dataclasses import KW_ONLY, dataclass, field
 from random import choice, randint
@@ -71,14 +71,16 @@ class MazeGenerator:
             raise MazeGenError(
                 "Pacman cannot have width or height equal to 1."
             )
+        if self.seed is None:
+            self.set_seed()
+        else:
+            self.set_seed(self.seed)
         # if not self.perfect and (self.width == 2 and self.height == 2):
         #     raise MazeGenError("bleh")
         self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
         origin = self._draft_maze.room
         if origin + self.entry is None or origin + self.exit is None:
             raise MazeGenError("Entry and/or exit are out of bounds.")
-        if self.seed is None:
-            self.seed = self.set_seed()
 
     def set_seed(self, value: int | None = None) -> int:
         """Regenerate the seed."""
@@ -90,9 +92,7 @@ class MazeGenerator:
             self.seed = value
             return value
 
-        random.seed(0)
-        new_seed = randint(MIN, MAX)
-        random.seed(new_seed)
+        new_seed = random.seed()
         self.seed = new_seed
         return self.seed
 
@@ -116,17 +116,19 @@ class MazeGenerator:
         if entry.blocked or exit.blocked:
             raise MazeGenError("Entry and exit cant be in pattern.")
         MAX_ATTEMPTS = 20
+        reasons = Counter()
         for _ in range(MAX_ATTEMPTS):
             try:
                 self._build_maze()
                 break
-            except Exception:
-                pass
+            except Exception as e:
+                reasons[e] += 1
         # if the loop didnt have a break
         else:
             print(maze.view(lambda x: str(x.walls)))
             raise MazeGenError(
-                "[ERROR] Failed not create maze for the current configuration."
+                "[ERROR] Failed to create maze for the current configuration."
+                    f"Reasons: {reasons}"
             )
         result = self.last_maze
         return result
