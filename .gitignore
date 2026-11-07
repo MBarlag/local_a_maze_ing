@@ -10,6 +10,8 @@ __pycache__
 T1.txt
 TESTING.txt
 todo_*
-*perfect.txt
 *maze*.txt
+*perfect.txt
 test.txt
+maze
+uv.lock

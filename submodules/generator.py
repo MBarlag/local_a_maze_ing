@@ -15,8 +15,8 @@ P42_HEIGHT = 5
 # MIN_WIDTH = 2
 # MIN_HEIGHT = 2
 
-P42_MIN_WIDTH = 9
-P42_MIN_HEIGHT = 6
+P42_MIN_WIDTH = P42_WIDTH + 2
+P42_MIN_HEIGHT = P42_HEIGHT + 1
 
 
 class MazeGenError(Exception):
@@ -91,8 +91,8 @@ class MazeGenerator:
             random.seed(value)
             self.seed = value
             return value
-
-        new_seed = random.seed()
+        new_seed = randint(MIN, MAX)
+        random.seed(new_seed)
         self.seed = new_seed
         return self.seed
 
@@ -116,7 +116,7 @@ class MazeGenerator:
         if entry.blocked or exit.blocked:
             raise MazeGenError("Entry and exit cant be in pattern.")
         MAX_ATTEMPTS = 20
-        reasons = Counter()
+        reasons: Counter = Counter()
         for _ in range(MAX_ATTEMPTS):
             try:
                 self._build_maze()
@@ -128,7 +128,7 @@ class MazeGenerator:
             print(maze.view(lambda x: str(x.walls)))
             raise MazeGenError(
                 "[ERROR] Failed to create maze for the current configuration."
-                    f"Reasons: {reasons}"
+                f"Reasons: {reasons}"
             )
         result = self.last_maze
         return result
@@ -226,7 +226,6 @@ class MazeGenerator:
         """Finds shortest path in a maze.
 
         Raises:
-            # TODO: make this possible
             ValueError: When there is no possible path between entry and exit.
 
         Returns:

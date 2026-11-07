@@ -62,10 +62,10 @@ def pick_valid(
     return entry, exit
 
 
-RAND_WIDTH = 3
-RAND_HEIGHT = 3
-PERFECT_TRIES = 5000
-PACMAN_TRIES = 5000
+RAND_WIDTH = 50
+RAND_HEIGHT = 50
+PERFECT_TRIES = 50
+PACMAN_TRIES = 50
 
 
 # ALWAYS FAILS: 2x2
@@ -74,8 +74,8 @@ PACMAN_TRIES = 5000
 def test_random_pacman(subtests: pytest.Subtests) -> None:
     for i in range(PACMAN_TRIES):
         random.seed()
-        width = randint(3, RAND_WIDTH)
-        height = randint(3, RAND_HEIGHT)
+        width = randint(0, RAND_WIDTH)
+        height = randint(0, RAND_HEIGHT)
         with subtests.test(f"{width}x{height}"), pydantic_pretty():
             pattern = Grid(
                 7, 5, from_file="42.txt", on_each_char=lambda c: c == "f"
@@ -172,8 +172,8 @@ def test_random_pacman(subtests: pytest.Subtests) -> None:
 def test_random_perfect(subtests: pytest.Subtests) -> None:
     for i in range(PERFECT_TRIES):
         random.seed()
-        width = randint(3, RAND_WIDTH)
-        height = randint(3, RAND_HEIGHT)
+        width = randint(0, RAND_WIDTH)
+        height = randint(0, RAND_HEIGHT)
         with (
             subtests.test(f"{width}x{height}"),
             pydantic_pretty(),
