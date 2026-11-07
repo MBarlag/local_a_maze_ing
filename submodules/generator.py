@@ -235,10 +235,10 @@ class MazeGenerator:
         self, old_room: Room, current_room: Room
     ) -> list[Room] | None:
         """Finds shortest path in a maze.
-
-        Raises:
-            ValueError: When there is no possible path between entry and exit.
-
+        
+        Args:
+            old_room: room we came from
+            current_room: current room
         Returns:
             list[Room] | None: Empty list if room
             has been visited or is blocked, otherwise a list with rooms
