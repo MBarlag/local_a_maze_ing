@@ -16,9 +16,9 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from submodules.config import ConfigParser
+from mazegen.config import ConfigParser
 from submodules.display import MazePrinter
-from submodules.generator import MazeGenerator
+from mazegen.generator import MazeGenerator
 from submodules.menu import Menu
 
 

@@ -1,14 +1,15 @@
 from dataclasses import dataclass
 
 import pytest
+from importlib.resources import files
 
-from submodules.abstract import Cell, Grid, Vector
-from submodules.enums import Step, Ways
+from mazegen.abstract import Cell, Grid, Vector
+from mazegen.enums import Step, Ways
 
 
 def test_from_file() -> None:
     grid = Grid(
-        7, 5, from_file="42.txt", on_each_char=lambda c: Ways(int(c, 16))
+        7, 5, from_file=str(files("mazegen") / "42.txt"), on_each_char=lambda c: Ways(int(c, 16))
     )
     print(grid)
     assert grid[0, 0].value == Ways.ALL
@@ -26,7 +27,7 @@ def test_grid_add() -> None:
 
 def test_grid_view() -> None:
     grid = Grid(
-        7, 5, from_file="42.txt", on_each_char=lambda x: Ways(int(x, 16))
+        7, 5, from_file=str(files("mazegen") / "42.txt"), on_each_char=lambda x: Ways(int(x, 16))
     )
     print(grid)
     print()

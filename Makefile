@@ -43,7 +43,7 @@ $(VENV_DIR): $(PY_VERSION)
 # and create a file "ready" when its ready
 # to avoid relinking
 ready: $(VENV_DIR) $(PIP_REQUIREMENTS)
-	uv pip install --exact -r $(PIP_REQUIREMENTS)
+	uv pip install --exact -r $(PIP_REQUIREMENTS) --link-mode=copy
 	touch ready
 
 # command asked in subject

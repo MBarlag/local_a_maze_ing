@@ -10,7 +10,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, NonNegativeInt
 
-from submodules.safe_types import Bool, FileName, IntVector
+from mazegen.safe_types import Bool, FileName, IntVector
 
 
 class ConfigParserError(Exception):

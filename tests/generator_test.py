@@ -5,23 +5,24 @@ from dataclasses import FrozenInstanceError
 from functools import partial
 from random import randint
 from typing import Any
+from importlib.resources import files
 
 import pytest
 from pydantic import ValidationError
 
 from a_maze_ing import format_pydantic_error
-from submodules.abstract import Cell, Grid, Vector
-from submodules.config import ConfigParser, MazeConfig
-from submodules.data import MazeError
+from mazegen.abstract import Cell, Grid, Vector
+from mazegen.config import ConfigParser, MazeConfig
+from mazegen.data import MazeError
 from submodules.display import MazePrinter
-from submodules.enums import Ways
-from submodules.generator import (
+from mazegen.enums import Ways
+from mazegen.generator import (
     P42_MIN_HEIGHT,
     P42_MIN_WIDTH,
     MazeGenerator,
     MazeGenError,
 )
-from submodules.safe_types import IntVector
+from mazegen.safe_types import IntVector
 from tests.maze_analyzer import Maze as MAZE
 from tests.maze_analyzer import analyze, render
 
@@ -78,7 +79,7 @@ def test_random_pacman(subtests: pytest.Subtests) -> None:
         height = randint(0, RAND_HEIGHT)
         with subtests.test(f"{width}x{height}"), pydantic_pretty():
             pattern = Grid(
-                7, 5, from_file="42.txt", on_each_char=lambda c: c == "f"
+                7, 5, from_file=str(files("mazegen") / "42.txt"), on_each_char=lambda c: c == "f"
             )
             grid = None
             try:
@@ -179,7 +180,7 @@ def test_random_perfect(subtests: pytest.Subtests) -> None:
             pydantic_pretty(),
         ):
             pattern = Grid(
-                7, 5, from_file="42.txt", on_each_char=lambda c: c == "f"
+                7, 5, from_file=str(files("mazegen") / "42.txt"), on_each_char=lambda c: c == "f"
             )
             grid = None
             try:

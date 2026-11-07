@@ -14,11 +14,12 @@ from collections.abc import Callable, Iterable
 from dataclasses import KW_ONLY, dataclass, field
 from random import choice, randint
 from typing import Any
+from importlib.resources import files
 
-from submodules.abstract import Grid, Vector
-from submodules.config import MazeConfig
-from submodules.data import Maze, Room
-from submodules.enums import Ways
+from mazegen.abstract import Grid, Vector
+from mazegen.config import MazeConfig
+from mazegen.data import Maze, Room
+from mazegen.enums import Ways
 
 P42_WIDTH = 7
 P42_HEIGHT = 5
@@ -188,7 +189,7 @@ class MazeGenerator:
         pattern = Grid(
             P42_WIDTH,
             P42_HEIGHT,
-            from_file="42.txt",
+            from_file=str(files("mazegen") / "42.txt"),
             on_each_char=lambda c: Ways(int(c, 16)),
         )
         x = (self.width - pattern.width) // 2

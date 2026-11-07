@@ -8,8 +8,8 @@ coordinates.
 from functools import cached_property
 from random import shuffle
 
-from submodules.abstract import Cell, Grid, Vector
-from submodules.enums import Step, Ways
+from mazegen.abstract import Cell, Grid, Vector
+from mazegen.enums import Step, Ways
 
 
 class Room(Cell[None]):

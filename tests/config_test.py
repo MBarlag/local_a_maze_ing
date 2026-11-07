@@ -2,7 +2,7 @@ from os import remove
 
 import pytest
 
-from submodules.config import ConfigParser, ConfigParserError
+from mazegen.config import ConfigParser, ConfigParserError
 
 VALID = [
     ("", {}),
