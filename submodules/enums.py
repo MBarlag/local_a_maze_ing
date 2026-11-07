@@ -29,7 +29,7 @@ class Step(Vector[int], Enum):
         for step in list(cls):
             if step.value == vector:
                 return step
-        raise Exception("Not a primitive step.")
+        raise ValueError("Not a primitive step.")
 
     @property
     def opposite(self) -> "Step":

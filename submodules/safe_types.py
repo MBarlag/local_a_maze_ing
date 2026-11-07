@@ -1,3 +1,9 @@
+"""Safe types tools.
+
+Has helper functions to make construction of the types
+that are gonna be validated by pydantic easier.
+"""
+
 import re
 from re import Pattern
 from typing import Annotated, Any

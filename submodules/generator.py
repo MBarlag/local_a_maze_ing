@@ -1,3 +1,13 @@
+"""A Maze generator module, has MazeGenerator class.
+
+Usage example:
+    maze_gen = MazeGenerator(entry = Vector(3,3), **config)
+    maze = maze_gen.generate()
+    assert maze.valid == True
+    print(maze.entry)
+    solution = maze_gen.path # [Ways.N, Ways.S, Ways.S ...]
+"""
+
 import random
 from collections import Counter, deque
 from collections.abc import Callable, Iterable

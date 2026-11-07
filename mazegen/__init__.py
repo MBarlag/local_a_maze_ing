@@ -1,4 +1,4 @@
-"""A reusable mazegenerator to generate perfect and imperfect mazes"""
+"""A reusable mazegenerator to generate perfect and imperfect mazes."""
 
 from mazegen.generator import MazeGenerator
 
