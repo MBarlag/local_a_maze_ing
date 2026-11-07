@@ -293,8 +293,7 @@ class MazeGenerator:
             current: Current room from dfs search.
 
         Returns:
-            A list of tuples in a format of (from, to).
-            'to' is populated by current room neighbours.
+            A list of rooms for visiting next.
         """
         if current.visited or current.blocked:
             return []
@@ -315,15 +314,16 @@ class MazeGenerator:
 
         Adds new walking options that processing function
         returned to the queue.
-        Processing function can return an empt list, which means
+        Processing function can return an empty list, which means
         no new options has been selected on the current steps.
         If on_each_visit function returned None => _walk completes.
         Otherwise _walk completes when the queue is empty.
 
         Args:
-            start_from: [TODO:description]
-            on_each_visit: [TODO:description]
-            depth_first: [TODO:description]
+            start_from: A room to start our walk from.
+            on_each_visit: Prossesing function, takes prev and curr rooms
+                            returns next rooms to be visited.
+            depth_first: what type of walking to do, DFS if True, BFS oterwise.
         """
         start_from.visited = True
         queue: deque[tuple[Room, Room]] = deque(

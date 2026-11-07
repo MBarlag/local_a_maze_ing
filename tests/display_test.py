@@ -16,7 +16,6 @@ def test_small_maze() -> None:
     printer = MazePrinter(**config)
     printer.display_maze()
 
-    # TODO find out how to compare temp_output.txt against tests/hex_small_maze.txt
 
 
 def test_big_maze() -> None:

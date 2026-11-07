@@ -44,12 +44,8 @@ class MazePrinter(BaseModel):
     entry: str
     exit: str
     input_file: str = Field(alias="output_file")
-    path_visible: bool = True  # TODO: flip to False once done
+    path_visible: bool = False
     wall_color: str = COLOR_2
-
-    # # TODO redefine print
-    # def _print(self, value):
-    #     print(value, file=self.file)
 
     @staticmethod
     def _parse_coords(coord: str) -> tuple[int, int]:
