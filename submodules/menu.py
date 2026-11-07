@@ -34,12 +34,19 @@ class Menu:
     def __init__(
         self, maze_gen: MazeGenerator, maze_printer: MazePrinter
     ) -> None:
+        """Creates attributes for every instance of Menu.
 
+        Sets self.first_maze to True. Creates a header.
+
+        Args:
+            maze_gen (MazeGenerator): Instance of MazeGenerator class.
+            maze_printer (MazePrinter): Instance of MazePrinter class.
+        """
         self.maze_gen = maze_gen
         self.maze_printer = maze_printer
         self.first_maze = True
         authors = " [A-Maze-ing] by mbarlag & eepyemy ^_^ "
-        w = self.maze_gen.width
+        w = self.maze_gen.width * 3
         self.header = "\n" + "-" * w + authors + "-" * w + "\n"
 
     def prompt_loop(self) -> None:
@@ -118,6 +125,7 @@ class Menu:
 
     @staticmethod
     def quit_menu() -> None:
+        """Method to quit the menu and close the program with sys.exit(0)."""
         print("\nBye, hope to see you soon!")
         sys.exit(0)
 
