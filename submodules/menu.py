@@ -14,8 +14,8 @@ from typing import Any
 
 import inquirer
 
-from submodules.display import COLOR_1, COLOR_2, MazePrinter
 from mazegen.generator import MazeGenerator
+from submodules.display import COLOR_1, COLOR_2, MazePrinter
 
 
 class Action(Enum):
@@ -46,7 +46,7 @@ class Menu:
         self.maze_printer = maze_printer
         self.first_maze = True
         authors = " [A-Maze-ing] by mbarlag & eepyemy ^_^ "
-        w = self.maze_gen.width * 3
+        w = self.maze_gen.width
         self.header = "\n" + "-" * w + authors + "-" * w + "\n"
 
     def prompt_loop(self) -> None:

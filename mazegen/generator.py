@@ -1,6 +1,7 @@
 """A Maze generator module, has MazeGenerator class.
 
 Usage example:
+    config = {'perfect': 'True', 'exit': '(0,0)', ...}
     maze_gen = MazeGenerator(entry = Vector(3,3), **config)
     maze = maze_gen.generate()
     assert maze.valid == True
@@ -12,9 +13,9 @@ import random
 from collections import Counter, deque
 from collections.abc import Callable, Iterable
 from dataclasses import KW_ONLY, dataclass, field
+from importlib.resources import files
 from random import choice, randint
 from typing import Any
-from importlib.resources import files
 
 from mazegen.abstract import Grid, Vector
 from mazegen.config import MazeConfig
@@ -67,13 +68,6 @@ class MazeGenerator:
         self,
     ) -> None:
         """Initialize MazeGenerator inner attributes after its been created."""
-        # self.width = config.width
-        # self.height = config.height
-        # self.entry = config.entry
-        # self.exit = config.exit
-        # self.perfect = config.perfect
-        # self.output_file = config.output_file
-        # self.seed = config.seed
         unchecked = vars(self)
         maze_config = MazeConfig(**unchecked)
         checked = vars(maze_config)
@@ -83,12 +77,10 @@ class MazeGenerator:
             raise MazeGenError(
                 "Pacman cannot have width or height equal to 1."
             )
-        if self.seed is None:
+        if "seed" not in checked:
             self.set_seed()
         else:
-            self.set_seed(self.seed)
-        # if not self.perfect and (self.width == 2 and self.height == 2):
-        #     raise MazeGenError("bleh")
+            self.set_seed(checked["seed"])
         self._draft_maze = Maze(self.width, self.height, self.entry, self.exit)
         origin = self._draft_maze.room
         if origin + self.entry is None or origin + self.exit is None:
@@ -137,10 +129,10 @@ class MazeGenerator:
                 reasons[e] += 1
         # if the loop didnt have a break
         else:
-            print(maze.view(lambda x: str(x.walls)))
+            #print(maze.view(lambda x: str(x.walls)))
             raise MazeGenError(
                 "[ERROR] Failed to create maze for the current configuration."
-                f"Reasons: {reasons}"
+                #f"Reasons: {reasons}"
             )
         result = self.last_maze
         return result

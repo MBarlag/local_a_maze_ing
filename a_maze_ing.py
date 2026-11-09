@@ -17,8 +17,8 @@ from typing import Any
 from pydantic import ValidationError
 
 from mazegen.config import ConfigParser
-from submodules.display import MazePrinter
 from mazegen.generator import MazeGenerator
+from submodules.display import MazePrinter
 from submodules.menu import Menu
 
 

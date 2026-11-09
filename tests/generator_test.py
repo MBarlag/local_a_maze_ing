@@ -155,7 +155,7 @@ def test_random_pacman(subtests: pytest.Subtests) -> None:
                 on_each_char=lambda x: Ways(int(x, 16)),
             )
             print(walls)
-            printer = MazePrinter(**config.as_dict)
+            printer = MazePrinter(path_visible=True,**config.as_dict)
             printer.display_maze()
             print(f"SEED: {maze_gen.seed=}")
             m = MAZE.from_file(config.output_file)
@@ -247,7 +247,7 @@ def test_random_perfect(subtests: pytest.Subtests) -> None:
                 on_each_char=lambda x: Ways(int(x, 16)),
             )
             print(walls)
-            printer = MazePrinter(**config.as_dict)
+            printer = MazePrinter(path_visible=True, **config.as_dict)
             printer.display_maze()
             print(f"SEED: {maze_gen.seed=}")
             m = MAZE.from_file(config.output_file)

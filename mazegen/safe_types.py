@@ -4,6 +4,7 @@ Has helper functions to make construction of the types
 that are gonna be validated by pydantic easier.
 """
 
+import os
 import re
 from re import Pattern
 from typing import Annotated, Any
@@ -126,10 +127,18 @@ def _to_vector_int(value: Any) -> Vector[int]:
         x, y = ints
         return Vector[int](x, y)
 
+def dirs_exist(value: Any) -> Any:
+    if isinstance(value, str):
+        if not os.path.exists(os.path.dirname(value)):
+            raise ValueError(
+                f"Path does not exist"
+            )
+    return value
 
 PositiveInt = Annotated[int, limited_input(pattern=r"^\d+$")]
 FileName = Annotated[
     str,
+    BeforeValidator(dirs_exist),
     blocked_inputs(".", ".."),
     StringConstraints(
         min_length=1,

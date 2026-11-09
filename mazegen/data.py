@@ -148,7 +148,6 @@ class Maze(Grid[None, Room]):
         self._set_exit(exit or Vector(1, 0))
         if self.exit == self.entry:
             raise MazeError("Cant have entry == exit.")
-        self.edges = 0
 
     @property
     def valid(self) -> bool:

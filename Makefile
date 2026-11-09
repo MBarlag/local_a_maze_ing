@@ -37,13 +37,13 @@ endif
 $(VENV_DIR): $(PY_VERSION)
 	$(MAKE) uv_install
 	rm -rf $(VENV_DIR)
-	uv venv --python $(PY_VER)
+	uv venv --python $(PY_VER) --link-mode=copy --refresh
 
 # make sure the environment is up to date
 # and create a file "ready" when its ready
 # to avoid relinking
-ready: $(VENV_DIR) $(PIP_REQUIREMENTS)
-	uv pip install --exact -r $(PIP_REQUIREMENTS) --link-mode=copy
+ready: $(VENV_DIR) $(PIP_REQUIREMENTS) mazegen
+	uv pip install --exact -r $(PIP_REQUIREMENTS) --link-mode=copy --refresh
 	touch ready
 
 # command asked in subject
@@ -54,23 +54,23 @@ install:
 run:
 	$(MAKE) ready
 	echo $(PY_VER)
-	uv run --python $(PY_VER) a_maze_ing.py config.txt
+	uv run --link-mode=copy --refresh --python $(PY_VER) a_maze_ing.py config.txt
 
 debug:
 	$(MAKE) ready
-	uv run --python $(PY_VER) -m pdb a_maze_ing.py $(CONFIG)
+	uv run --link-mode=copy --refresh --python $(PY_VER) -m pdb a_maze_ing.py $(CONFIG)
 
 clean:
-	rm -rf __pycache__
-	rm -rf .mypy_cache
-	rm -rf .ruff_cache
-	rm -rf .pytest_cache
-	rm -rf */__pycache__
-	rm -rf */.mypy_cache
-	rm -rf */.ruff_cache
-	rm -rf */.pytest_cache
-
-# removes uv package manager, and it's .venv
+	find -not -path "*.venv*" -name __pycache__ | xargs -n1 rm -rf
+	find -not -path "*.venv*" -name .mypy_cache | xargs -n1 rm -rf
+	find -not -path "*.venv*" -name .ruff_cache | xargs -n1 rm -rf
+	find -not -path "*.venv*" -name .pytest_cache | xargs -n1 rm -rf
+	find -not -path "*.venv*" -name "*.egg-info" | xargs -n1 rm -rf
+	find -path "*tests/output*" -name "*.txt" | xargs -n1 rm -rf
+	find -maxdepth 1 -name "*.txt" -and -not -name "config.txt" | xargs -n1 rm -rf
+	rm -rf maze
+	rm -rf dist
+# removes uv package manager, and it's .venv/
 # also removes build folders and the file ready
 
 # uninstall:

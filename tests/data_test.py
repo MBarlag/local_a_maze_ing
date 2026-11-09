@@ -29,7 +29,7 @@ def test_maze() -> None:
             )
         )
     )
-    printer = MazePrinter(**config)
+    printer = MazePrinter(path_visible=True, **config)
     printer.display_maze()
 
 

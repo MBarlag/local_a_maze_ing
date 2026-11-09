@@ -7,6 +7,6 @@ mypy
 ruff
 typing-extensions
 build
-mazegen-1.0.0-py3-none-any.whl
+mazegen
 # line_profiler
 # snakeviz
