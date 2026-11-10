@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by mabarlag, eepyemy*
+*This project has been created as part of the 42 curriculum by mabarlag, emkulpa*
 
 ## Description
 

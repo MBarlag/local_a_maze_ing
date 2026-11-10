@@ -45,7 +45,7 @@ class Menu:
         self.maze_gen = maze_gen
         self.maze_printer = maze_printer
         self.first_maze = True
-        authors = " [A-Maze-ing] by mbarlag & eepyemy ^_^ "
+        authors = " [A-Maze-ing] by mbarlag & emkulpa ^_^ "
         w = self.maze_gen.width
         self.header = "\n" + "-" * w + authors + "-" * w + "\n"
 
