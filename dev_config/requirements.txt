@@ -1,7 +1,0 @@
-pydantic
-inquirer
-flake8
-mypy
-ruff
-typing-extensions
-build
