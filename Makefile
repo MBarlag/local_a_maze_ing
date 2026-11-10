@@ -17,30 +17,30 @@ CLR:=\033[0m
 all: run
 lint:
 	$(MAKE) ready
-	echo -en "	$(PINK)mypy: $(CLR)"
+	echo -en "$(PINK)mypy: $(CLR)"
 	source activate.sh && mypy $(LINT_FLAGS) . || true
-	echo -en "	$(PINK)flake: $(CLR)"
+	echo -en "$(PINK)flake: $(CLR)"
 	source activate.sh && flake8 . || true
 	echo -e "$(GREEN)Done!$(CLR)"
 	printf "$(CLR)"
 
 lint-strict:
 	$(MAKE) ready
-	echo -en "	$(PINK)mypy: $(CLR)"
+	echo -en "$(PINK)mypy: $(CLR)"
 	source activate.sh && mypy --strict . || true
-	echo -en "	$(PINK)flake: $(CLR)"
+	echo -en "$(PINK)flake: $(CLR)"
 	source activate.sh && flake8 . || true
 	echo -e "$(GREEN)Done!$(CLR)"
 	printf "$(CLR)"
 
 check:
 	$(MAKE) ready
-	echo -en "	$(PINK)mypy: $(CLR)"
+	echo -en "$(PINK)mypy: $(CLR)"
 	source activate.sh && mypy --strict . || true
-	echo -en "	$(PINK)flake: $(CLR)"
+	echo -en "$(PINK)flake: $(CLR)"
 	source activate.sh && flake8 . || true
 	echo -e "$(GREEN)Done!$(CLR)"
-	echo -en "	$(PINK)ruff: $(CLR)"
+	echo -en "$(PINK)ruff: $(CLR)"
 	source activate.sh && ruff check . || true
 	source activate.sh && pytest -q || true
 	printf "$(CLR)"
