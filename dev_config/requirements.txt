@@ -1,7 +1,7 @@
 pydantic
-pytest
 inquirer
-pylint
 flake8
 mypy
 ruff
+typing-extensions
+build

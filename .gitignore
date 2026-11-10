@@ -7,3 +7,12 @@ dist
 .ruff_cache
 __pycache__
 .pytest_cache
+T1.txt
+TESTING.txt
+todo_*
+*maze*.txt
+*perfect.txt
+test.txt
+maze
+uv.lock
+*.DS_Store
