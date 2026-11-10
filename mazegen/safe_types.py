@@ -47,6 +47,7 @@ def limited_input(
     Raises:
         ValueError: if any of the limits has been triggered.
     """
+    # this is a model that uses pydantic StringConstrains
     _STR: TypeAdapter[Any] = TypeAdapter(
         Annotated[
             str,
@@ -127,18 +128,22 @@ def _to_vector_int(value: Any) -> Vector[int]:
         x, y = ints
         return Vector[int](x, y)
 
-def dirs_exist(value: Any) -> Any:
+
+def _filepath_validator(value: Any) -> Any:
+    """Validates a filepath."""
     if isinstance(value, str):
-        if not os.path.exists(os.path.dirname(value)):
-            raise ValueError(
-                f"Path does not exist"
-            )
+        if os.path.exists(value) and os.path.isdir(value):
+            raise ValueError(f"{value!r} is a directory.")
+        parent_dir = os.path.dirname(value) or "."
+        if not os.path.exists(parent_dir):
+            raise ValueError("Parent forlder does not exist.")
     return value
 
+
 PositiveInt = Annotated[int, limited_input(pattern=r"^\d+$")]
-FileName = Annotated[
+FilePath = Annotated[
     str,
-    BeforeValidator(dirs_exist),
+    BeforeValidator(_filepath_validator),
     blocked_inputs(".", ".."),
     StringConstraints(
         min_length=1,

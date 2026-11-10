@@ -9,17 +9,41 @@ LINT_FLAGS:=--warn-return-any \
 --check-untyped-defs
 PY_VER:=$(shell cat $(PY_VERSION))
 CONFIG:=config.txt
+SHELL:=/bin/bash
+GREEN:=\033[1;38;5;10m
+PINK=\033[38;5;207m
+CLR:=\033[0m
 
 all: run
 lint:
 	$(MAKE) ready
-	mypy $(LINT_FLAGS) . || true
-	flake8 . || true
+	echo -en "	$(PINK)mypy: $(CLR)"
+	source activate.sh && mypy $(LINT_FLAGS) . || true
+	echo -en "	$(PINK)flake: $(CLR)"
+	source activate.sh && flake8 . || true
+	echo -e "$(GREEN)Done!$(CLR)"
+	printf "$(CLR)"
 
 lint-strict:
 	$(MAKE) ready
-	uvx mypy  --strict . || true
-	uvx flake8 --exclude $(VENV_DIR) . || true
+	echo -en "	$(PINK)mypy: $(CLR)"
+	source activate.sh && mypy --strict . || true
+	echo -en "	$(PINK)flake: $(CLR)"
+	source activate.sh && flake8 . || true
+	echo -e "$(GREEN)Done!$(CLR)"
+	printf "$(CLR)"
+
+check:
+	$(MAKE) ready
+	echo -en "	$(PINK)mypy: $(CLR)"
+	source activate.sh && mypy --strict . || true
+	echo -en "	$(PINK)flake: $(CLR)"
+	source activate.sh && flake8 . || true
+	echo -e "$(GREEN)Done!$(CLR)"
+	echo -en "	$(PINK)ruff: $(CLR)"
+	source activate.sh && ruff check . || true
+	source activate.sh && pytest -q || true
+	printf "$(CLR)"
 
 
 # command for installing uv in case it's not installed
@@ -37,13 +61,13 @@ endif
 $(VENV_DIR): $(PY_VERSION)
 	$(MAKE) uv_install
 	rm -rf $(VENV_DIR)
-	uv venv --python $(PY_VER) --link-mode=copy --refresh
+	uv venv --python $(PY_VER) # --link-mode=copy --refresh
 
 # make sure the environment is up to date
 # and create a file "ready" when its ready
 # to avoid relinking
-ready: $(VENV_DIR) $(PIP_REQUIREMENTS) mazegen
-	uv pip install --exact -r $(PIP_REQUIREMENTS) --link-mode=copy --refresh
+ready: $(VENV_DIR) $(PIP_REQUIREMENTS)
+	uv pip install --exact -r $(PIP_REQUIREMENTS) #--link-mode=copy --refresh
 	touch ready
 
 # command asked in subject
@@ -54,11 +78,11 @@ install:
 run:
 	$(MAKE) ready
 	echo $(PY_VER)
-	uv run --link-mode=copy --refresh --python $(PY_VER) a_maze_ing.py config.txt
+	uv run --link-mode=copy --no-project --refresh --python $(PY_VER) a_maze_ing.py $(CONFIG) || true
 
 debug:
 	$(MAKE) ready
-	uv run --link-mode=copy --refresh --python $(PY_VER) -m pdb a_maze_ing.py $(CONFIG)
+	uv run --link-mode=copy --no-project --refresh --python $(PY_VER) -m pdb a_maze_ing.py $(CONFIG) || true
 
 clean:
 	find -not -path "*.venv*" -name __pycache__ | xargs -n1 rm -rf
@@ -81,4 +105,4 @@ clean:
 # 	rm -rf *.egg-info
 # 	rm -f ready
 
-.PHONY:	all install run debug clean lint lint-strict # uninstall
+.PHONY:	all install run debug clean lint lint-strict check # uninstall

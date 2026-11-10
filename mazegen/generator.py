@@ -129,10 +129,10 @@ class MazeGenerator:
                 reasons[e] += 1
         # if the loop didnt have a break
         else:
-            #print(maze.view(lambda x: str(x.walls)))
+            # print(maze.view(lambda x: str(x.walls)))
             raise MazeGenError(
                 "[ERROR] Failed to create maze for the current configuration."
-                #f"Reasons: {reasons}"
+                # f"Reasons: {reasons}"
             )
         result = self.last_maze
         return result

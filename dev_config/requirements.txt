@@ -7,6 +7,3 @@ mypy
 ruff
 typing-extensions
 build
-mazegen
-# line_profiler
-# snakeviz

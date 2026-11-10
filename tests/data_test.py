@@ -7,7 +7,6 @@ from submodules.display import MazePrinter
 from mazegen.enums import Step, Ways
 from mazegen.generator import MazeGenerator
 
-
 def test_maze() -> None:
     with pytest.raises(ValueError, match="negative") as e:
         Maze(-3, 3)

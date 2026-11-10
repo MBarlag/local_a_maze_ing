@@ -263,7 +263,7 @@ def test_random_perfect(subtests: pytest.Subtests) -> None:
 def debug() -> None:
     width = 500
     height = 500
-    dict_config: dict[str, str] = {
+    dict_config: dict[str, Any] = {
         "width": f"{width}",
         "height": f"{height}",
         "entry": "0,0",
@@ -272,7 +272,7 @@ def debug() -> None:
         "perfect": "False",
     }
     config = MazeConfig(**dict_config)
-    maze_gen = MazeGenerator(**vars(config))
+    maze_gen = MazeGenerator(**dict_config)
     maze = maze_gen.generate()
     if not maze:
         raise Exception("Maze did not generate.")

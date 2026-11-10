@@ -10,7 +10,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, NonNegativeInt
 
-from mazegen.safe_types import Bool, FileName, IntVector
+from mazegen.safe_types import Bool, FilePath, IntVector
 
 
 class ConfigParserError(Exception):
@@ -25,7 +25,7 @@ class MazeConfig(BaseModel):
     entry: IntVector
     exit: IntVector
     perfect: Bool
-    output_file: FileName
+    output_file: FilePath
     seed: NonNegativeInt | None = Field(None)
 
     @property
