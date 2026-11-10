@@ -85,7 +85,7 @@ _Cell = TypeVar("_Cell", bound="Cell[Any]")
 class Cell(Generic[_Data]):
     """Stores x, y coordinates and grid it belongs to."""
 
-    _own = frozenset({"_grid", "_value", "y", "x", "__dict__"})
+    _own = frozenset({"_grid", "_value", "y", "x"})
 
     @property
     def valid(self) -> bool:
@@ -178,12 +178,7 @@ class Cell(Generic[_Data]):
     def __getattr__(self, name: str) -> Any:
         """Get Attribute from Data. Except _grid, x, y, _value from Cell."""
         # using type(self) to avoid recursion,
-        # hasattr(self, "map") -> return "map" in self.__dict__
-        if name in Cell._own or hasattr(self, name):
-            # just get the attribute of the instance of class Cell or its child itself.
-            # for example print(cell.x)
-            # print(room.map)
-            # recursion 1 avoided
+        if name in Cell._own or hasattr(type(self), name):
             return object.__getattribute__(self, name)
         elif hasattr(self._value, name):
             return getattr(self._value, name)
@@ -191,9 +186,8 @@ class Cell(Generic[_Data]):
 
     def __setattr__(self, name: str, value: Any) -> None:
         """Set Attribute from Data. Except _grid, x, y, _value from Cell."""
-        if name in Cell._own or hasattr(self, name):
+        if name in Cell._own or hasattr(type(self), name):
             return object.__setattr__(self, name, value)
-        # self._value => self.__getattr__("_value")
         elif hasattr(self._value, name):
             return setattr(self._value, name, value)
         raise AttributeError
