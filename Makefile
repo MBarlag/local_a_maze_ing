@@ -61,13 +61,13 @@ endif
 $(VENV_DIR): $(PY_VERSION)
 	$(MAKE) uv_install
 	rm -rf $(VENV_DIR)
-	uv venv --python $(PY_VER) # --link-mode=copy --refresh
+	uv venv --python $(PY_VER)  --link-mode=copy --refresh
 
 # make sure the environment is up to date
 # and create a file "ready" when its ready
 # to avoid relinking
 ready: $(VENV_DIR) $(PIP_REQUIREMENTS)
-	uv pip install --exact -r $(PIP_REQUIREMENTS) #--link-mode=copy --refresh
+	uv pip install --exact -r $(PIP_REQUIREMENTS) --link-mode=copy --refresh
 	touch ready
 
 # command asked in subject
