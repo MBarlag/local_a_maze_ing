@@ -42,7 +42,7 @@ check:
 	echo -e "$(GREEN)Done!$(CLR)"
 	echo -en "$(PINK)ruff: $(CLR)"
 	source activate.sh && ruff check . || true
-	source activate.sh && pytest -q || true
+	source activate.sh && pytest -q 2>/dev/null || true
 	printf "$(CLR)"
 
 
