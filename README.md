@@ -152,12 +152,6 @@ Running project:
  make run
 ```
 
-As stated in the subject, we were not allowed to provide the tests in our main branch. You can still get the tests by visiting another branch. First, switch to the tester branch. Second, run pytest:
-```bash
-git checkout tester
-pytest
-```
-
 ## Team & Project Management
  
 __Roles and responsibilities:__  
